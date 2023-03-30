@@ -11,7 +11,7 @@ import fr.weefle.constructor.block.DataBuildBlock;
 import fr.weefle.constructor.block.EmptyBuildBlock;
 
 @SuppressWarnings("deprecation")
-public class ConstructorSchematic {
+public class BuilderSchematic {
 	public Vector offset;
 	public EmptyBuildBlock[][][] Blocks = new EmptyBuildBlock[1][1][1];
 	public Queue<BlockData> excludedMaterials = new LinkedList<>();
@@ -19,7 +19,7 @@ public class ConstructorSchematic {
 	public String Name = ""; 
 	public Vector SchematicOrigin = null;
 
-	public Location getSchematicOrigin(ConstructorTrait Builder){	
+	public Location getSchematicOrigin(BuilderTrait Builder){
 		if (SchematicOrigin == null)return null;
 
 
@@ -52,7 +52,7 @@ public class ConstructorSchematic {
 	int yoffset = 0;
 	int useryoffset = 0;
 
-	public Queue<EmptyBuildBlock> BuildQueue(Location origin, boolean ignoreLiquids, boolean ignoreAir, boolean excavate, fr.weefle.constructor.essentials.ConstructorTrait.BuildPatternsXZ pattern, boolean GroupByLayer, int ylayers, int useryoffset){
+	public Queue<EmptyBuildBlock> BuildQueue(Location origin, boolean ignoreLiquids, boolean ignoreAir, boolean excavate, BuilderTrait.BuildPatternsXZ pattern, boolean GroupByLayer, int ylayers, int useryoffset){
 		dwidth = width();
 		dlength = length();
 		yoffset = 0;
@@ -209,13 +209,13 @@ public class ConstructorSchematic {
 		return Q;
 	}
 
-	public ConstructorSchematic(int w, int h, int l){
+	public BuilderSchematic(int w, int h, int l){
 		Blocks = new EmptyBuildBlock[w][h][l]; 
 		dwidth = w;
 		dlength = l;
 	}
 
-	public ConstructorSchematic() {
+	public BuilderSchematic() {
 
 	}
 

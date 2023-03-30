@@ -3,8 +3,8 @@ package fr.weefle.constructor;
 import com.denizenscript.denizen.npc.traits.AssignmentTrait;
 import com.denizenscript.denizen.objects.NPCTag;
 import fr.weefle.constructor.NMS.NMS;
-import fr.weefle.constructor.essentials.ConstructorSchematic;
-import fr.weefle.constructor.essentials.ConstructorTrait;
+import fr.weefle.constructor.essentials.BuilderSchematic;
+import fr.weefle.constructor.essentials.BuilderTrait;
 import fr.weefle.constructor.extra.DenizenSupport;
 import fr.weefle.constructor.extra.SelectionListener;
 import fr.weefle.constructor.extra.TraitListener;
@@ -23,9 +23,9 @@ import java.util.List;
 import java.util.logging.Level;
 
 
-public class Constructor extends JavaPlugin {
+public class SchematicBuilder extends JavaPlugin {
 	
-	public static Constructor instance;
+	public static SchematicBuilder instance;
 
 	public static String schematicsFolder = "";
 	public static List<Material> MarkMats = new ArrayList<>();
@@ -84,8 +84,8 @@ public class Constructor extends JavaPlugin {
         }
 
         if (denizen != null) {
-            getLogger().log(Level.INFO, "ProConstructor registered sucessfully with Denizen");
-        } else { getLogger().log(Level.INFO, "ProConstructor could not register with Denizen"); }
+            getLogger().log(Level.INFO, "ProSchematicBuilder registered sucessfully with Denizen");
+        } else { getLogger().log(Level.INFO, "ProSchematicBuilder could not register with Denizen"); }
 
         getServer().getPluginManager().registerEvents(new TraitListener(), this);
         getServer().getPluginManager().registerEvents(new SelectionListener(), this);
@@ -94,20 +94,20 @@ public class Constructor extends JavaPlugin {
 
 
 
-	public ConstructorTrait getBuilder(Entity ent){
+	public BuilderTrait getBuilder(Entity ent){
 		if( ent == null) return null;
 		NPC npc = net.citizensnpcs.api.CitizensAPI.getNPCRegistry().getNPC(ent);
-		if (npc !=null && npc.hasTrait(ConstructorTrait.class)){
-			return npc.getTrait(ConstructorTrait.class);
+		if (npc !=null && npc.hasTrait(BuilderTrait.class)){
+			return npc.getTrait(BuilderTrait.class);
 		}
 
 		return null;
 	}
 
-	public  ConstructorTrait getBuilder(NPC npc){
+	public BuilderTrait getBuilder(NPC npc){
 
-		if (npc !=null && npc.hasTrait(ConstructorTrait.class)){
-			return npc.getTrait(ConstructorTrait.class);
+		if (npc !=null && npc.hasTrait(BuilderTrait.class)){
+			return npc.getTrait(BuilderTrait.class);
 		}
 
 		return null;
@@ -204,11 +204,11 @@ public class Constructor extends JavaPlugin {
 
 
 
-	public static Constructor getInstance() {
-		return Constructor.instance;
+	public static SchematicBuilder getInstance() {
+		return SchematicBuilder.instance;
 	}
 
-	public String format(String input, NPC npc, ConstructorSchematic schem, CommandSender player, String item, String amount){
+	public String format(String input, NPC npc, BuilderSchematic schem, CommandSender player, String item, String amount){
 		input = input.replace("<NPC>",npc.getName());
 		input = input.replace("<SCHEMATIC>", schem == null ? "" : schem.Name);
 		input = input.replace("<PLAYER>", player == null ? "" : player.getName());

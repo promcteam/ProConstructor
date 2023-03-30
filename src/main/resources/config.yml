@@ -1,7 +1,7 @@
-#Constructor configuration
+#ProSchematicBuilder configuration
 
 #The directory to look for schematics. 
-SchematicsFolder: plugins/ProConstructor/schematics/
+SchematicsFolder: plugins/ProSchematicBuilder/schematics/
 
 #The allowed materials for plot marking, the first one in the list is the default. 
 #Use Id or Name. Should only use base blocks, not things that can break on place (like TORCH).
@@ -10,7 +10,7 @@ MarkMaterials:
  - GLOWSTONE
  - BEDROCK
   
-#Customize the messages Constructor sends. <NPC>, <SCHEMATIC>, <AMOUNT>, <PLAYER>, and <ITEM> can be used as placeholders where appropriate.
+#Customize the messages ProSchematicBuilder sends. <NPC>, <SCHEMATIC>, <AMOUNT>, <PLAYER>, and <ITEM> can be used as placeholders where appropriate.
 DefaultTexts:
  BuildStarted: "&a<NPC> has started to build &f<SCHEMATIC>!"
  BuildComplete: "&a<NPC> has completed build of &f<SCHEMATIC>!"

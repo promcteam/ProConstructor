@@ -5,7 +5,7 @@ import com.google.common.collect.Maps;
 import fr.weefle.constructor.block.DataBuildBlock;
 import fr.weefle.constructor.block.EmptyBuildBlock;
 import fr.weefle.constructor.block.EntityMap;
-import fr.weefle.constructor.essentials.ConstructorSchematic;
+import fr.weefle.constructor.essentials.BuilderSchematic;
 import fr.weefle.constructor.nbt.*;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -15,7 +15,6 @@ import org.bukkit.util.Vector;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.List;
@@ -155,7 +154,7 @@ public class Structure{
     }
 
 
-    public ConstructorSchematic load(File path, String filename) throws Exception
+    public BuilderSchematic load(File path, String filename) throws Exception
     {
     	File file = new File(path,filename+".nbt");
     	Vector origin = new Vector(0,0,0);
@@ -167,7 +166,7 @@ public class Structure{
         populateData(data);
 
         
-        ConstructorSchematic out = new ConstructorSchematic(dimensions[0], dimensions[1], dimensions[2]);
+        BuilderSchematic out = new BuilderSchematic(dimensions[0], dimensions[1], dimensions[2]);
     	width = (short) dimensions[0];
     	height = (short) dimensions[1];
     	length = (short) dimensions[2];

@@ -1,6 +1,6 @@
 package fr.weefle.constructor.updater;
 
-import fr.weefle.constructor.Constructor;
+import fr.weefle.constructor.SchematicBuilder;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.json.simple.JSONObject;
@@ -23,18 +23,18 @@ public class Updater
   private boolean enabled = true;
   public static boolean enabledingame = true;
   private URL url;
-  private final Constructor m;
-  public Updater(Constructor m) {
+  private final SchematicBuilder m;
+  public Updater(SchematicBuilder m) {
 	  this.m = m;
   }
   
-  public Updater(Constructor plugin, int resourceID)
+  public Updater(SchematicBuilder plugin, int resourceID)
     throws IOException
   {
     this(plugin, resourceID, true);
   }
   
-  public Updater(Constructor plugin, int resourceID, boolean log)
+  public Updater(SchematicBuilder plugin, int resourceID, boolean log)
     throws IOException
   {
     if (plugin == null) {
@@ -49,7 +49,7 @@ public class Updater
     //this.url = new URL("https://api.spiget.org/v2/resources/" + resourceID + "/versions/latest");
     this.url = new URL("https://pastebin.com/raw/MT8GTJNY");
     
-    File configDir = new File(plugin.getDataFolder().getParentFile(), "ProConstructor");
+    File configDir = new File(plugin.getDataFolder().getParentFile(), "ProSchematicBuilder");
       File config = new File(configDir, "updater.yml");
     YamlConfiguration yamlConfig = new YamlConfiguration();
     if (!configDir.exists()) {
@@ -58,7 +58,7 @@ public class Updater
     if (!config.exists())
     {
       config.createNewFile();
-      yamlConfig.options().header("Configuration for the Constructor updater system\nit will inform you about new versions of all plugins which use this updater\n'enabled' specifies whether the system is enabled (affects all plugins)");
+      yamlConfig.options().header("Configuration for the ProSchematicBuilder updater system\nit will inform you about new versions of all plugins which use this updater\n'enabled' specifies whether the system is enabled (affects all plugins)");
       
       yamlConfig.options().copyDefaults(true);
       yamlConfig.addDefault("enabled", Boolean.valueOf(true));

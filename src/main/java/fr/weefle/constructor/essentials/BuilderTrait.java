@@ -1,6 +1,6 @@
 package fr.weefle.constructor.essentials;
 
-import fr.weefle.constructor.Constructor;
+import fr.weefle.constructor.SchematicBuilder;
 import fr.weefle.constructor.NMS.NMS;
 import fr.weefle.constructor.block.DataBuildBlock;
 import fr.weefle.constructor.block.EmptyBuildBlock;
@@ -24,20 +24,20 @@ import java.util.*;
 import java.util.Map.Entry;
 
 @SuppressWarnings("deprecation")
-public class ConstructorTrait extends Trait implements Toggleable {
+public class BuilderTrait extends Trait implements Toggleable {
 
-	private Constructor plugin;
+	private SchematicBuilder plugin;
 
 	private boolean isToggled = true;
 
-	public ConstructorTrait() {
-		super("constructor");
+	public BuilderTrait() {
+		super("builder");
 	}
 
 	@Override
 	public void load(DataKey key) {
 
-		plugin = (Constructor) Bukkit.getServer().getPluginManager().getPlugin("ProConstructor");
+		plugin = (SchematicBuilder) Bukkit.getServer().getPluginManager().getPlugin("ProSchematicBuilder");
 
 		if( key.keyExists("Origin")){
 			try {
@@ -97,7 +97,7 @@ public class ConstructorTrait extends Trait implements Toggleable {
 
 
 		if (SchematicName !=null){
-			File dir= new File(Constructor.schematicsFolder);
+			File dir= new File(SchematicBuilder.schematicsFolder);
 			try {
 				
 				
@@ -135,7 +135,7 @@ public class ConstructorTrait extends Trait implements Toggleable {
 	@Override
 	public void onSpawn() {
 
-        plugin = (Constructor) Bukkit.getPluginManager().getPlugin("ProConstructor");
+        plugin = (SchematicBuilder) Bukkit.getPluginManager().getPlugin("ProSchematicBuilder");
 
 
 
@@ -236,7 +236,7 @@ public class ConstructorTrait extends Trait implements Toggleable {
 
 
 	public BuilderState State = BuilderState.idle;
-	public ConstructorSchematic schematic = null;
+	public BuilderSchematic schematic = null;
 	public String SchematicName = null;
 	public Boolean IgnoreAir, IgnoreLiquid, Excavate;
 	public Queue<BlockData> ExcavateMaterials = new LinkedList<>();
@@ -379,7 +379,7 @@ public class ConstructorTrait extends Trait implements Toggleable {
 		return true;
 	}
 
-	private ConstructorSchematic _schematic = null;
+	private BuilderSchematic _schematic = null;
 
 	private Location mypos = null;
 
@@ -398,7 +398,7 @@ public class ConstructorTrait extends Trait implements Toggleable {
 
 		mypos = npc.getEntity().getLocation().clone();
 
-		schematic = new ConstructorSchematic();
+		schematic = new BuilderSchematic();
 		schematic.Name = _schematic.Name;
 
 		if (Origin==null){
@@ -478,7 +478,7 @@ public class ConstructorTrait extends Trait implements Toggleable {
 						//npc.faceLocation(loc);
 						npc.getNavigator().setTarget(loc);
 						npc.getNavigator().getLocalParameters().stationaryTicks((int) (MoveTimeout * 20));
-						npc.getNavigator().getLocalParameters().stuckAction(ConstructorTeleportStuckAction.INSTANCE);
+						npc.getNavigator().getLocalParameters().stuckAction(BuilderTeleportStuckAction.INSTANCE);
 						//npc.getNavigator().getLocalParameters().useNewPathfinder();
 						//npc.getNavigator().setPaused(false);
 						//npc.getNavigator().getPathStrategy().clearCancelReason();

@@ -1,8 +1,8 @@
 package fr.weefle.constructor.essentials;
 
 
-import fr.weefle.constructor.Constructor;
-import fr.weefle.constructor.essentials.ConstructorTrait.BuilderState;
+import fr.weefle.constructor.SchematicBuilder;
+import fr.weefle.constructor.essentials.BuilderTrait.BuilderState;
 import mc.promcteam.engine.utils.ItemUT;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.event.NPCLeftClickEvent;
@@ -32,12 +32,12 @@ import java.util.Map;
 import java.util.Objects;
 
 @SuppressWarnings("deprecation")
-public class ConstructorListener implements Listener {
+public class BuilderListener implements Listener {
 
-	public Constructor plugin;
+	public SchematicBuilder plugin;
 	public static Map<String, Integer> materials = new HashMap<>();
 
-	public ConstructorListener(Constructor builderplugin) {
+	public BuilderListener(SchematicBuilder builderplugin) {
 
 		plugin = builderplugin;
 
@@ -46,7 +46,7 @@ public class ConstructorListener implements Listener {
 
 	@EventHandler(priority = org.bukkit.event.EventPriority.HIGHEST)
 	public void place(org.bukkit.event.block.BlockPlaceEvent event){
-		ConstructorTrait inst = plugin.getBuilder(event.getPlayer());
+		BuilderTrait inst = plugin.getBuilder(event.getPlayer());
 		if (inst!=null) event.setCancelled(false);
 	}
 
@@ -90,21 +90,21 @@ public class ConstructorListener implements Listener {
 		if(inventory.getHolder() instanceof Player){
 			Player p = (Player) inventory.getHolder();
 			InventoryView view = p.getOpenInventory();
-			if(view.getTitle().equals("Constructor - Schematics")){
+			if(view.getTitle().equals("SchematicBuilder - Schematics")){
 				assert clicked != null;
 				try{
 				if (clicked.getType() == Material.MAP) { // The item that the player clicked it dirt
 					event.setCancelled(true);
 					Objects.requireNonNull(Bukkit.getServer().getWorld(p.getWorld().getUID())).playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_BELL, 1, 1);
-						p.performCommand("constructor load " + Objects.requireNonNull(clicked.getItemMeta()).getDisplayName());
+						p.performCommand("schematicbuilder load " + Objects.requireNonNull(clicked.getItemMeta()).getDisplayName());
 						p.closeInventory();
 
 				}else if (clicked.getType() == Material.PLAYER_HEAD && Objects.requireNonNull(Objects.requireNonNull(clicked.getItemMeta()).getLore()).get(0).equals("Next Page")) { // The item that the player clicked it dirt
 					Objects.requireNonNull(Bukkit.getServer().getWorld(p.getWorld().getUID())).playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_BELL, 1, 1);
-					Inventory inv = Bukkit.createInventory(p, 54, "Constructor - Schematics");
+					Inventory inv = Bukkit.createInventory(p, 54, "ProSchematicBuilder - Schematics");
 					int nb = 0;
 					for (String fileName : materials.keySet()) {
-						int count = ConstructorListener.materials.get(fileName);
+						int count = BuilderListener.materials.get(fileName);
 						if (nb < 53) {
 							if (count > 0) {
 								ItemStack is = new ItemStack(Material.MAP);
@@ -116,7 +116,7 @@ public class ConstructorListener implements Listener {
 								nb++;
 							}
 						}
-						ConstructorListener.materials.put(fileName, 0);
+						BuilderListener.materials.put(fileName, 0);
 						if (nb == 53) {
 							ItemStack ims = getItem("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGVmMzU2YWQyYWE3YjE2NzhhZWNiODgyOTBlNWZhNWEzNDI3ZTVlNDU2ZmY0MmZiNTE1NjkwYzY3NTE3YjgifX19");
 							inv.setItem(nb, ims);
@@ -130,30 +130,30 @@ public class ConstructorListener implements Listener {
 			}catch (NullPointerException e){
 					event.setCancelled(true);
 			}
-			}else if(view.getTitle().equals("Constructor - NPCs")) {
+			}else if(view.getTitle().equals("ProSchematicBuilder - NPCs")) {
 				assert clicked != null;
 				try {
 					if (clicked.getType() == Material.PLAYER_HEAD) {
 						event.setCancelled(true);
 						Objects.requireNonNull(Bukkit.getServer().getWorld(p.getWorld().getUID())).playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_BELL, 1, 1);
-						if ((event.getClick().equals(ClickType.RIGHT)) && (p.hasPermission("constructor.npc.click"))){
+						if ((event.getClick().equals(ClickType.RIGHT)) && (p.hasPermission("schematicbuilder.npc.click"))){
 							for(NPC npc : CitizensAPI.getNPCRegistry().sorted()){
 								if(npc.getName().equals(Objects.requireNonNull(clicked.getItemMeta()).getDisplayName())){
-									if(npc.hasTrait(ConstructorTrait.class)){
-										npc.removeTrait(ConstructorTrait.class);
+									if(npc.hasTrait(BuilderTrait.class)){
+										npc.removeTrait(BuilderTrait.class);
 										p.closeInventory();
 									}else{
-										npc.addTrait(ConstructorTrait.class);
+										npc.addTrait(BuilderTrait.class);
 										p.closeInventory();
 									}
 								}
 							}
-						} else if ((event.getClick().equals(ClickType.LEFT)) && (p.hasPermission("constructor.npc.click"))){
+						} else if ((event.getClick().equals(ClickType.LEFT)) && (p.hasPermission("schematicbuilder.npc.click"))){
 							for(NPC npc : CitizensAPI.getNPCRegistry().sorted()) {
 								if (npc.getName().equals(Objects.requireNonNull(clicked.getItemMeta()).getDisplayName())) {
-									if (npc.hasTrait(ConstructorTrait.class)) {
+									if (npc.hasTrait(BuilderTrait.class)) {
 										p.performCommand("npc select " + npc.getId());
-										Inventory inv = Bukkit.createInventory(p, 54, "Constructor - Parameters");
+										Inventory inv = Bukkit.createInventory(p, 54, "ProSchematicBuilder - Parameters");
 										if(plugin.getBuilder(npc) != null && (plugin.getBuilder(npc).Excavate == null ||plugin.getBuilder(npc).RequireMaterials == null ||plugin.getBuilder(npc).IgnoreLiquid == null || plugin.getBuilder(npc).IgnoreAir == null)) {
 											plugin.getBuilder(npc).IgnoreLiquid = false;
 											plugin.getBuilder(npc).Excavate = false;
@@ -253,7 +253,7 @@ public class ConstructorListener implements Listener {
 										p.openInventory(inv);
 
 									}else {
-										p.sendMessage(ChatColor.GOLD + Objects.requireNonNull(clicked.getItemMeta()).getDisplayName() + ChatColor.RED + " isn't a constructor, right-click on it to make it one!");
+										p.sendMessage(ChatColor.GOLD + Objects.requireNonNull(clicked.getItemMeta()).getDisplayName() + ChatColor.RED + " isn't a builder, right-click on it to make it one!");
 										p.closeInventory();
 									}
 								}
@@ -265,10 +265,10 @@ public class ConstructorListener implements Listener {
 						}
 					}else if (clicked.getType() == Material.PLAYER_HEAD && Objects.requireNonNull(Objects.requireNonNull(clicked.getItemMeta()).getLore()).get(0).equals("Next Page")) { // The item that the player clicked it dirt
 						Objects.requireNonNull(Bukkit.getServer().getWorld(p.getWorld().getUID())).playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_BELL, 1, 1);
-						Inventory inv = Bukkit.createInventory(p, 54, "Constructor - NPCs");
+						Inventory inv = Bukkit.createInventory(p, 54, "ProSchematicBuilder - NPCs");
 						int nb = 0;
-						for(String npcName : ConstructorListener.materials.keySet()){
-							int count = ConstructorListener.materials.get(npcName);
+						for(String npcName : BuilderListener.materials.keySet()){
+							int count = BuilderListener.materials.get(npcName);
 
 							if (nb < 53) {
 								if (count > 0) {
@@ -279,13 +279,13 @@ public class ConstructorListener implements Listener {
 									ArrayList<String> Lore = new ArrayList<String>();
 									for (NPC npcc : CitizensAPI.getNPCRegistry().sorted()) {
 										if (npcc.getName().equals(npcName)) {
-											if (npcc.hasTrait(ConstructorTrait.class)) {
+											if (npcc.hasTrait(BuilderTrait.class)) {
 												Lore.add("This NPC can build.");
-												Lore.add("Right-click to remove constructor's trait");
+												Lore.add("Right-click to remove builder's trait");
 												Lore.add("Left-click to enter parameters");
 											} else {
 												Lore.add("This NPC can't build!");
-												Lore.add("Right-click to add constructor's trait");
+												Lore.add("Right-click to add builder's trait");
 											}
 										}
 									}
@@ -295,7 +295,7 @@ public class ConstructorListener implements Listener {
 									nb++;
 								}
 							}
-							ConstructorListener.materials.put(npcName, 0);
+							BuilderListener.materials.put(npcName, 0);
 							if (nb == 53) {
 								ItemStack ims = getItem("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGVmMzU2YWQyYWE3YjE2NzhhZWNiODgyOTBlNWZhNWEzNDI3ZTVlNDU2ZmY0MmZiNTE1NjkwYzY3NTE3YjgifX19");
 								inv.setItem(nb, ims);
@@ -311,13 +311,13 @@ public class ConstructorListener implements Listener {
 					event.setCancelled(true);
 				}
 
-			}else if(view.getTitle().equals("Constructor - Materials")){
+			}else if(view.getTitle().equals("ProSchematicBuilder - Materials")){
 				assert clicked != null;
 				try{
 					if (clicked.getType() == Material.PLAYER_HEAD && Objects.requireNonNull(Objects.requireNonNull(clicked.getItemMeta()).getLore()).get(0).equals("Next Page")) { // The item that the player clicked it dirt
 						event.setCancelled(true);
 						Objects.requireNonNull(Bukkit.getServer().getWorld(p.getWorld().getUID())).playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_BELL, 1, 1);
-						Inventory inv = Bukkit.createInventory(p, 54, "Constructor - Materials");
+						Inventory inv = Bukkit.createInventory(p, 54, "ProSchematicBuilder - Materials");
 						int nb = 0;
 						for (String item : materials.keySet()) {
 
@@ -361,7 +361,7 @@ public class ConstructorListener implements Listener {
 				}catch (NullPointerException e){
 					event.setCancelled(true);
 				}
-			}else if(view.getTitle().equals("Constructor - Parameters")){
+			}else if(view.getTitle().equals("ProSchematicBuilder - Parameters")){
 				assert clicked != null;
 				try{
 
@@ -370,7 +370,7 @@ public class ConstructorListener implements Listener {
 						Objects.requireNonNull(Bukkit.getServer().getWorld(p.getWorld().getUID())).playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_BELL, 1, 1);
 						for(NPC npc : CitizensAPI.getNPCRegistry().sorted()){
 							if(npc.getName().equals(Objects.requireNonNull(clicked.getItemMeta()).getDisplayName())){
-								if(npc.hasTrait(ConstructorTrait.class)){
+								if(npc.hasTrait(BuilderTrait.class)){
 									plugin.getBuilder(npc).oncancel = null;
 									plugin.getBuilder(npc).oncomplete = null;
 									plugin.getBuilder(npc).onStart = null;
@@ -378,8 +378,8 @@ public class ConstructorListener implements Listener {
 									plugin.getBuilder(npc).GroupByLayer = true;
 									plugin.getBuilder(npc).BuildYLayers = 1;
 									plugin.getBuilder(npc).Silent = false;
-									plugin.getBuilder(npc).BuildPatternXY = fr.weefle.constructor.essentials.ConstructorTrait.BuildPatternsXZ.spiral;
-									if (plugin.getBuilder(npc).State == ConstructorTrait.BuilderState.building){
+									plugin.getBuilder(npc).BuildPatternXY = BuilderTrait.BuildPatternsXZ.spiral;
+									if (plugin.getBuilder(npc).State == BuilderTrait.BuilderState.building){
 										plugin.getBuilder(npc).CancelBuild();
 										p.sendMessage(ChatColor.RED + npc.getName() + " isn't building anymore.");
 									}else{
@@ -401,7 +401,7 @@ public class ConstructorListener implements Listener {
 							for(ItemStack isss : inventory.getContents()){
 								for(NPC npc : CitizensAPI.getNPCRegistry().sorted()) {
 									if(Objects.requireNonNull(isss.getItemMeta()).getDisplayName().equals(npc.getName())){
-										if(npc.hasTrait(ConstructorTrait.class)){
+										if(npc.hasTrait(BuilderTrait.class)){
 											plugin.getBuilder(npc).Excavate = false;
 											clicked.setType(Material.RED_CONCRETE);
 											p.updateInventory();
@@ -415,7 +415,7 @@ public class ConstructorListener implements Listener {
 							for(ItemStack isss : inventory.getContents()){
 								for(NPC npc : CitizensAPI.getNPCRegistry().sorted()) {
 									if(Objects.requireNonNull(isss.getItemMeta()).getDisplayName().equals(npc.getName())){
-										if(npc.hasTrait(ConstructorTrait.class)){
+										if(npc.hasTrait(BuilderTrait.class)){
 											plugin.getBuilder(npc).IgnoreAir = false;
 											clicked.setType(Material.RED_CONCRETE);
 											p.updateInventory();
@@ -429,7 +429,7 @@ public class ConstructorListener implements Listener {
 							for(ItemStack isss : inventory.getContents()){
 								for(NPC npc : CitizensAPI.getNPCRegistry().sorted()) {
 									if(Objects.requireNonNull(isss.getItemMeta()).getDisplayName().equals(npc.getName())){
-										if(npc.hasTrait(ConstructorTrait.class)){
+										if(npc.hasTrait(BuilderTrait.class)){
 											plugin.getBuilder(npc).IgnoreLiquid = false;
 											clicked.setType(Material.RED_CONCRETE);
 											p.updateInventory();
@@ -443,7 +443,7 @@ public class ConstructorListener implements Listener {
 							for(ItemStack isss : inventory.getContents()){
 								for(NPC npc : CitizensAPI.getNPCRegistry().sorted()) {
 									if(Objects.requireNonNull(isss.getItemMeta()).getDisplayName().equals(npc.getName())){
-										if(npc.hasTrait(ConstructorTrait.class)){
+										if(npc.hasTrait(BuilderTrait.class)){
 											plugin.getBuilder(npc).RequireMaterials = false;
 											clicked.setType(Material.RED_CONCRETE);
 											p.updateInventory();
@@ -464,7 +464,7 @@ public class ConstructorListener implements Listener {
 							for(ItemStack isss : inventory.getContents()){
 							for(NPC npc : CitizensAPI.getNPCRegistry().sorted()) {
 									if(Objects.requireNonNull(isss.getItemMeta()).getDisplayName().equals(npc.getName())){
-										if(npc.hasTrait(ConstructorTrait.class)){
+										if(npc.hasTrait(BuilderTrait.class)){
 											plugin.getBuilder(npc).Excavate = true;
 											clicked.setType(Material.GREEN_CONCRETE);
 											p.updateInventory();
@@ -478,7 +478,7 @@ public class ConstructorListener implements Listener {
 							for(ItemStack isss : inventory.getContents()){
 								for(NPC npc : CitizensAPI.getNPCRegistry().sorted()) {
 									if(Objects.requireNonNull(isss.getItemMeta()).getDisplayName().equals(npc.getName())){
-										if(npc.hasTrait(ConstructorTrait.class)){
+										if(npc.hasTrait(BuilderTrait.class)){
 											plugin.getBuilder(npc).IgnoreAir = true;
 											clicked.setType(Material.GREEN_CONCRETE);
 											p.updateInventory();
@@ -492,7 +492,7 @@ public class ConstructorListener implements Listener {
 							for(ItemStack isss : inventory.getContents()){
 								for(NPC npc : CitizensAPI.getNPCRegistry().sorted()) {
 									if(Objects.requireNonNull(isss.getItemMeta()).getDisplayName().equals(npc.getName())){
-										if(npc.hasTrait(ConstructorTrait.class)){
+										if(npc.hasTrait(BuilderTrait.class)){
 											plugin.getBuilder(npc).IgnoreLiquid = true;
 											clicked.setType(Material.GREEN_CONCRETE);
 											p.updateInventory();
@@ -506,7 +506,7 @@ public class ConstructorListener implements Listener {
 							for(ItemStack isss : inventory.getContents()){
 								for(NPC npc : CitizensAPI.getNPCRegistry().sorted()) {
 									if(Objects.requireNonNull(isss.getItemMeta()).getDisplayName().equals(npc.getName())){
-										if(npc.hasTrait(ConstructorTrait.class)){
+										if(npc.hasTrait(BuilderTrait.class)){
 											plugin.getBuilder(npc).RequireMaterials = true;
 											clicked.setType(Material.GREEN_CONCRETE);
 											p.updateInventory();
@@ -522,7 +522,7 @@ public class ConstructorListener implements Listener {
 					}else if (clicked.getType() == Material.BOOK) {
 						event.setCancelled(true);
 						Objects.requireNonNull(Bukkit.getServer().getWorld(p.getWorld().getUID())).playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_BELL, 1, 1);
-						p.performCommand("constructor list");
+						p.performCommand("proschematicbuilder list");
 						p.sendMessage(ChatColor.GREEN + "Choose a schematic you want to load !");
 					}else {
 						event.setCancelled(true);
@@ -538,7 +538,7 @@ public class ConstructorListener implements Listener {
 	public void clickedme2(NPCLeftClickEvent event){
 
 		Player player = event.getClicker();
-		ConstructorTrait inst = plugin.getBuilder(event.getNPC());
+		BuilderTrait inst = plugin.getBuilder(event.getNPC());
 		if(inst!=null) {
 			if (inst.State == BuilderState.collecting) {
 				//list what is still needed
@@ -548,7 +548,7 @@ public class ConstructorListener implements Listener {
 					materials.put(item, inst.NeededMaterials.get(item));
 				}
 
-				Inventory inv = Bukkit.createInventory(player, 54, "Constructor - Materials");
+				Inventory inv = Bukkit.createInventory(player, 54, "ProSchematicBuilder - Materials");
 				int nb = 0;
 				for (String item : materials.keySet()) {
 
@@ -594,7 +594,7 @@ public class ConstructorListener implements Listener {
 						materials.put(embb.getMaterial().name(), count);
 					}
 
-					Inventory inv = Bukkit.createInventory(player, 54, "Constructor - Materials");
+					Inventory inv = Bukkit.createInventory(player, 54, "ProSchematicBuilder - Materials");
 					int nb = 0;
 					for (String item : materials.keySet()) {
 
@@ -640,15 +640,15 @@ public class ConstructorListener implements Listener {
 
 	@EventHandler
 	public void clickedme(net.citizensnpcs.api.event.NPCRightClickEvent event){
-		ConstructorTrait inst = plugin.getBuilder(event.getNPC());
+		BuilderTrait inst = plugin.getBuilder(event.getNPC());
 		Player player = event.getClicker();
 		if(inst==null || inst.State == BuilderState.idle) {
 
 			NPC npc = event.getNPC();
 
-					if ((npc.hasTrait(ConstructorTrait.class)) && (player.hasPermission("constructor.npc.click"))) {
+					if ((npc.hasTrait(BuilderTrait.class)) && (player.hasPermission("schematicbuilder.npc.click"))) {
 						player.performCommand("npc select " + npc.getId());
-						Inventory inv = Bukkit.createInventory(player, 54, "Constructor - Parameters");
+						Inventory inv = Bukkit.createInventory(player, 54, "ProSchematicBuilder - Parameters");
 						if(plugin.getBuilder(npc) != null && (plugin.getBuilder(npc).Excavate == null ||plugin.getBuilder(npc).RequireMaterials == null ||plugin.getBuilder(npc).IgnoreLiquid == null || plugin.getBuilder(npc).IgnoreAir == null)) {
 							plugin.getBuilder(npc).IgnoreLiquid = false;
 							plugin.getBuilder(npc).Excavate = false;
@@ -756,9 +756,9 @@ public class ConstructorListener implements Listener {
 
 	NPC npc = event.getNPC();
 
-	if ((npc.hasTrait(ConstructorTrait.class)) && (player.hasPermission("constructor.npc.click"))) {
+	if ((npc.hasTrait(BuilderTrait.class)) && (player.hasPermission("schematicbuilder.npc.click"))) {
 		player.performCommand("npc select " + npc.getId());
-		Inventory inv = Bukkit.createInventory(player, 54, "Constructor - Parameters");
+		Inventory inv = Bukkit.createInventory(player, 54, "ProSchematicBuilder - Parameters");
 		if(plugin.getBuilder(npc) != null && (plugin.getBuilder(npc).Excavate == null ||plugin.getBuilder(npc).RequireMaterials == null ||plugin.getBuilder(npc).IgnoreLiquid == null || plugin.getBuilder(npc).IgnoreAir == null)) {
 			plugin.getBuilder(npc).IgnoreLiquid = false;
 			plugin.getBuilder(npc).Excavate = false;
@@ -870,7 +870,7 @@ public class ConstructorListener implements Listener {
 				String itemname = is.getType().name();
 
 
-				if (!player.hasPermission("constructor.donate")) {
+				if (!player.hasPermission("schematicbuilder.donate")) {
 					player.sendMessage(ChatColor.RED + "You do not have permission to donate");
 					return;
 				}
@@ -933,7 +933,7 @@ public class ConstructorListener implements Listener {
 
 		//	plugin.getLogger().info("nav complete " + npc);
 
-		ConstructorTrait inst = plugin.getBuilder(npc);
+		BuilderTrait inst = plugin.getBuilder(npc);
 
 		if(inst==null) return;
 		if(inst.State!=BuilderState.idle){
@@ -952,7 +952,7 @@ public class ConstructorListener implements Listener {
 				break;
 			}
 		}
-		ConstructorTrait inst = plugin.getBuilder(npc);
+		BuilderTrait inst = plugin.getBuilder(npc);
 
 		//	plugin.getLogger().info("nav cancel " + npc);
 

@@ -11,14 +11,14 @@
     </parent>
 
     <groupId>com.promcteam</groupId>
-    <artifactId>proconstructor</artifactId>
+    <artifactId>proschematicbuilder</artifactId>
     <version>1.0-R0.1-SNAPSHOT</version>
 
     <properties>
         <java.version>1.8</java.version>
     </properties>
 
-    <name>ProConstructor</name>
+    <name>ProSchematicBuilder</name>
     <description>Let NPCs build your schematics and structures block by block with Citizens
     </description>
     <url>

@@ -1,10 +1,10 @@
 package fr.weefle.constructor.extra;
 
 import fr.weefle.constructor.API.StructureUtil;
-import fr.weefle.constructor.Constructor;
+import fr.weefle.constructor.SchematicBuilder;
 import fr.weefle.constructor.NMS.NMS;
-import fr.weefle.constructor.essentials.ConstructorListener;
-import fr.weefle.constructor.essentials.ConstructorTrait;
+import fr.weefle.constructor.essentials.BuilderListener;
+import fr.weefle.constructor.essentials.BuilderTrait;
 import fr.weefle.constructor.util.Structure;
 import mc.promcteam.engine.utils.ItemUT;
 import net.citizensnpcs.Citizens;
@@ -36,7 +36,7 @@ import java.util.LinkedList;
 import java.util.Objects;
 import java.util.logging.Level;
 
-public class ConstructorCommand implements CommandExecutor {
+public class SchematicBuilderCommand implements CommandExecutor {
 
     private int scheduler;
     public static NPC ThisNPC;
@@ -45,7 +45,7 @@ public class ConstructorCommand implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command cmd, String cmdLabel, String[] inargs) {
 
         if (inargs.length < 1) {
-            sender.sendMessage(ChatColor.RED + "Use /constructor help for command reference.");
+            sender.sendMessage(ChatColor.RED + "Use /schematicbuilder help for command reference.");
             return true;
         }
 
@@ -68,86 +68,86 @@ public class ConstructorCommand implements CommandExecutor {
 
 
         if (args.length < 1) {
-            sender.sendMessage(ChatColor.RED + "Use /constructor help for command reference.");
+            sender.sendMessage(ChatColor.RED + "Use /schematicbuilder help for command reference.");
             return true;
         }
 
 
         if (args[0].equalsIgnoreCase("help")) {
             player.sendMessage("");
-            player.sendMessage(ChatColor.GOLD + "------- Constructor Commands -------");
+            player.sendMessage(ChatColor.GOLD + "------- ProSchematicBuilder Commands -------");
             player.sendMessage("");
-            player.sendMessage(ChatColor.GREEN + "You can use /constructor (id) [command] [args] to perform any of these commands on a constructor without having it selected.");
+            player.sendMessage(ChatColor.GREEN + "You can use /schematicbuilder (id) [command] [args] to perform any of these commands on a builder without having it selected.");
             player.sendMessage("");
-            player.sendMessage(ChatColor.BLUE + "/constructor reload");
+            player.sendMessage(ChatColor.BLUE + "/schematicbuilder reload");
             player.sendMessage(ChatColor.AQUA + "  Reload the config.yml");
-            player.sendMessage(ChatColor.BLUE + "/constructor load [schematic]");
+            player.sendMessage(ChatColor.BLUE + "/schematicbuilder load [schematic]");
             player.sendMessage(ChatColor.AQUA + "  Loads a schematic file");
-            player.sendMessage(ChatColor.BLUE + "/constructor origin");
-            player.sendMessage(ChatColor.AQUA + "  Sets the build origin to the constructor's current location");
-            player.sendMessage(ChatColor.BLUE + "/constructor origin clear");
+            player.sendMessage(ChatColor.BLUE + "/schematicbuilder origin");
+            player.sendMessage(ChatColor.AQUA + "  Sets the build origin to the builder's current location");
+            player.sendMessage(ChatColor.BLUE + "/schematicbuilder origin clear");
             player.sendMessage(ChatColor.AQUA + "  Clears the build origin.");
-            player.sendMessage(ChatColor.BLUE + "/constructor origin schematic");
+            player.sendMessage(ChatColor.BLUE + "/schematicbuilder origin schematic");
             player.sendMessage(ChatColor.AQUA + "  Sets the build origin to the loaded schematic's original position");
-            player.sendMessage(ChatColor.BLUE + "/constructor origin me");
+            player.sendMessage(ChatColor.BLUE + "/schematicbuilder origin me");
             player.sendMessage(ChatColor.AQUA+ "  Sets the build origin to your current location");
-            player.sendMessage(ChatColor.BLUE + "/constructor origin current");
-            player.sendMessage(ChatColor.AQUA + "  If the constructor is currently building, sets the origin to the starting position of the current project.");
-            player.sendMessage(ChatColor.BLUE + "/constructor origin x,y,z");
-            player.sendMessage(ChatColor.AQUA + "  Sets the constructor's origin to x,y,z of the current world.");
-            player.sendMessage(ChatColor.BLUE + "/constructor mark (item)");
+            player.sendMessage(ChatColor.BLUE + "/schematicbuilder origin current");
+            player.sendMessage(ChatColor.AQUA + "  If the builder is currently building, sets the origin to the starting position of the current project.");
+            player.sendMessage(ChatColor.BLUE + "/schematicbuilder origin x,y,z");
+            player.sendMessage(ChatColor.AQUA + "  Sets the builder's origin to x,y,z of the current world.");
+            player.sendMessage(ChatColor.BLUE + "/schematicbuilder mark (item)");
             player.sendMessage(ChatColor.AQUA + "  marks the 4 corners of the footprint. Optionally specify the material name or id.");
-            player.sendMessage(ChatColor.BLUE + "/constructor build (ignoreair) (ignorewater) (excavate) (layers:#) (groupall) (reversespiral) (linear) (reverselinear) (yoffset:#) (offset)");
+            player.sendMessage(ChatColor.BLUE + "/schematicbuilder build (ignoreair) (ignorewater) (excavate) (layers:#) (groupall) (reversespiral) (linear) (reverselinear) (yoffset:#) (offset)");
             player.sendMessage(ChatColor.AQUA + "  Begin building with the selected options.");
-            player.sendMessage(ChatColor.BLUE + "/constructor cancel");
+            player.sendMessage(ChatColor.BLUE + "/schematicbuilder cancel");
             player.sendMessage(ChatColor.AQUA + "  Cancel building");
-            player.sendMessage(ChatColor.BLUE + "/constructor survey (excavate)");
+            player.sendMessage(ChatColor.BLUE + "/schematicbuilder survey (excavate)");
             player.sendMessage(ChatColor.AQUA + "  View the list of materials required to build the loaded schematic at the current origin with the specified options.");
-            player.sendMessage(ChatColor.BLUE + "/constructor timeout [0.1 - 1.0]");
+            player.sendMessage(ChatColor.BLUE + "/schematicbuilder timeout [0.1 - 1.0]");
             player.sendMessage(ChatColor.AQUA + "  Sets the maximum number of seconds between blocks");
-            player.sendMessage(ChatColor.BLUE + "/constructor supply [true/false]");
-            player.sendMessage(ChatColor.AQUA + "  set whether the constructor needs to be supplied with materials before building.");
-            player.sendMessage(ChatColor.BLUE + "/constructor hold [true/false]");
-            player.sendMessage(ChatColor.AQUA + "  Set whether the Constructor holds blocks while building.");
-            player.sendMessage(ChatColor.BLUE+ "/constructor structure [name]");
+            player.sendMessage(ChatColor.BLUE + "/schematicbuilder supply [true/false]");
+            player.sendMessage(ChatColor.AQUA + "  set whether the builder needs to be supplied with materials before building.");
+            player.sendMessage(ChatColor.BLUE + "/schematicbuilder hold [true/false]");
+            player.sendMessage(ChatColor.AQUA + "  Set whether the builder holds blocks while building.");
+            player.sendMessage(ChatColor.BLUE+ "/schematicbuilder structure [name]");
             player.sendMessage(ChatColor.AQUA + "  Save named structure with WorldEdit region selection.");
-            player.sendMessage(ChatColor.BLUE+ "/constructor preview");
+            player.sendMessage(ChatColor.BLUE+ "/schematicbuilder preview");
             player.sendMessage(ChatColor.AQUA + "  Shows the preview of the current structure.");
-            player.sendMessage(ChatColor.BLUE+ "/constructor list");
+            player.sendMessage(ChatColor.BLUE+ "/schematicbuilder list");
             player.sendMessage(ChatColor.AQUA + "  Shows the list of all schematics and structures.");
-            player.sendMessage(ChatColor.BLUE+ "/constructor npc");
+            player.sendMessage(ChatColor.BLUE+ "/schematicbuilder npc");
             player.sendMessage(ChatColor.AQUA + "  Select the NPC which will build something for you.");
-            player.sendMessage(ChatColor.BLUE+ "/constructor excavated");
+            player.sendMessage(ChatColor.BLUE+ "/schematicbuilder excavated");
             player.sendMessage(ChatColor.AQUA + "  Get all excavated blocks from current build.");
             player.sendMessage("");
             return true;
         }
         else if (args[0].equalsIgnoreCase("reload")) {
-            if(!player.hasPermission("constructor.reload")) {
+            if(!player.hasPermission("schematicbuilder.reload")) {
                 player.sendMessage(ChatColor.RED + "You do not have permissions for that command.");
                 return true;
             }
 
-            Constructor.getInstance().reloadMyConfig();
-            player.sendMessage(ChatColor.GREEN+"reloaded ProConstructor/config.yml");
+            SchematicBuilder.getInstance().reloadMyConfig();
+            player.sendMessage(ChatColor.GREEN+"reloaded ProSchematicBuilder/config.yml");
             return true;
         }
         else if (args[0].equalsIgnoreCase("npc")) {
-            if(!player.hasPermission("constructor.npc")) {
+            if(!player.hasPermission("schematicbuilder.npc")) {
                 player.sendMessage(ChatColor.RED + "You do not have permissions for that command.");
                 return true;
             }
 
             if(player instanceof Player) {
                 Player p = (Player) player;
-                Inventory inv = Bukkit.createInventory(p, 54, "Constructor - NPCs");
-                ConstructorListener.materials = new HashMap<>();
+                Inventory inv = Bukkit.createInventory(p, 54, "ProSchematicBuilder - NPCs");
+                BuilderListener.materials = new HashMap<>();
                 for(NPC npc : CitizensAPI.getNPCRegistry().sorted()){
-                    ConstructorListener.materials.put(npc.getName(), 1);
+                    BuilderListener.materials.put(npc.getName(), 1);
                 }
                 int nb = 0;
-                for(String npcName : ConstructorListener.materials.keySet()){
-                    int count = ConstructorListener.materials.get(npcName);
+                for(String npcName : BuilderListener.materials.keySet()){
+                    int count = BuilderListener.materials.get(npcName);
 
                     if (nb < 53) {
                         if (count > 0) {
@@ -158,13 +158,13 @@ public class ConstructorCommand implements CommandExecutor {
                             ArrayList<String> Lore = new ArrayList<String>();
                             for (NPC npcc : CitizensAPI.getNPCRegistry().sorted()) {
                                 if (npcc.getName().equals(npcName)) {
-                                    if (npcc.hasTrait(ConstructorTrait.class)) {
+                                    if (npcc.hasTrait(BuilderTrait.class)) {
                                         Lore.add("This NPC can build.");
-                                        Lore.add("Right-click to remove constructor's trait");
+                                        Lore.add("Right-click to remove builder's trait");
                                         Lore.add("Left-click to enter parameters");
                                     } else {
                                         Lore.add("This NPC can't build!");
-                                        Lore.add("Right-click to add constructor's trait");
+                                        Lore.add("Right-click to add builder's trait");
                                     }
                                 }
                             }
@@ -174,7 +174,7 @@ public class ConstructorCommand implements CommandExecutor {
                             nb++;
                         }
                     }
-                    ConstructorListener.materials.put(npcName, 0);
+                    BuilderListener.materials.put(npcName, 0);
                     if (nb == 53) {
                         ItemStack ims = getItem("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGVmMzU2YWQyYWE3YjE2NzhhZWNiODgyOTBlNWZhNWEzNDI3ZTVlNDU2ZmY0MmZiNTE1NjkwYzY3NTE3YjgifX19");
                         inv.setItem(nb, ims);
@@ -190,13 +190,13 @@ public class ConstructorCommand implements CommandExecutor {
             return true;
         }
         else if (args[0].equalsIgnoreCase("list")) {
-            if(!player.hasPermission("constructor.list")) {
+            if(!player.hasPermission("schematicbuilder.list")) {
                 player.sendMessage(ChatColor.RED + "You do not have permissions for that command.");
                 return true;
             }
 
             // Directory path here
-            String path =Constructor.schematicsFolder;
+            String path = SchematicBuilder.schematicsFolder;
 
             File folder = new File(path);
             File[] listOfFiles = folder.listFiles();
@@ -210,14 +210,14 @@ public class ConstructorCommand implements CommandExecutor {
             if(player instanceof Player) {
                 Player p = (Player) player;
 
-                Inventory inv = Bukkit.createInventory(p, 54, "Constructor - Schematics");
-                ConstructorListener.materials = new HashMap<>();
+                Inventory inv = Bukkit.createInventory(p, 54, "ProSchematicBuilder - Schematics");
+                BuilderListener.materials = new HashMap<>();
                 for (File file : listOfFiles) {
-                    ConstructorListener.materials.put(file.getName(), 1);
+                    BuilderListener.materials.put(file.getName(), 1);
                 }
                 int nb = 0;
-                for (String fileName : ConstructorListener.materials.keySet()) {
-                    int count = ConstructorListener.materials.get(fileName);
+                for (String fileName : BuilderListener.materials.keySet()) {
+                    int count = BuilderListener.materials.get(fileName);
                     if (nb < 53) {
                         if (count > 0) {
                             ItemStack is = new ItemStack(Material.MAP);
@@ -229,7 +229,7 @@ public class ConstructorCommand implements CommandExecutor {
                             nb++;
                         }
                     }
-                    ConstructorListener.materials.put(fileName, 0);
+                    BuilderListener.materials.put(fileName, 0);
                     if (nb == 53) {
                         ItemStack ims = getItem("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGVmMzU2YWQyYWE3YjE2NzhhZWNiODgyOTBlNWZhNWEzNDI3ZTVlNDU2ZmY0MmZiNTE1NjkwYzY3NTE3YjgifX19");
                         inv.setItem(nb, ims);
@@ -242,7 +242,7 @@ public class ConstructorCommand implements CommandExecutor {
 
             return true;
         }else if (args[0].equalsIgnoreCase("structure")) {
-            if(!player.hasPermission("constructor.structure")) {
+            if(!player.hasPermission("schematicbuilder.structure")) {
                 player.sendMessage(ChatColor.RED + "You do not have permissions for that command.");
                 return true;
             }
@@ -286,7 +286,7 @@ public class ConstructorCommand implements CommandExecutor {
                    }
                     player.sendMessage(ChatColor.GREEN + "Successfully saved structure " + ChatColor.WHITE + name + ChatColor.GREEN + " in schematics folder.");
                 }else {
-                    player.sendMessage(ChatColor.RED + "Too less arguments! Use this command: /constructor structure [name]");
+                    player.sendMessage(ChatColor.RED + "Too less arguments! Use this command: /schematicbuilder structure [name]");
                     return true;
                 }/*}else{
                 player.sendMessage(ChatColor.RED + "You need WorldEdit to use this feature!");
@@ -319,8 +319,8 @@ public class ConstructorCommand implements CommandExecutor {
             return true;
         }
 
-        if (!ThisNPC.hasTrait(ConstructorTrait.class)) {
-            player.sendMessage(ChatColor.RED + "That command must be performed on a Constructor!");
+        if (!ThisNPC.hasTrait(BuilderTrait.class)) {
+            player.sendMessage(ChatColor.RED + "That command must be performed on a builder!");
             return true;
         }
 
@@ -347,16 +347,16 @@ public class ConstructorCommand implements CommandExecutor {
             }
         }
 
-        ConstructorTrait inst = Constructor.getInstance().getBuilder(ThisNPC);
+        BuilderTrait inst = SchematicBuilder.getInstance().getBuilder(ThisNPC);
 
         // Commands
         if (args[0].equalsIgnoreCase("build")) {
-            if(!player.hasPermission("constructor.build")) {
+            if(!player.hasPermission("schematicbuilder.build")) {
                 player.sendMessage(ChatColor.RED + "You do not have permissions for that command.");
                 return true;
             }
 
-            if (inst.State == ConstructorTrait.BuilderState.building){
+            if (inst.State == BuilderTrait.BuilderState.building){
                 if(!inst.Silent)player.sendMessage(ChatColor.RED + ThisNPC.getName() + " is already building!"); // Talk to the player.
                 return true;
             }
@@ -371,7 +371,7 @@ public class ConstructorCommand implements CommandExecutor {
             inst.GroupByLayer = true;
             inst.BuildYLayers = 1;
             inst.Silent = false;
-            inst.BuildPatternXY = fr.weefle.constructor.essentials.ConstructorTrait.BuildPatternsXZ.spiral;
+            inst.BuildPatternXY = BuilderTrait.BuildPatternsXZ.spiral;
 
             for (int a = 0; a< args.length; a++){
                 if (args[a].equalsIgnoreCase("silent")){
@@ -424,16 +424,16 @@ public class ConstructorCommand implements CommandExecutor {
                     if(!inst.Silent)player.sendMessage(ChatColor.GREEN + ThisNPC.getName() + " will excavate first");
                 }
                 else if (args[a].equalsIgnoreCase("spiral")){
-                    inst.BuildPatternXY = fr.weefle.constructor.essentials.ConstructorTrait.BuildPatternsXZ.spiral;
+                    inst.BuildPatternXY = BuilderTrait.BuildPatternsXZ.spiral;
                 }
                 else if (args[a].equalsIgnoreCase("reversespiral")){
-                    inst.BuildPatternXY = fr.weefle.constructor.essentials.ConstructorTrait.BuildPatternsXZ.reversespiral;
+                    inst.BuildPatternXY = BuilderTrait.BuildPatternsXZ.reversespiral;
                 }
                 else if (args[a].equalsIgnoreCase("linear")){
-                    inst.BuildPatternXY = fr.weefle.constructor.essentials.ConstructorTrait.BuildPatternsXZ.linear;
+                    inst.BuildPatternXY = BuilderTrait.BuildPatternsXZ.linear;
                 }
                 else if (args[a].equalsIgnoreCase("reverselinear")){
-                    inst.BuildPatternXY = fr.weefle.constructor.essentials.ConstructorTrait.BuildPatternsXZ.reverselinear;
+                    inst.BuildPatternXY = BuilderTrait.BuildPatternsXZ.reverselinear;
                 }
                 else if (args[a].equalsIgnoreCase("offset")){
                     inst.offset = true;
@@ -450,13 +450,13 @@ public class ConstructorCommand implements CommandExecutor {
 
         }
         else if (args[0].equalsIgnoreCase("cancel")) {
-            if(!player.hasPermission("constructor.cancel")) {
+            if(!player.hasPermission("schematicbuilder.cancel")) {
                 player.sendMessage(ChatColor.RED + "You do not have permissions for that command.");
                 return true;
             }
 
-            if (inst.State != ConstructorTrait.BuilderState.idle){
-                sender.sendMessage(Constructor.getInstance().format(Constructor.CancelMessage, ThisNPC,inst.schematic, sender, null, "0"));
+            if (inst.State != BuilderTrait.BuilderState.idle){
+                sender.sendMessage(SchematicBuilder.getInstance().format(SchematicBuilder.CancelMessage, ThisNPC, inst.schematic, sender, null, "0"));
             }
             else {
                 player.sendMessage(ChatColor.RED + ThisNPC.getName() + " is not building.");   // Talk to the player.
@@ -467,12 +467,12 @@ public class ConstructorCommand implements CommandExecutor {
 
         }
         else if (args[0].equalsIgnoreCase("excavated")) {
-            if(!player.hasPermission("constructor.excavated")) {
+            if(!player.hasPermission("schematicbuilder.excavated")) {
                 player.sendMessage(ChatColor.RED + "You do not have permissions for that command.");
                 return true;
             }
 
-            if (inst.State == ConstructorTrait.BuilderState.building && inst.Excavate){
+            if (inst.State == BuilderTrait.BuilderState.building && inst.Excavate){
 
                 if(!inst.ExcavateMaterials.isEmpty()) {
                     BlockData[] array = new BlockData[inst.ExcavateMaterials.size()];
@@ -493,7 +493,7 @@ public class ConstructorCommand implements CommandExecutor {
 
         }
         else if (args[0].equalsIgnoreCase("preview")) {
-            if(!player.hasPermission("constructor.preview")) {
+            if(!player.hasPermission("schematicbuilder.preview")) {
                 player.sendMessage(ChatColor.RED + "You do not have permissions for that command.");
                 return true;
             }
@@ -502,7 +502,7 @@ public class ConstructorCommand implements CommandExecutor {
                 Location tmpLoc = ThisNPC.getEntity().getLocation();
                 //Bukkit.getLogger().warning(tmpLoc.toString());
 
-                if(inst.State == ConstructorTrait.BuilderState.idle) {
+                if(inst.State == BuilderTrait.BuilderState.idle) {
                     if (inst.schematic != null) {
 
                         HashMap<Location, BlockData> blocks = new HashMap<>();
@@ -521,7 +521,7 @@ public class ConstructorCommand implements CommandExecutor {
                             }
                         }
 
-                        Bukkit.getScheduler().scheduleSyncDelayedTask(Constructor.getInstance(), new Runnable() {
+                        Bukkit.getScheduler().scheduleSyncDelayedTask(SchematicBuilder.getInstance(), new Runnable() {
                             @Override
                             public void run() {
                                 for (Location loc : blocks.keySet()) {
@@ -567,7 +567,7 @@ public class ConstructorCommand implements CommandExecutor {
         }
 
         else if (args[0].equalsIgnoreCase("survey")) {
-            if(!player.hasPermission("constructor.survey")) {
+            if(!player.hasPermission("schematicbuilder.survey")) {
                 player.sendMessage(ChatColor.RED + "You do not have permissions for that command.");
                 return true;
             }
@@ -583,7 +583,7 @@ public class ConstructorCommand implements CommandExecutor {
                 player.sendMessage(ChatColor.RED + "No Schematic Loaded!");   // Talk to the player.
             }
             else{
-                sender.sendMessage(Constructor.getInstance().format(Constructor.SurveyMessage + (ex ? " (excavate)" : ""), ThisNPC, inst.schematic, sender, null, "0"));
+                sender.sendMessage(SchematicBuilder.getInstance().format(SchematicBuilder.SurveyMessage + (ex ? " (excavate)" : ""), ThisNPC, inst.schematic, sender, null, "0"));
                 player.sendMessage(inst.GetMatsList(ex));   // Talk to the player.
             }
 
@@ -591,7 +591,7 @@ public class ConstructorCommand implements CommandExecutor {
 
         }
         else if (args[0].equalsIgnoreCase("origin")) {
-            if(!player.hasPermission("constructor.origin")) {
+            if(!player.hasPermission("schematicbuilder.origin")) {
                 player.sendMessage(ChatColor.RED + "You do not have permissions for that command.");
                 return true;
             }
@@ -629,7 +629,7 @@ public class ConstructorCommand implements CommandExecutor {
                     else 	player.sendMessage(ChatColor.RED +  "This command can only be used in-game");
                 }
                 else if(args[1].equalsIgnoreCase("current")){
-                    if(inst.State == fr.weefle.constructor.essentials.ConstructorTrait.BuilderState.building){
+                    if(inst.State == BuilderTrait.BuilderState.building){
                         inst.Origin = inst.ContinueLoc.clone();
                         player.sendMessage(ChatColor.GREEN + ThisNPC.getName() + " build origin has been set to the origin of the current build");   // Talk to the player.
                     }
@@ -653,7 +653,7 @@ public class ConstructorCommand implements CommandExecutor {
             return true;
         }
         else if (args[0].equalsIgnoreCase("mark")) {
-            if(!player.hasPermission("constructor.mark")) {
+            if(!player.hasPermission("schematicbuilder.mark")) {
                 player.sendMessage(ChatColor.RED + "You do not have permissions for that command.");
                 return true;
             }
@@ -661,17 +661,17 @@ public class ConstructorCommand implements CommandExecutor {
              Material mat = null;
             if(args.length > 1){
                 mat = Material.valueOf(args[1].toUpperCase());
-                if(!Constructor.MarkMats.contains(mat)) {
+                if(!SchematicBuilder.MarkMats.contains(mat)) {
                     mat = null;
                     player.sendMessage(ChatColor.GOLD + ThisNPC.getName() + " can not mark with " + args[1]+ ".The specified item is not allowed. Using default.");   // Talk to the player.
                 }
             }
 
 
-            if(mat == null)  mat = Constructor.MarkMats.get(0);
+            if(mat == null)  mat = SchematicBuilder.MarkMats.get(0);
 
             if (inst.StartMark(mat)){
-                sender.sendMessage(Constructor.getInstance().format(Constructor.MarkMessage, ThisNPC, inst.schematic, sender,null, "0"));
+                sender.sendMessage(SchematicBuilder.getInstance().format(SchematicBuilder.MarkMessage, ThisNPC, inst.schematic, sender, null, "0"));
             }
             else {
                 player.sendMessage(ChatColor.RED + ThisNPC.getName() + " could not mark. Already building or no schematic loaded?.");   // Talk to the player.
@@ -681,12 +681,12 @@ public class ConstructorCommand implements CommandExecutor {
 
         }
         else if (args[0].equalsIgnoreCase("load")) {
-            if(!player.hasPermission("constructor.load")) {
+            if(!player.hasPermission("schematicbuilder.load")) {
                 player.sendMessage(ChatColor.RED + "You do not have permissions for that command.");
                 return true;
             }
 
-            if (inst.State != fr.weefle.constructor.essentials.ConstructorTrait.BuilderState.idle) {
+            if (inst.State != BuilderTrait.BuilderState.idle) {
                 player.sendMessage(ChatColor.RED + "Please cancel current build before loading new schematic.");
                 return true;
             }
@@ -702,7 +702,7 @@ public class ConstructorCommand implements CommandExecutor {
                 arg = arg.replace(".schem", "");
                 arg = arg.replace(".nbt", "");
                 String msg = "";
-                File dir= new File(Constructor.schematicsFolder);
+                File dir= new File(SchematicBuilder.schematicsFolder);
                 File file;
                 file = new File(dir,arg+".schem");
 
@@ -715,8 +715,8 @@ public class ConstructorCommand implements CommandExecutor {
 
                 //see if this has already been loaded to another constructor
                 for (NPC npc : CitizensAPI.getNPCRegistry()) {
-                    if(npc.hasTrait(ConstructorTrait.class)){
-                        ConstructorTrait bt = npc.getTrait(ConstructorTrait.class);
+                    if(npc.hasTrait(BuilderTrait.class)){
+                        BuilderTrait bt = npc.getTrait(BuilderTrait.class);
                         if (bt.schematic!=null && bt.schematic.Name.equals(arg)){
                             inst.schematic = bt.schematic;
                         }
@@ -760,7 +760,7 @@ public class ConstructorCommand implements CommandExecutor {
                     msg = ChatColor.YELLOW +  e.getMessage();   // Talk to the player.
                     inst.schematic = null;
                     if (!(e instanceof java.io.FileNotFoundException)){
-                        Bukkit.getLogger().log(Level.WARNING, "Constructor encountered an error attempting to load: " + file);
+                        Bukkit.getLogger().log(Level.WARNING, "ProSchematicBuilder encountered an error attempting to load: " + file);
                         e.printStackTrace();
                     }
                 }
@@ -783,13 +783,13 @@ public class ConstructorCommand implements CommandExecutor {
             return true;
         }
         else if (args[0].equalsIgnoreCase("timeout")) {
-            if(!player.hasPermission("constructor.timeout")) {
+            if(!player.hasPermission("schematicbuilder.timeout")) {
                 player.sendMessage(ChatColor.RED + "You do not have permissions for that command.");
                 return true;
             }
             if (args.length <= 1) {
                 player.sendMessage(ChatColor.GOLD + ThisNPC.getName() + "'s Move Timeout is " + inst.MoveTimeout);
-                player.sendMessage(ChatColor.GOLD + "Usage: /constructor timeout [0.1 - 2000000.0]");
+                player.sendMessage(ChatColor.GOLD + "Usage: /schematicbuilder timeout [0.1 - 2000000.0]");
             }
             else {
 
@@ -806,13 +806,13 @@ public class ConstructorCommand implements CommandExecutor {
         }
 
         else if (args[0].equalsIgnoreCase("supply")) {
-            if(!player.hasPermission("constructor.supply")) {
+            if(!player.hasPermission("schematicbuilder.supply")) {
                 player.sendMessage(ChatColor.RED + "You do not have permissions for that command.");
                 return true;
             }
             if (args.length <= 1) {
                 player.sendMessage(ChatColor.GOLD + ThisNPC.getName() + " currently does" + (inst.RequireMaterials ? "":" NOT") +" need to be supplied with materials." );
-                player.sendMessage(ChatColor.GOLD + "Usage: /constructor supply [true/false]");
+                player.sendMessage(ChatColor.GOLD + "Usage: /schematicbuilder supply [true/false]");
             }
             else {
 
@@ -826,13 +826,13 @@ public class ConstructorCommand implements CommandExecutor {
             return true;
         }
         else if (args[0].equalsIgnoreCase("hold")) {
-            if(!player.hasPermission("constructor.hold")) {
+            if(!player.hasPermission("schematicbuilder.hold")) {
                 player.sendMessage(ChatColor.RED + "You do not have permissions for that command.");
                 return true;
             }
             if (args.length <= 1) {
                 player.sendMessage(ChatColor.GOLD + ThisNPC.getName() + " currently does" + (inst.HoldItems ? "":" NOT") +" hold blocks." );
-                player.sendMessage(ChatColor.GOLD + "Usage: /constructor hold [true/false]");
+                player.sendMessage(ChatColor.GOLD + "Usage: /schematicbuilder hold [true/false]");
             }
             else {
 
@@ -844,11 +844,11 @@ public class ConstructorCommand implements CommandExecutor {
             return true;
         }
         else if (args[0].equalsIgnoreCase("info")) {
-            if(!player.hasPermission("constructor.info")) {
+            if(!player.hasPermission("schematicbuilder.info")) {
                 player.sendMessage(ChatColor.RED + "You do not have permissions for that command.");
                 return true;
             }
-            player.sendMessage(ChatColor.GOLD + "------- Constructor Info for " + ThisNPC.getName() + "------");
+            player.sendMessage(ChatColor.GOLD + "------- Builder Info for " + ThisNPC.getName() + "------");
 
             //	DecimalFormat df=  new DecimalFormat("#");
 
@@ -861,7 +861,7 @@ public class ConstructorCommand implements CommandExecutor {
             player.sendMessage(ChatColor.GREEN + "Status: " + ChatColor.WHITE + inst.State + " Timeout: " + inst.MoveTimeout);
             player.sendMessage(ChatColor.GREEN + "Require Mats: " + ChatColor.WHITE + inst.RequireMaterials + " Hold Items: " + inst.HoldItems);
 
-            if (inst.State == fr.weefle.constructor.essentials.ConstructorTrait.BuilderState.building){
+            if (inst.State == BuilderTrait.BuilderState.building){
                 player.sendMessage(ChatColor.BLUE + "Location: " +ChatColor.WHITE + " x:" + inst.ContinueLoc.getBlockX()+ " y:" + inst.ContinueLoc.getBlockY()+ " z:" + inst.ContinueLoc.getBlockZ());
                 player.sendMessage(ChatColor.BLUE + "Build Pattern XZ: " + ChatColor.WHITE +inst.BuildPatternXY + ChatColor.BLUE + " Build Y Layers: " + ChatColor.WHITE +inst.BuildYLayers);
                 player.sendMessage(ChatColor.BLUE + "Ignore Air: " + ChatColor.WHITE +inst.IgnoreAir +ChatColor.BLUE +  "  Ignore Liquid: " + ChatColor.WHITE +inst.IgnoreLiquid);

@@ -29,7 +29,7 @@ public class SelectionListener implements Listener {
             if (e.getMaterial().equals(Material.BLAZE_ROD)) {
 
 
-                if (e.getPlayer().hasPermission("constructor.select")) {
+                if (e.getPlayer().hasPermission("schematicbuilder.select")) {
 
                     e.setCancelled(true);
 
@@ -56,7 +56,7 @@ public class SelectionListener implements Listener {
             if (e.getMaterial().equals(Material.BLAZE_ROD)) {
 
 
-                if(e.getPlayer().hasPermission("constructor.select")){
+                if(e.getPlayer().hasPermission("schematicbuilder.select")){
                     e.setCancelled(true);
 
 

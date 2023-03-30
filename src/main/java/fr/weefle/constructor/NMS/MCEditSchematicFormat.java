@@ -2,7 +2,7 @@ package fr.weefle.constructor.NMS;
 
 import fr.weefle.constructor.block.DataBuildBlock;
 import fr.weefle.constructor.block.EmptyBuildBlock;
-import fr.weefle.constructor.essentials.ConstructorSchematic;
+import fr.weefle.constructor.essentials.BuilderSchematic;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.data.BlockData;
@@ -31,7 +31,7 @@ public class MCEditSchematicFormat {
 	}*/
 
 
-	public ConstructorSchematic load(File path, String filename) throws IOException {
+	public BuilderSchematic load(File path, String filename) throws IOException {
 
 		File file = new File(path, filename+".schem");
 
@@ -206,7 +206,7 @@ public class MCEditSchematicFormat {
 		}
 
 
-		ConstructorSchematic out = new ConstructorSchematic(width, height, length);
+		BuilderSchematic out = new BuilderSchematic(width, height, length);
 
 		int index = 0;
 		int i = 0;

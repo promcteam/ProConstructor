@@ -1,36 +1,36 @@
-name: ProConstructor
+name: ProSchematicBuilder
 authors: [Weefle, Sentropic]
 version: ${project.version}
-main: fr.weefle.constructor.Constructor
+main: fr.weefle.constructor.SchematicBuilder
 depends: [ProMCCore, Citizens]
 softdepends: [Denizen, dynmap]
 api-version: 1.14
 commands:
-  constructor:
-    description: Lists constructor commands.
-    usage: /constructor help
+  schematicbuilder:
+    description: Lists SchematicBuilder commands.
+    usage: /schematicbuilder help
 permissions:
-  constructor.*:
+  schematicbuilder.*:
     default: op
     children:
-      constructor.load: true
-      constructor.npc: true
-      constructor.cancel: true
-      constructor.excavated: true
-      constructor.preview: true
-      constructor.structure: true
-      constructor.build: true
-      constructor.mark: true
-      constructor.origin: true
-      constructor.check: true
-      constructor.compare: true
-      constructor.info: true
-      constructor.survey: true
-      constructor.timeout: true
-      constructor.ignoreprotection: true
-      constructor.list: true
-      constructor.hold: true
-      constructor.supply: true
-      constructor.donate: true
-      constructor.select: true
-      constructor.npc.click: true
+      schematicbuilder.load: true
+      schematicbuilder.npc: true
+      schematicbuilder.cancel: true
+      schematicbuilder.excavated: true
+      schematicbuilder.preview: true
+      schematicbuilder.structure: true
+      schematicbuilder.build: true
+      schematicbuilder.mark: true
+      schematicbuilder.origin: true
+      schematicbuilder.check: true
+      schematicbuilder.compare: true
+      schematicbuilder.info: true
+      schematicbuilder.survey: true
+      schematicbuilder.timeout: true
+      schematicbuilder.ignoreprotection: true
+      schematicbuilder.list: true
+      schematicbuilder.hold: true
+      schematicbuilder.supply: true
+      schematicbuilder.donate: true
+      schematicbuilder.select: true
+      schematicbuilder.npc.click: true

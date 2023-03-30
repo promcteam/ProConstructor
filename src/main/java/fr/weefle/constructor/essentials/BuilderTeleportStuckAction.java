@@ -6,7 +6,7 @@ import net.citizensnpcs.api.ai.Navigator;
 import net.citizensnpcs.api.ai.StuckAction;
 import net.citizensnpcs.api.npc.NPC;
 
-public class ConstructorTeleportStuckAction implements StuckAction{
+public class BuilderTeleportStuckAction implements StuckAction{
 
 	@Override
 	public boolean run(NPC npc, Navigator navigator) {
@@ -28,6 +28,6 @@ public class ConstructorTeleportStuckAction implements StuckAction{
 		return false;
 	}
 
-	public static ConstructorTeleportStuckAction INSTANCE = new ConstructorTeleportStuckAction(); 
+	public static BuilderTeleportStuckAction INSTANCE = new BuilderTeleportStuckAction();
 
 }
