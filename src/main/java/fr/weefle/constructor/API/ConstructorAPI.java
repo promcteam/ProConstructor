@@ -33,7 +33,7 @@ public class ConstructorAPI {
         bt.GroupByLayer = false;
         bt.BuildYLayers = 0;
         bt.BuildPatternXY = buildPattern;
-        File file = new File("plugins/Constructor/schematics/");
+        File file = new File("plugins/ProConstructor/schematics/");
         try
         {
             bt.schematic = new Structure(file, schematic.trim().replace("\"", "")).load(file, schematic.trim().replace("\"", ""));

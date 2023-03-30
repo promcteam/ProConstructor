@@ -1,12 +1,8 @@
-package fr.weefle.constructor.NMS.Version_1_14_R1;
+package fr.weefle.constructor.NMS;
 
 import fr.weefle.constructor.block.DataBuildBlock;
 import fr.weefle.constructor.block.EmptyBuildBlock;
 import fr.weefle.constructor.essentials.ConstructorSchematic;
-import net.minecraft.server.v1_14_R1.NBTBase;
-import net.minecraft.server.v1_14_R1.NBTCompressedStreamTools;
-import net.minecraft.server.v1_14_R1.NBTTagCompound;
-import net.minecraft.server.v1_14_R1.NBTTagList;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.data.BlockData;
@@ -15,20 +11,12 @@ import org.bukkit.util.Vector;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 
-public class MCEditSchematicFormat_1_14_R1 {
+public class MCEditSchematicFormat {
 
-
-
-	private byte[] blockData;
-	private final Map<Integer, BlockData> blocks = new HashMap<>();
-	private short width = 0;
-	private short height = 0;
-	private short length = 0;
+	private final Map<Integer,BlockData> blocks = new HashMap<>();
 	public int dataVersion;
 	//private ArrayList<EntityMap> entitieslist = new ArrayList<>();
 
@@ -43,80 +31,77 @@ public class MCEditSchematicFormat_1_14_R1 {
 	}*/
 
 
-	public ConstructorSchematic load(File path, String filename) throws Exception {
+	public ConstructorSchematic load(File path, String filename) throws IOException {
 
-		File file = new File(path,filename+".schem");
+		File file = new File(path, filename+".schem");
 
-		if(!file.exists()) throw(new java.io.FileNotFoundException("File not found"));
+		if (!file.exists()) { throw (new java.io.FileNotFoundException("File not found")); }
 
 		FileInputStream fis = new FileInputStream(file);
-		NBTTagCompound nbt = NBTCompressedStreamTools.a(fis);
+		Object nbt = NMS.getInstance().getNMSProvider().loadNBTFromInputStream(fis);
 
 		//Bukkit.getLogger().warning(nbt.toString());
 
-		dataVersion = nbt.getInt("DataVersion");
+		dataVersion = NMS.getInstance().getNMSProvider().nbtTagCompound_getInt(nbt, "DataVersion");
+		//Bukkit.getLogger().warning(dataVersion.toString());
 
 		Vector origin = new Vector();
 		Vector offsetvec = new Vector();
 		Vector offsetWE = new Vector();
 
-		width = nbt.getShort("Width");
-		height = nbt.getShort("Height");
-		length = nbt.getShort("Length");
+		short width = NMS.getInstance().getNMSProvider().nbtTagCompound_getShort(nbt, "Width");
+		short height = NMS.getInstance().getNMSProvider().nbtTagCompound_getShort(nbt, "Height");
+		short length = NMS.getInstance().getNMSProvider().nbtTagCompound_getShort(nbt, "Length");
 
-		int xoff = 0;
-		int yoff = 0;
-		int zoff = 0;
+		int xoff, yoff, zoff;
 
-		int[] offset = nbt.getIntArray("Offset");
-		if(offset.length == 3) {
+		int[] offset = NMS.getInstance().getNMSProvider().nbtTagCompound_getIntArray(nbt, "Offset");
+		if (offset.length == 3) {
 			xoff = offset[0];
 			yoff = offset[1];
 			zoff = offset[2];
-			offsetvec = new Vector(xoff,yoff,zoff);
+			offsetvec = new Vector(xoff, yoff, zoff);
 		}
 
-		NBTTagCompound meta = nbt.getCompound("Metadata");
+		Object meta = NMS.getInstance().getNMSProvider().nbtTagCompound_getCompound(nbt, "Metadata");
 
 		if (meta != null) {
 
-			int offsetX = meta.getInt("WEOffsetX");
-			int offsetY = meta.getInt("WEOffsetY");
-			int offsetZ = meta.getInt("WEOffsetZ");
+			int offsetX = NMS.getInstance().getNMSProvider().nbtTagCompound_getInt(meta, "WEOffsetX");
+			int offsetY = NMS.getInstance().getNMSProvider().nbtTagCompound_getInt(meta, "WEOffsetY");
+			int offsetZ = NMS.getInstance().getNMSProvider().nbtTagCompound_getInt(meta, "WEOffsetZ");
 			offsetWE = new Vector(offsetX, offsetY, offsetZ);
 			//Bukkit.getLogger().warning(originX + "," + originY + "," + originZ);
 			origin = offsetvec.subtract(offsetWE);
 		}
 
-
-		blockData = nbt.getByteArray("BlockData");
-		NBTTagCompound palette = nbt.getCompound("Palette");
+		byte[] blockData = NMS.getInstance().getNMSProvider().nbtTagCompound_getByteArray(nbt, "BlockData");
+		Object palette = NMS.getInstance().getNMSProvider().nbtTagCompound_getCompound(nbt, "Palette");
 		//Bukkit.getLogger().info(palette.getKeys().toString());
 		//try {
-		for(String rawState : palette.getKeys()) {
-
-			int id = palette.getInt(rawState);
-			if(getRawState(rawState)!=null){
+		for (String rawState : NMS.getInstance().getNMSProvider().nbtTagCompound_getAllKeys(palette)) {
+			int id = NMS.getInstance().getNMSProvider().nbtTagCompound_getInt(palette, rawState);
+			if (getRawState(rawState) != null) {
 				blocks.put(id, getRawState(rawState));
-			}else{
+			} else {
 				String material;
-				if(rawState.contains("[")) {
+				if (rawState.contains("[")) {
 					material = rawState.substring(0, rawState.indexOf("[")).replace("minecraft:", "").toUpperCase();
-				}else{
+				} else {
 					material = rawState.replace("minecraft:", "").toUpperCase();
 				}
 				//Bukkit.getLogger().warning(material);
-				Material mat;
-				if (EnumSet.allOf(Material.class).contains(Material.getMaterial(material)))
-				{
-					mat = Material.getMaterial(material);
-				}else{
-					mat = Material.getMaterial(material, true);
+					Material mat;
+					if (EnumSet.allOf(Material.class).contains(Material.getMaterial(material)))
+					{
+						mat = Material.getMaterial(material);
+					}else{
+						mat = Material.getMaterial(material, true);
+					}
+					blocks.put(id, Bukkit.createBlockData(Objects.requireNonNull(mat)));
 				}
-				blocks.put(id, Bukkit.createBlockData(mat));
-			}
 
-		}
+				}
 
 			/*	} catch (Exception e) {
 
@@ -148,14 +133,14 @@ public class MCEditSchematicFormat_1_14_R1 {
 					//return null;
 				}*/
 
-		int version = nbt.getInt("Version");
+		int version = NMS.getInstance().getNMSProvider().nbtTagCompound_getInt(nbt, "Version");
 
-		NBTTagList tileEntities = null;
+		AbstractList<Object> tileEntities;
 		//NBTTagList entities = null;
 		//Bukkit.getLogger().warning(nbt+"");
 		if(version>1) {
-			//ArrayList<NBTTagDouble> listd = new ArrayList<NBTTagDouble>();;
-			tileEntities = nbt.getList("BlockEntities", 10);
+			//ArrayList<NBTTagDouble> listd = new ArrayList<NBTTagDouble>();
+			tileEntities = NMS.getInstance().getNMSProvider().nbtTagCompound_getList(nbt, "BlockEntities", 10);
 		/*entities = nbt.getList("Entities", 10);
 		for (NBTBase tag : entities) {
 			if (!(tag instanceof NBTTagCompound)) continue;
@@ -195,49 +180,44 @@ public class MCEditSchematicFormat_1_14_R1 {
 				
 	            
 		}*/
-		}else {
-			tileEntities = nbt.getList("TileEntities", 10);
+		} else {
+			tileEntities = NMS.getInstance().getNMSProvider().nbtTagCompound_getList(nbt, "TileEntities", 10);
 		}
 		//Bukkit.getLogger().warning(tileEntities+"");
-		Map<Vector, NBTBase> tileEntitiesMap = new HashMap<Vector, NBTBase>();
+		Map<Vector,Object> tileEntitiesMap = new HashMap<>();
 
+		Class<?> nbtTagCompound = NMS.getInstance().getNMSProvider().getNBTTagCompoundClass();
+		for (Object tag : tileEntities) {
+			if (!nbtTagCompound.isAssignableFrom(tag.getClass())) { continue; }
 
-		for (NBTBase tag : tileEntities) {
-			if (!(tag instanceof NBTTagCompound)) continue;
-			NBTTagCompound t = (NBTTagCompound) tag;
+			int x, y, z;
 
-			int x = 0;
-			int y = 0;
-			int z = 0;
-
-			int[] pos = t.getIntArray("Pos");
-			if(pos.length == 3) {
+			int[] pos = NMS.getInstance().getNMSProvider().nbtTagCompound_getIntArray(tag, "Pos");
+			if (pos.length == 3) {
 				x = pos[0];
 				y = pos[1];
 				z = pos[2];
 
 
 				Vector vec = new Vector(x, y, z);
-				tileEntitiesMap.put(vec, t);
+				tileEntitiesMap.put(vec, tag);
 			}
 
 		}
 
 
-
-
-		ConstructorSchematic out = new ConstructorSchematic(width, height,length);
+		ConstructorSchematic out = new ConstructorSchematic(width, height, length);
 
 		int index = 0;
 		int i = 0;
-		int value = 0;
-		int varint_length = 0;
+		int value;
+		int varint_length;
 		while (i < blockData.length) {
 			value = 0;
 			varint_length = 0;
 
 			while (true) {
-				value |= (blockData[i] & 127) << (varint_length++ * 7);
+				value |= (blockData[i] & 127) << (varint_length++*7);
 				if (varint_length > 5) {
 					throw new RuntimeException("VarInt too big (probably corrupted data)");
 				}
@@ -247,52 +227,53 @@ public class MCEditSchematicFormat_1_14_R1 {
 				}
 				i++;
 			}
-			int y = index / (width * length);
-			int z = (index % (width * length)) / width;
-			int x = (index % (width * length)) % width;
+			int y = index/(width*length);
+			int z = (index%(width*length))/width;
+			int x = (index%(width*length))%width;
 			BlockData data = blocks.get(value);
 
-			EmptyBuildBlock M = null;
+			EmptyBuildBlock M;
 
 			Vector v = null;
 			for (Vector victor : tileEntitiesMap.keySet()) {
-				if(victor.getBlockX() == x && victor.getBlockY() == y && victor.getBlockZ() == z){
+				if (victor.getBlockX() == x && victor.getBlockY() == y && victor.getBlockZ() == z) {
 					v = victor;
 					break;
 				}
-			}
+				}
 
-			if(v!=null) {
+				if(v!=null) {
 
-				M = new TileBuildBlock_1_14_R1(x,y,z, data);
-				((TileBuildBlock_1_14_R1)M).nbt = (NBTTagCompound) tileEntitiesMap.get(v);
-				//((TileBuildBlock_1_15_R1)M).id = ((NBTTagCompound) tileEntitiesMap.get(v)).getString("Id");
-				tileEntitiesMap.remove(v);
+					M = new TileBuildBlock(x, y, z, data);
+					((TileBuildBlock) M).nbt = tileEntitiesMap.get(v);
+					//Bukkit.getLogger().warning(tileEntitiesMap.get(v)+"");
+					//((TileBuildBlock_1_15_R1)M).id = ((NBTTagCompound) tileEntitiesMap.get(v)).getString("Id");
+					tileEntitiesMap.remove(v);
 
-			}else if(data==null) {
+				}else if(data==null) {
+					
 
+					
+					M = new EmptyBuildBlock(x,y,z);
+					
+				}else {
+					M = new DataBuildBlock(x,y,z, data);
+				}
 
+				out.Blocks[x][y][z] = M;
+				//Bukkit.getLogger().warning(x+","+y+","+z);
 
-				M = new EmptyBuildBlock(x,y,z);
-
-			}else {
-				M = new DataBuildBlock(x,y,z, data);
-			}
-
-			out.Blocks[x][y][z] = M;
-			//Bukkit.getLogger().warning(x+","+y+","+z);
-
-			index++;
-		}
-		//Bukkit.getLogger().warning(out.Blocks[10][11][6].getMat().getAsString()); 
-
+	            index++;
+	        }
+	        //Bukkit.getLogger().warning(out.Blocks[10][11][6].getMat().getAsString()); 
+		
 
 		out.Name = filename;
 		out.SchematicOrigin = origin;
 		out.offset = offsetWE;
 		fis.close();
 		return out;
-
+		
 	}
 
 	public BlockData getRawState(String rawState){

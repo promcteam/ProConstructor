@@ -1,143 +1,91 @@
 package fr.weefle.constructor.NMS;
 
-import fr.weefle.constructor.API.SchematicChooser;
 import fr.weefle.constructor.API.StructureUtil;
-import fr.weefle.constructor.API.TileChecker;
-import fr.weefle.constructor.API.Util;
-import fr.weefle.constructor.NMS.Version_1_13_R2.SchematicChooser_1_13_R2;
-import fr.weefle.constructor.NMS.Version_1_13_R2.TileChecker_1_13_R2;
-import fr.weefle.constructor.NMS.Version_1_13_R2.Util_1_13_R2;
-import fr.weefle.constructor.NMS.Version_1_14_R1.SchematicChooser_1_14_R1;
-import fr.weefle.constructor.NMS.Version_1_14_R1.TileChecker_1_14_R1;
-import fr.weefle.constructor.NMS.Version_1_14_R1.Util_1_14_R1;
-import fr.weefle.constructor.NMS.Version_1_15_R1.SchematicChooser_1_15_R1;
-import fr.weefle.constructor.NMS.Version_1_15_R1.TileChecker_1_15_R1;
-import fr.weefle.constructor.NMS.Version_1_15_R1.Util_1_15_R1;
-import fr.weefle.constructor.NMS.Version_1_16_R3.SchematicChooser_1_16_R3;
-import fr.weefle.constructor.NMS.Version_1_16_R3.TileChecker_1_16_R3;
-import fr.weefle.constructor.NMS.Version_1_16_R3.Util_1_16_R3;
-import fr.weefle.constructor.NMS.Version_1_17_R1.SchematicChooser_1_17_R1;
-import fr.weefle.constructor.NMS.Version_1_17_R1.TileChecker_1_17_R1;
-import fr.weefle.constructor.NMS.Version_1_17_R1.Util_1_17_R1;
-import fr.weefle.constructor.NMS.Version_1_18_R1.SchematicChooser_1_18_R1;
-import fr.weefle.constructor.NMS.Version_1_18_R1.TileChecker_1_18_R1;
-import fr.weefle.constructor.NMS.Version_1_18_R1.Util_1_18_R1;
+import fr.weefle.constructor.NMS.providers.*;
 import org.bukkit.Bukkit;
 
 public class NMS {
-	
-	private static NMS instance;
-	public String version;
-	private Util util;
-	private TileChecker checker;
-	private SchematicChooser chooser;
-	private StructureUtil structure;
 
-	public boolean isSet() {
-		setInstance(this);
+    private static NMS instance;
+    public String version;
+    private NMSProvider nmsProvider;
+    private fr.weefle.constructor.API.Util util;
+    private fr.weefle.constructor.API.TileChecker checker;
+    private fr.weefle.constructor.API.SchematicChooser chooser;
+    private StructureUtil structure;
 
-	try {
+    public boolean setInstance() {
+        String[] packageArray = Bukkit.getServer().getClass().getPackage().getName().split("\\.");
+        version = packageArray[packageArray.length-1];
 
-		version = Bukkit.getServer().getClass().getPackage().getName().replace(".",  ",").split(",")[3];
+        Bukkit.getLogger().info("Your server is running version "+version);
 
-	} catch (ArrayIndexOutOfBoundsException exception) {
-		return false;
-	}
+        if (version.compareTo("v1_19_R1") >= 0) {
+            nmsProvider = new NMSProvider_1_19();
+        } else if (version.compareTo("v1_18_R1") >= 0) {
+            nmsProvider = new NMSProvider_1_18();
+        } else if (version.compareTo("v1_17_R1") >= 0) {
+            nmsProvider = new NMSProvider_1_17();
+        } else if (version.compareTo("v1_16_R1") >= 0) {
+            nmsProvider = new NMSProvider_1_16(version);
+        } else {
+            return false;
+        }
+        setUtil(new NMSUtil());
+        setChecker(new TileChecker());
+        setChooser(new SchematicChooser());
+        NMS.instance = this;
+        return true;
+    }
 
-	Bukkit.getLogger().info("Your server is running version " + version);
+    public static NMS getInstance() {
+        return instance;
+    }
 
-		switch (version) {
-			case "v1_18_R1": case "v1_18_R2": case "v1_19_R1":
-				setUtil(new Util_1_18_R1());
-				setChecker(new TileChecker_1_18_R1());
-				setChooser(new SchematicChooser_1_18_R1());
-				break;
-			case "v1_17_R1":
-				setUtil(new Util_1_17_R1());
-				setChecker(new TileChecker_1_17_R1());
-				setChooser(new SchematicChooser_1_17_R1());
-				break;
-			case "v1_16_R3":
-				setUtil(new Util_1_16_R3());
-				setChecker(new TileChecker_1_16_R3());
-				setChooser(new SchematicChooser_1_16_R3());
-				break;
-			case "v1_15_R1":
-				setUtil(new Util_1_15_R1());
-				setChecker(new TileChecker_1_15_R1());
-				setChooser(new SchematicChooser_1_15_R1());
-				break;
-			case "v1_14_R1":
-				setUtil(new Util_1_14_R1());
-				setChecker(new TileChecker_1_14_R1());
-				setChooser(new SchematicChooser_1_14_R1());
-				break;
-			case "v1_13_R2":
-				setUtil(new Util_1_13_R2());
-				setChecker(new TileChecker_1_13_R2());
-				setChooser(new SchematicChooser_1_13_R2());
+    public NMSProvider getNMSProvider() { return nmsProvider; }
 
-				break;
-			default:
-				return false;
-		}
+    public fr.weefle.constructor.API.Util getUtil() {
+        return util;
+    }
 
-	return true;
-	}
+    public void setUtil(fr.weefle.constructor.API.Util util) {
+        this.util = util;
+    }
 
-	public static NMS getInstance() {
-		return instance;
-	}
+    public String getVersion() {
+        return version;
+    }
 
-	public static void setInstance(NMS instance) {
-		NMS.instance = instance;
-	}
+    public void setVersion(String version) {
+        this.version = version;
+    }
 
-	public Util getUtil() {
-		return util;
-	}
+    public fr.weefle.constructor.API.TileChecker getChecker() {
+        return checker;
+    }
 
-	public void setUtil(Util util) {
-		this.util = util;
-	}
-	
-	public String getVersion() {
-		return version;
-	}
+    public void setChecker(fr.weefle.constructor.API.TileChecker checker) {
+        this.checker = checker;
+    }
 
-	public void setVersion(String version) {
-		this.version = version;
-	}
-	
-	public TileChecker getChecker() {
-		return checker;
-	}
+    public fr.weefle.constructor.API.SchematicChooser getChooser() {
+        return chooser;
+    }
 
-	public void setChecker(TileChecker checker) {
-		this.checker = checker;
-	}
-	
-	public SchematicChooser getChooser() {
-		return chooser;
-	}
+    public void setChooser(fr.weefle.constructor.API.SchematicChooser chooser) {
+        this.chooser = chooser;
+    }
 
-	public void setChooser(SchematicChooser chooser) {
-		this.chooser = chooser;
-	}
-
-	public static Class< ? > getNMSClass ( String classname )
-	{
-		String version = Bukkit.getServer ( ).getClass ( ).getPackage ( ).getName ( ).replace ( ".", "," ).split ( "," )[ 3 ] + ".";
-		String name = "org.bukkit.craftbukkit." + version + classname;
-		Class< ? > nmsClass = null;
-		try
-		{
-			nmsClass = Class.forName ( name );
-		} catch ( ClassNotFoundException e )
-		{
-			e.printStackTrace ( );
-		}
-		return nmsClass;
-	}
+    public static Class<?> getNMSClass(String classname) {
+        String version = Bukkit.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3]+".";
+        String name = "org.bukkit.craftbukkit."+version+classname;
+        Class<?> nmsClass = null;
+        try {
+            nmsClass = Class.forName(name);
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        return nmsClass;
+    }
 
 }

@@ -1,15 +1,12 @@
 package fr.weefle.constructor.extra;
 
-import com.mojang.authlib.GameProfile;
-import com.mojang.authlib.properties.Property;
-import com.mojang.authlib.properties.PropertyMap;
-import fr.weefle.constructor.API.ConstructorAPI;
 import fr.weefle.constructor.API.StructureUtil;
 import fr.weefle.constructor.Constructor;
 import fr.weefle.constructor.NMS.NMS;
 import fr.weefle.constructor.essentials.ConstructorListener;
 import fr.weefle.constructor.essentials.ConstructorTrait;
 import fr.weefle.constructor.util.Structure;
+import mc.promcteam.engine.utils.ItemUT;
 import net.citizensnpcs.Citizens;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
@@ -24,21 +21,19 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.Merchant;
-import org.bukkit.inventory.MerchantRecipe;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.util.Vector;
 
 import java.io.File;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Objects;
 import java.util.logging.Level;
 
 public class ConstructorCommand implements CommandExecutor {
@@ -134,7 +129,7 @@ public class ConstructorCommand implements CommandExecutor {
             }
 
             Constructor.getInstance().reloadMyConfig();
-            player.sendMessage(ChatColor.GREEN + "reloaded Constructor/config.yml");
+            player.sendMessage(ChatColor.GREEN+"reloaded ProConstructor/config.yml");
             return true;
         }
         else if (args[0].equalsIgnoreCase("npc")) {
@@ -903,26 +898,16 @@ public class ConstructorCommand implements CommandExecutor {
     }
 
     private static ItemStack getItem(String b64stringtexture) {
-        GameProfile profile = new GameProfile(UUID.randomUUID(), null);
-        PropertyMap propertyMap = profile.getProperties();
-        if (propertyMap == null) {
-            throw new IllegalStateException("Profile doesn't contain a property map");
-        }
-        propertyMap.put("textures", new Property("textures", b64stringtexture));
         ItemStack head = new ItemStack(Material.PLAYER_HEAD);
+        ItemUT.addSkullTexture(head, b64stringtexture);
         ItemMeta headMeta = head.getItemMeta();
-        assert headMeta != null;
-        Class<?> headMetaClass = headMeta.getClass();
-        try {
-            getField(headMetaClass, "profile", GameProfile.class, 0).set(headMeta, profile);
-        } catch (IllegalArgumentException | IllegalAccessException e) {
-            e.printStackTrace();
+        if (headMeta != null) {
+            headMeta.setDisplayName("Materials");
+            ArrayList<String> lore = new ArrayList<>();
+            lore.add("Next Page");
+            headMeta.setLore(lore);
+            head.setItemMeta(headMeta);
         }
-        headMeta.setDisplayName("Materials");
-        ArrayList<String> lore = new ArrayList<>();
-        lore.add("Next Page");
-        headMeta.setLore(lore);
-        head.setItemMeta(headMeta);
         return head;
     }
 

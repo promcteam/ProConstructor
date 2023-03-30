@@ -1,19 +1,18 @@
 package fr.weefle.constructor.updater;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-
+import fr.weefle.constructor.Constructor;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import fr.weefle.constructor.Constructor;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 public class Updater
   extends Thread
@@ -50,8 +49,8 @@ public class Updater
     //this.url = new URL("https://api.spiget.org/v2/resources/" + resourceID + "/versions/latest");
     this.url = new URL("https://pastebin.com/raw/MT8GTJNY");
     
-    File configDir = new File(plugin.getDataFolder().getParentFile(), "Constructor");
-    File config = new File(configDir, "updater.yml");
+    File configDir = new File(plugin.getDataFolder().getParentFile(), "ProConstructor");
+      File config = new File(configDir, "updater.yml");
     YamlConfiguration yamlConfig = new YamlConfiguration();
     if (!configDir.exists()) {
       configDir.mkdirs();

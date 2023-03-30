@@ -14,6 +14,10 @@
     <artifactId>proconstructor</artifactId>
     <version>1.0-R0.1-SNAPSHOT</version>
 
+    <properties>
+        <java.version>1.8</java.version>
+    </properties>
+
     <name>ProConstructor</name>
     <description>Let NPCs build your schematics and structures block by block with Citizens
     </description>
@@ -25,12 +29,20 @@
             <id>citizens-repo</id>
             <url>https://maven.citizensnpcs.co/repo</url>
         </repository>
+        <repository>
+            <id>MikeRepo</id>
+            <url>https://repo.mikeprimm.com/</url>
+        </repository>
     </repositories>
 
     <dependencies>
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.promcteam</groupId>
+            <artifactId>promccore</artifactId>
         </dependency>
         <dependency>
             <groupId>net.citizensnpcs</groupId>
@@ -49,6 +61,18 @@
             <groupId>com.denizenscript</groupId>
             <artifactId>denizen</artifactId>
             <version>1.2.7-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>us.dynmap</groupId>
+            <artifactId>dynmap-api</artifactId>
+            <version>3.4-beta-3</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.github.shynixn.structureblocklib</groupId>
+            <artifactId>structureblocklib-bukkit-api</artifactId>
+            <version>2.10.0</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
@@ -81,8 +105,8 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <source>14</source>
-                    <target>14</target>
+                    <source>1.8</source>
+                    <target>1.8</target>
                 </configuration>
             </plugin>
         </plugins>

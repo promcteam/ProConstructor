@@ -6,10 +6,8 @@ import fr.weefle.constructor.NMS.NMS;
 import fr.weefle.constructor.essentials.ConstructorSchematic;
 import fr.weefle.constructor.essentials.ConstructorTrait;
 import fr.weefle.constructor.extra.DenizenSupport;
-import fr.weefle.constructor.extra.Metrics;
 import fr.weefle.constructor.extra.SelectionListener;
 import fr.weefle.constructor.extra.TraitListener;
-import fr.weefle.constructor.updater.Updater;
 import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -20,7 +18,6 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -48,19 +45,19 @@ public class Constructor extends JavaPlugin {
 	public void onEnable() {
 		instance=this;
 		NMS nms = new NMS();
-		if (nms.isSet()) {
-			getLogger().info("NMS setup was successful!");
-			getLogger().info("The plugin setup process is complete!");
+		if (nms.setInstance()) {
+            getLogger().info("NMS setup was successful!");
+            getLogger().info("The plugin setup process is complete!");
 
-		} else {
+        } else {
 
-			getLogger().severe("Failed to setup NMS!");
-			getLogger().severe("Your server version is not compatible with this plugin!");
+            getLogger().severe("Failed to setup NMS!");
+            getLogger().severe("Your server version is not compatible with this plugin!");
 
-			Bukkit.getPluginManager().disablePlugin(this);
-		}
+            Bukkit.getPluginManager().disablePlugin(this);
+        }
 		
-		try {
+		/*try {
 			new Metrics(this);
 			getLogger().info("Metrics setup was successful");
 			new Updater(this, 79683);
@@ -69,7 +66,7 @@ public class Constructor extends JavaPlugin {
 			getLogger().severe("Failed to setup Updater");
 			getLogger().severe("Verify the resource's link");
 			e.printStackTrace();
-		}
+		}*/
 		
 		if(getServer().getPluginManager().getPlugin("Citizens") != null || getServer().getPluginManager().getPlugin("Citizens").isEnabled()) {
 			getLogger().log(Level.INFO, "Citizens is now enabled");
@@ -77,23 +74,23 @@ public class Constructor extends JavaPlugin {
 			getLogger().log(Level.SEVERE, "Citizens not found or not enabled");
 			getServer().getPluginManager().disablePlugin(this);	
 			return;
-		}
+        }
 
-		
-		
-		try {
-			setupDenizenHook();
-		} catch (Exception e) {
 
-		}
+        try {
+            setupDenizenHook();
+        } catch (Exception e) {
 
-		if (denizen != null)	getLogger().log(Level.INFO,"Constructor registered sucessfully with Denizen");
-		else getLogger().log(Level.INFO,"Constructor could not register with Denizen");
+        }
 
-		getServer().getPluginManager().registerEvents(new TraitListener(), this);
-		getServer().getPluginManager().registerEvents(new SelectionListener(), this);
-		reloadMyConfig();
-	}
+        if (denizen != null) {
+            getLogger().log(Level.INFO, "ProConstructor registered sucessfully with Denizen");
+        } else { getLogger().log(Level.INFO, "ProConstructor could not register with Denizen"); }
+
+        getServer().getPluginManager().registerEvents(new TraitListener(), this);
+        getServer().getPluginManager().registerEvents(new SelectionListener(), this);
+        reloadMyConfig();
+    }
 
 
 
@@ -197,12 +194,13 @@ public class Constructor extends JavaPlugin {
 
 	
 	public void loadSchematic() {
-		if(!(new File(this.getDataFolder() + File.separator + "schematics/house.schem").exists()))
-		saveResource("schematics/house.schem", false);
-		
-		if(!(new File(this.getDataFolder() + File.separator + "schematics/structure_house.nbt").exists()))
-			saveResource("schematics/structure_house.nbt", false);
-	}
+        if (!(new File(this.getDataFolder()+File.separator+"schematics/house.schem").exists())) {
+            saveResource("schematics/house.schem", false);
+        }
+
+        //if(!(new File(this.getDataFolder() + File.separator + "schematics/structure_house.nbt").exists()))
+        //	saveResource("schematics/structure_house.nbt", false);
+    }
 
 
 

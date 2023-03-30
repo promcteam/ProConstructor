@@ -1,27 +1,24 @@
-package fr.weefle.constructor.NMS.Version_1_14_R1;
+package fr.weefle.constructor.NMS;
 
-import fr.weefle.constructor.API.Util;
 import fr.weefle.constructor.block.EmptyBuildBlock;
-import fr.weefle.constructor.nbt.Tag;
 import fr.weefle.constructor.nbt.*;
-import net.minecraft.server.v1_14_R1.*;
 import org.bukkit.ChatColor;
 
 import java.util.*;
 import java.util.Map.Entry;
 
 
-public class Util_1_14_R1 implements Util {
+public class NMSUtil implements fr.weefle.constructor.API.Util {
 
-	public String printList(Map<String, Integer> map){
-		StringBuilder sb = new StringBuilder();
+    public String printList(Map<String,Integer> map) {
+        StringBuilder sb = new StringBuilder();
 
-		java.util.Iterator<Entry<String, Integer>> it = map.entrySet().iterator();
+        Iterator<Entry<String,Integer>> it = map.entrySet().iterator();
 
-		while (it.hasNext()){
-			Entry<String, Integer> i = it.next();
-			if(i.getValue() > 0){
-				sb.append(ChatColor.GREEN).append(i.getKey()).append(":").append(ChatColor.WHITE).append(i.getValue());
+        while (it.hasNext()) {
+            Entry<String,Integer> i = it.next();
+            if (i.getValue() > 0) {
+                sb.append(ChatColor.GREEN).append(i.getKey()).append(":").append(ChatColor.WHITE).append(i.getValue());
 				if(it.hasNext())sb.append(", ");
 			}
 		}
@@ -130,7 +127,7 @@ public class Util_1_14_R1 implements Util {
 		}
 
 
-		if (!reverse) java.util.Collections.reverse(out);
+		if (!reverse) Collections.reverse(out);
 		return out;
 	}
 
@@ -182,7 +179,7 @@ public class Util_1_14_R1 implements Util {
 
 		}while(true);
 
-		if (reverse) java.util.Collections.reverse(out);
+		if (reverse) Collections.reverse(out);
 		return out;
 	}
 
@@ -222,43 +219,42 @@ public class Util_1_14_R1 implements Util {
 		}
 		return false;
 	}
-	
-	public static NBTBase fromNative(Tag foreign) {
+
+    public static Object fromNative(Tag foreign) {
         if (foreign == null) {
             return null;
         }
         if (foreign instanceof CompoundTag) {
-            NBTTagCompound tag = new NBTTagCompound();
-            for (Map.Entry<String, Tag> entry : ((CompoundTag) foreign)
-                    .getValue().entrySet()) {
-                tag.set(entry.getKey(), fromNative(entry.getValue()));
+            Object tag = NMS.getInstance().getNMSProvider().newNBTTagCompound();
+            for (Entry<String,Tag> entry : ((CompoundTag) foreign).getValue().entrySet()) {
+                NMS.getInstance().getNMSProvider().nbtTagCompound_put(tag, entry.getKey(), fromNative(entry.getValue()));
             }
             return tag;
         } else if (foreign instanceof ByteTag) {
-            return new NBTTagByte(((ByteTag) foreign).getValue());
+            return NMS.getInstance().getNMSProvider().nbtTagByte_valueOf(((ByteTag) foreign).getValue());
         } else if (foreign instanceof ByteArrayTag) {
-            return new NBTTagByteArray(((ByteArrayTag) foreign).getValue());
+            return NMS.getInstance().getNMSProvider().newNBTTagByteArray(((ByteArrayTag) foreign).getValue());
         } else if (foreign instanceof DoubleTag) {
-            return new NBTTagDouble(((DoubleTag) foreign).getValue());
+            return NMS.getInstance().getNMSProvider().nbtTagDouble_valueOf(((DoubleTag) foreign).getValue());
         } else if (foreign instanceof FloatTag) {
-            return new NBTTagFloat(((FloatTag) foreign).getValue());
+            return NMS.getInstance().getNMSProvider().nbtTagFloat_valueOf(((FloatTag) foreign).getValue());
         } else if (foreign instanceof IntTag) {
-            return new NBTTagInt(((IntTag) foreign).getValue());
+            return NMS.getInstance().getNMSProvider().nbtTagInt_valueOf(((IntTag) foreign).getValue());
         } else if (foreign instanceof IntArrayTag) {
-            return new NBTTagIntArray(((IntArrayTag) foreign).getValue());
+            return NMS.getInstance().getNMSProvider().newNBTTagIntArray(((IntArrayTag) foreign).getValue());
         } else if (foreign instanceof ListTag) {
-            NBTTagList tag = new NBTTagList();
+            AbstractList<Object> tag = NMS.getInstance().getNMSProvider().newNBTTagList();
             ListTag foreignList = (ListTag) foreign;
             for (Tag t : foreignList.getValue()) {
                 tag.add(fromNative(t));
             }
             return tag;
         } else if (foreign instanceof LongTag) {
-            return new NBTTagLong(((LongTag) foreign).getValue());
+            return NMS.getInstance().getNMSProvider().nbtTagLong_valueOf(((LongTag) foreign).getValue());
         } else if (foreign instanceof ShortTag) {
-            return new NBTTagShort(((ShortTag) foreign).getValue());
+            return NMS.getInstance().getNMSProvider().nbtTagShort_valueOf(((ShortTag) foreign).getValue());
         } else if (foreign instanceof StringTag) {
-            return new NBTTagString(foreign.getValue().toString());
+            return NMS.getInstance().getNMSProvider().nbtTagString_valueOf(((StringTag) foreign).getValue());
         } else if (foreign instanceof EndTag) {
             throw new IllegalArgumentException("Cant make EndTag: "
                     + foreign.getValue().toString());

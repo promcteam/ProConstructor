@@ -2,9 +2,9 @@ name: ProConstructor
 authors: [Weefle, Sentropic]
 version: ${project.version}
 main: fr.weefle.constructor.Constructor
-depends: [Citizens]
+depends: [ProMCCore, Citizens]
 softdepends: [Denizen, dynmap]
-api-version: 1.19.3
+api-version: 1.14
 commands:
   constructor:
     description: Lists constructor commands.

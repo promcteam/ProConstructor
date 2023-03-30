@@ -1,7 +1,7 @@
 #Constructor configuration
 
 #The directory to look for schematics. 
-SchematicsFolder: plugins/Constructor/schematics/
+SchematicsFolder: plugins/ProConstructor/schematics/
 
 #The allowed materials for plot marking, the first one in the list is the default. 
 #Use Id or Name. Should only use base blocks, not things that can break on place (like TORCH).

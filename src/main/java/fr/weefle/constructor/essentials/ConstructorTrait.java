@@ -5,7 +5,6 @@ import fr.weefle.constructor.NMS.NMS;
 import fr.weefle.constructor.block.DataBuildBlock;
 import fr.weefle.constructor.block.EmptyBuildBlock;
 import fr.weefle.constructor.util.Structure;
-import net.citizensnpcs.api.exception.NPCLoadException;
 import net.citizensnpcs.api.trait.Trait;
 import net.citizensnpcs.api.util.DataKey;
 import net.citizensnpcs.trait.Toggleable;
@@ -38,7 +37,7 @@ public class ConstructorTrait extends Trait implements Toggleable {
 	@Override
 	public void load(DataKey key) {
 
-		plugin = (Constructor) Bukkit.getServer().getPluginManager().getPlugin("Constructor");
+		plugin = (Constructor) Bukkit.getServer().getPluginManager().getPlugin("ProConstructor");
 
 		if( key.keyExists("Origin")){
 			try {
@@ -136,7 +135,7 @@ public class ConstructorTrait extends Trait implements Toggleable {
 	@Override
 	public void onSpawn() {
 
-		plugin = (Constructor) Bukkit.getPluginManager().getPlugin("Constructor");
+        plugin = (Constructor) Bukkit.getPluginManager().getPlugin("ProConstructor");
 
 
 
@@ -591,17 +590,17 @@ public class ConstructorTrait extends Trait implements Toggleable {
 	}
 
 	private BukkitTask canceltaskid;
-	public void PlaceNextBlock() throws IllegalArgumentException, InvocationTargetException, NoSuchMethodException, IllegalAccessException {
 
-		if(canceltaskid != null && !canceltaskid.isCancelled()){
-			canceltaskid.cancel();
-		}
+    public void PlaceNextBlock() throws IllegalArgumentException, InvocationTargetException, NoSuchMethodException, IllegalAccessException, ClassNotFoundException, InstantiationException {
 
-			BlockData bdata = next.getMat();
+        if (canceltaskid != null && !canceltaskid.isCancelled()) {
+            canceltaskid.cancel();
+        }
+
+        BlockData bdata = next.getMat();
 
 
-
-				if (State == BuilderState.marking && !clearingMarks) {
+        if (State == BuilderState.marking && !clearingMarks) {
 					_marks.add(new DataBuildBlock(pending.getX(), pending.getY(), pending.getZ(), pending.getBlockData()));
 				}
 
