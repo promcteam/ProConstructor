@@ -1,0 +1,36 @@
+name: ProConstructor
+authors: [Weefle, Sentropic]
+version: ${project.version}
+main: fr.weefle.constructor.Constructor
+depends: [Citizens]
+softdepends: [Denizen, dynmap]
+api-version: 1.19.3
+commands:
+  constructor:
+    description: Lists constructor commands.
+    usage: /constructor help
+permissions:
+  constructor.*:
+    default: op
+    children:
+      constructor.load: true
+      constructor.npc: true
+      constructor.cancel: true
+      constructor.excavated: true
+      constructor.preview: true
+      constructor.structure: true
+      constructor.build: true
+      constructor.mark: true
+      constructor.origin: true
+      constructor.check: true
+      constructor.compare: true
+      constructor.info: true
+      constructor.survey: true
+      constructor.timeout: true
+      constructor.ignoreprotection: true
+      constructor.list: true
+      constructor.hold: true
+      constructor.supply: true
+      constructor.donate: true
+      constructor.select: true
+      constructor.npc.click: true
