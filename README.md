@@ -2,6 +2,11 @@
 Let [Citizens](https://www.spigotmc.org/resources/citizens.13811/) NPCs build your schematics and structures block by 
 block.
 
+## Dependencies
+
+- [Citizens](https://www.spigotmc.org/resources/citizens.13811/)
+- [ProMCCore](https://www.spigotmc.org/resources/promccore.93608/)
+
 ## Usage
 1) Create a NPC with Citizens and give it the 'builder' trait.
 
