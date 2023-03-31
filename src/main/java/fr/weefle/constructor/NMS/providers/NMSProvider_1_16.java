@@ -103,6 +103,11 @@ public class NMSProvider_1_16 extends NMSProvider {
     }
 
     @Override
+    public String[] getBlockEntityClassNames() {
+        return new String[]{"net.minecraft.server." + version + ".TileEntity"};
+    }
+
+    @Override
     public String[] getIBlockDataClassNames() {
         return new String[]{"net.minecraft.server." + version + ".IBlockData"};
     }

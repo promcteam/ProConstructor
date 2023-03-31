@@ -147,6 +147,10 @@ public abstract class NMSProvider {
         return new String[]{"c_", "getBlockEntity"};
     }
 
+    public String[] getBlockEntityClassNames() {
+        return new String[]{"net.minecraft.world.level.block.entity.TileEntity", "net.minecraft.world.level.block.entity.BlockEntity"};
+    }
+
     public String[] getBlockEntity_loadMethodNames() {
         return new String[]{"a", "load"};
     }
@@ -620,11 +624,11 @@ public abstract class NMSProvider {
     public final void blockEntity_load(Object blockEntity, Object nbtTagCompound) {
         if (blockEntity_loadMethod == null) {
             try {
-                blockEntity_loadMethod = getMethodByNames(blockEntity.getClass(), getBlockEntity_loadMethodNames(), getNBTTagCompoundClass());
+                blockEntity_loadMethod = getMethodByNames(getClassByNames(getBlockEntityClassNames()), getBlockEntity_loadMethodNames(), getNBTTagCompoundClass());
                 blockEntity_loadMethod_old = false;
-            } catch (NoSuchMethodException e) {
+            } catch (NoSuchMethodException | ClassNotFoundException e) {
                 try {
-                    blockEntity_loadMethod = getMethodByNames(blockEntity.getClass(), getBlockEntity_loadMethodNames(), getClassByNames(getIBlockDataClassNames()), getNBTTagCompoundClass());
+                    blockEntity_loadMethod = getMethodByNames(getClassByNames(getBlockEntityClassNames()), getBlockEntity_loadMethodNames(), getClassByNames(getIBlockDataClassNames()), getNBTTagCompoundClass());
                     blockEntity_loadMethod_old = true;
                 } catch (NoSuchMethodException | ClassNotFoundException e1) {
                     throw new RuntimeException(e1);
