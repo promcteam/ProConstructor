@@ -198,8 +198,8 @@ public class SchematicBuilder extends JavaPlugin {
             saveResource("schematics/house.schem", false);
         }
 
-        //if(!(new File(this.getDataFolder() + File.separator + "schematics/structure_house.nbt").exists()))
-        //	saveResource("schematics/structure_house.nbt", false);
+        if(!(new File(this.getDataFolder() + File.separator + "schematics/structure_house.nbt").exists()))
+        	saveResource("schematics/structure_house.nbt", false);
     }
 
 
