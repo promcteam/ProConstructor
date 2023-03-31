@@ -1,35 +1,35 @@
 /*
-* JNBT License
-*
-* Copyright (c) 2010 Graham Edgecombe
-* All rights reserved.
-*
-* Redistribution and use in source and binary forms, with or without
-* modification, are permitted provided that the following conditions are met:
-*
-*     * Redistributions of source code must retain the above copyright notice,
-*       this list of conditions and the following disclaimer.
-*
-*     * Redistributions in binary form must reproduce the above copyright
-*       notice, this list of conditions and the following disclaimer in the
-*       documentation and/or other materials provided with the distribution.
-*
-*     * Neither the name of the JNBT team nor the names of its
-*       contributors may be used to endorse or promote products derived from
-*       this software without specific prior written permission.
-*
-* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-* AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-* IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-* ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
-* LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
-* CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
-* SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
-* INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
-* CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
-* ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-* POSSIBILITY OF SUCH DAMAGE.
-*/
+ * JNBT License
+ *
+ * Copyright (c) 2010 Graham Edgecombe
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ *     * Redistributions of source code must retain the above copyright notice,
+ *       this list of conditions and the following disclaimer.
+ *
+ *     * Redistributions in binary form must reproduce the above copyright
+ *       notice, this list of conditions and the following disclaimer in the
+ *       documentation and/or other materials provided with the distribution.
+ *
+ *     * Neither the name of the JNBT team nor the names of its
+ *       contributors may be used to endorse or promote products derived from
+ *       this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ */
 
 package fr.weefle.constructor.nbt;
 
@@ -60,10 +60,8 @@ public final class NBTOutputStream implements Closeable {
      * Creates a new {@code NBTOutputStream}, which will write data to the
      * specified underlying output stream.
      *
-     * @param os
-     *            The output stream.
-     * @throws IOException
-     *             if an I/O error occurs.
+     * @param os The output stream.
+     * @throws IOException if an I/O error occurs.
      */
     public NBTOutputStream(OutputStream os) throws IOException {
         this.os = new DataOutputStream(os);
@@ -72,14 +70,12 @@ public final class NBTOutputStream implements Closeable {
     /**
      * Writes a tag.
      *
-     * @param tag
-     *            The tag to write.
-     * @throws IOException
-     *             if an I/O error occurs.
+     * @param tag The tag to write.
+     * @throws IOException if an I/O error occurs.
      */
     public void writeNamedTag(String name, Tag tag) throws IOException {
 
-        int type = NBTUtils.getTypeCode(tag.getClass());
+        int    type      = NBTUtils.getTypeCode(tag.getClass());
         byte[] nameBytes = name.getBytes(NBTConstants.CHARSET);
 
         os.writeByte(type);
@@ -96,65 +92,61 @@ public final class NBTOutputStream implements Closeable {
     /**
      * Writes tag payload.
      *
-     * @param tag
-     *            The tag.
-     * @throws IOException
-     *             if an I/O error occurs.
+     * @param tag The tag.
+     * @throws IOException if an I/O error occurs.
      */
     private void writeTagPayload(Tag tag) throws IOException {
         int type = NBTUtils.getTypeCode(tag.getClass());
         switch (type) {
-        case NBTConstants.TYPE_END:
-            writeEndTagPayload((EndTag) tag);
-            break;
-        case NBTConstants.TYPE_BYTE:
-            writeByteTagPayload((ByteTag) tag);
-            break;
-        case NBTConstants.TYPE_SHORT:
-            writeShortTagPayload((ShortTag) tag);
-            break;
-        case NBTConstants.TYPE_INT:
-            writeIntTagPayload((IntTag) tag);
-            break;
-        case NBTConstants.TYPE_LONG:
-            writeLongTagPayload((LongTag) tag);
-            break;
-        case NBTConstants.TYPE_FLOAT:
-            writeFloatTagPayload((FloatTag) tag);
-            break;
-        case NBTConstants.TYPE_DOUBLE:
-            writeDoubleTagPayload((DoubleTag) tag);
-            break;
-        case NBTConstants.TYPE_BYTE_ARRAY:
-            writeByteArrayTagPayload((ByteArrayTag) tag);
-            break;
-        case NBTConstants.TYPE_STRING:
-            writeStringTagPayload((StringTag) tag);
-            break;
-        case NBTConstants.TYPE_LIST:
-            writeListTagPayload((ListTag) tag);
-            break;
-        case NBTConstants.TYPE_COMPOUND:
-            writeCompoundTagPayload((CompoundTag) tag);
-            break;
-        case NBTConstants.TYPE_INT_ARRAY:
-            writeIntArrayTagPayload((IntArrayTag) tag);
-            break;
-        case NBTConstants.TYPE_LONG_ARRAY:
-            writeLongArrayTagPayload((LongArrayTag) tag);
-            break;
-        default:
-            throw new IOException("Invalid tag type: " + type + ".");
+            case NBTConstants.TYPE_END:
+                writeEndTagPayload((EndTag) tag);
+                break;
+            case NBTConstants.TYPE_BYTE:
+                writeByteTagPayload((ByteTag) tag);
+                break;
+            case NBTConstants.TYPE_SHORT:
+                writeShortTagPayload((ShortTag) tag);
+                break;
+            case NBTConstants.TYPE_INT:
+                writeIntTagPayload((IntTag) tag);
+                break;
+            case NBTConstants.TYPE_LONG:
+                writeLongTagPayload((LongTag) tag);
+                break;
+            case NBTConstants.TYPE_FLOAT:
+                writeFloatTagPayload((FloatTag) tag);
+                break;
+            case NBTConstants.TYPE_DOUBLE:
+                writeDoubleTagPayload((DoubleTag) tag);
+                break;
+            case NBTConstants.TYPE_BYTE_ARRAY:
+                writeByteArrayTagPayload((ByteArrayTag) tag);
+                break;
+            case NBTConstants.TYPE_STRING:
+                writeStringTagPayload((StringTag) tag);
+                break;
+            case NBTConstants.TYPE_LIST:
+                writeListTagPayload((ListTag) tag);
+                break;
+            case NBTConstants.TYPE_COMPOUND:
+                writeCompoundTagPayload((CompoundTag) tag);
+                break;
+            case NBTConstants.TYPE_INT_ARRAY:
+                writeIntArrayTagPayload((IntArrayTag) tag);
+                break;
+            case NBTConstants.TYPE_LONG_ARRAY:
+                writeLongArrayTagPayload((LongArrayTag) tag);
+                break;
+            default:
+                throw new IOException("Invalid tag type: " + type + ".");
         }
     }
 
     /**
      * Writes a {@code TAG_Byte} tag.
      *
-     * @param tag
-     *            The tag.
-     * @throws IOException
-     *             if an I/O error occurs.
+     * @param tag The tag.
+     * @throws IOException if an I/O error occurs.
      */
     private void writeByteTagPayload(ByteTag tag) throws IOException {
         os.writeByte(tag.getValue());
@@ -163,10 +155,8 @@ public final class NBTOutputStream implements Closeable {
     /**
      * Writes a {@code TAG_Byte_Array} tag.
      *
-     * @param tag
-     *            The tag.
-     * @throws IOException
-     *             if an I/O error occurs.
+     * @param tag The tag.
+     * @throws IOException if an I/O error occurs.
      */
     private void writeByteArrayTagPayload(ByteArrayTag tag) throws IOException {
         byte[] bytes = tag.getValue();
@@ -177,10 +167,8 @@ public final class NBTOutputStream implements Closeable {
     /**
      * Writes a {@code TAG_Compound} tag.
      *
-     * @param tag
-     *            The tag.
-     * @throws IOException
-     *             if an I/O error occurs.
+     * @param tag The tag.
+     * @throws IOException if an I/O error occurs.
      */
     private void writeCompoundTagPayload(CompoundTag tag) throws IOException {
         for (Map.Entry<String, Tag> entry : tag.getValue().entrySet()) {
@@ -192,15 +180,13 @@ public final class NBTOutputStream implements Closeable {
     /**
      * Writes a {@code TAG_List} tag.
      *
-     * @param tag
-     *            The tag.
-     * @throws IOException
-     *             if an I/O error occurs.
+     * @param tag The tag.
+     * @throws IOException if an I/O error occurs.
      */
     private void writeListTagPayload(ListTag tag) throws IOException {
         Class<? extends Tag> clazz = tag.getType();
-        List<Tag> tags = tag.getValue();
-        int size = tags.size();
+        List<Tag>            tags  = tag.getValue();
+        int                  size  = tags.size();
 
         os.writeByte(NBTUtils.getTypeCode(clazz));
         os.writeInt(size);
@@ -212,10 +198,8 @@ public final class NBTOutputStream implements Closeable {
     /**
      * Writes a {@code TAG_String} tag.
      *
-     * @param tag
-     *            The tag.
-     * @throws IOException
-     *             if an I/O error occurs.
+     * @param tag The tag.
+     * @throws IOException if an I/O error occurs.
      */
     private void writeStringTagPayload(StringTag tag) throws IOException {
         byte[] bytes = tag.getValue().getBytes(NBTConstants.CHARSET);
@@ -226,10 +210,8 @@ public final class NBTOutputStream implements Closeable {
     /**
      * Writes a {@code TAG_Double} tag.
      *
-     * @param tag
-     *            The tag.
-     * @throws IOException
-     *             if an I/O error occurs.
+     * @param tag The tag.
+     * @throws IOException if an I/O error occurs.
      */
     private void writeDoubleTagPayload(DoubleTag tag) throws IOException {
         os.writeDouble(tag.getValue());
@@ -238,10 +220,8 @@ public final class NBTOutputStream implements Closeable {
     /**
      * Writes a {@code TAG_Float} tag.
      *
-     * @param tag
-     *            The tag.
-     * @throws IOException
-     *             if an I/O error occurs.
+     * @param tag The tag.
+     * @throws IOException if an I/O error occurs.
      */
     private void writeFloatTagPayload(FloatTag tag) throws IOException {
         os.writeFloat(tag.getValue());
@@ -250,10 +230,8 @@ public final class NBTOutputStream implements Closeable {
     /**
      * Writes a {@code TAG_Long} tag.
      *
-     * @param tag
-     *            The tag.
-     * @throws IOException
-     *             if an I/O error occurs.
+     * @param tag The tag.
+     * @throws IOException if an I/O error occurs.
      */
     private void writeLongTagPayload(LongTag tag) throws IOException {
         os.writeLong(tag.getValue());
@@ -262,10 +240,8 @@ public final class NBTOutputStream implements Closeable {
     /**
      * Writes a {@code TAG_Int} tag.
      *
-     * @param tag
-     *            The tag.
-     * @throws IOException
-     *             if an I/O error occurs.
+     * @param tag The tag.
+     * @throws IOException if an I/O error occurs.
      */
     private void writeIntTagPayload(IntTag tag) throws IOException {
         os.writeInt(tag.getValue());
@@ -274,10 +250,8 @@ public final class NBTOutputStream implements Closeable {
     /**
      * Writes a {@code TAG_Short} tag.
      *
-     * @param tag
-     *            The tag.
-     * @throws IOException
-     *             if an I/O error occurs.
+     * @param tag The tag.
+     * @throws IOException if an I/O error occurs.
      */
     private void writeShortTagPayload(ShortTag tag) throws IOException {
         os.writeShort(tag.getValue());

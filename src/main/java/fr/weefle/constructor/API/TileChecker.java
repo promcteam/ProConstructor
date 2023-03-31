@@ -7,8 +7,7 @@ import java.lang.reflect.InvocationTargetException;
 
 public interface TileChecker {
 
-	void check(EmptyBuildBlock next, Block pending) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, ClassNotFoundException, InstantiationException;
-	
-	
+    void check(EmptyBuildBlock next, Block pending) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, ClassNotFoundException, InstantiationException;
+
 
 }

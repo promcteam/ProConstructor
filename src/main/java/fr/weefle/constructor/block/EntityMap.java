@@ -1,15 +1,14 @@
 package fr.weefle.constructor.block;
 
+import fr.weefle.constructor.nbt.Tag;
 import org.bukkit.block.data.BlockData;
 
-import fr.weefle.constructor.nbt.Tag;
+public class EntityMap extends DataBuildBlock {
 
-public class EntityMap extends DataBuildBlock{
-	
-	public EntityMap(int x, int y, int z, BlockData data) {
-		super(x, y, z, data);
-	}
+    public EntityMap(int x, int y, int z, BlockData data) {
+        super(x, y, z, data);
+    }
 
-	public  Tag nbt = null;
-	
+    public Tag nbt = null;
+
 }

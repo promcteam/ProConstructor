@@ -5,14 +5,12 @@ import com.denizenscript.denizen.objects.NPCTag;
 import com.denizenscript.denizen.utilities.implementation.BukkitScriptEntryData;
 import com.denizenscript.denizencore.scripts.ScriptRegistry;
 import com.denizenscript.denizencore.scripts.containers.core.TaskScriptContainer;
-
-import com.denizenscript.denizencore.scripts.queues.ContextSource;
 import net.citizensnpcs.api.npc.NPC;
 
 public class DenizenSupport {
 
     public static boolean runTask(String taskName, NPC npc) {
-        NPCTag dnpc = new NPCTag(npc);
+        NPCTag              dnpc = new NPCTag(npc);
         TaskScriptContainer task = ScriptRegistry.getScriptContainerAs(taskName, TaskScriptContainer.class);
         if (task != null) {
             task.run(new BukkitScriptEntryData(null, dnpc), null);

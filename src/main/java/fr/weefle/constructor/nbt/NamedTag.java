@@ -7,13 +7,13 @@ package fr.weefle.constructor.nbt;
 public class NamedTag {
 
     private final String name;
-    private final Tag tag;
+    private final Tag    tag;
 
     /**
      * Create a new named tag.
      *
      * @param name the name
-     * @param tag the tag
+     * @param tag  the tag
      */
     public NamedTag(String name, Tag tag) {
         this.name = name;

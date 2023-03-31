@@ -16,7 +16,7 @@ public class SchematicBuilderAPI {
     public static boolean npcBuild(int npcId, Location location, Float speed, boolean ignoreAir, boolean ignoreLiquid, boolean excavate, BuilderTrait.BuildPatternsXZ buildPattern, String schematic, Player player) throws Exception {
 
         NPCRegistry registry = CitizensAPI.getNPCRegistry();
-        NPC npc = registry.getById(npcId);
+        NPC         npc      = registry.getById(npcId);
         npc.addTrait(BuilderTrait.class);
         npc.teleport(location, null);
         if (speed != null) {
@@ -34,21 +34,18 @@ public class SchematicBuilderAPI {
         bt.BuildYLayers = 0;
         bt.BuildPatternXY = buildPattern;
         File file = new File("plugins/ProSchematicBuilder/schematics/");
-        try
-        {
+        try {
             bt.schematic = new Structure(file, schematic.trim().replace("\"", "")).load(file, schematic.trim().replace("\"", ""));
-        } catch (Exception exception)
-        {
-            try
-            {
+        } catch (Exception exception) {
+            try {
                 bt.schematic = new Structure(file, schematic.trim().replace("\"", "")).load(file, schematic.trim().replace("\"", ""));
-            bt.schematic = NMS.getInstance().getChooser().setSchematic(file, schematic.trim().replace("\"", ""));
+                bt.schematic = NMS.getInstance().getChooser().setSchematic(file, schematic.trim().replace("\"", ""));
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
 
-            return bt.TryBuild(player);
+        return bt.TryBuild(player);
 
     }
 

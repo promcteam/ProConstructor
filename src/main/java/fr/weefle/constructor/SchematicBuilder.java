@@ -24,28 +24,28 @@ import java.util.logging.Level;
 
 
 public class SchematicBuilder extends JavaPlugin {
-	
-	public static SchematicBuilder instance;
 
-	public static String schematicsFolder = "";
-	public static List<Material> MarkMats = new ArrayList<>();
-	public String StartedMessage = "";
-	public String  CompleteMessage = "";
-	public static String  CancelMessage = "";
-	public static String  MarkMessage = "";
-	public static String SurveyMessage = "";
-	public String SupplyListMessage = "";
-	public String SupplyNeedMessage = "";
-	public String SupplyDontNeedMessage = "";
-	public String SupplyTakenMessage = "";
-	public String CollectingMessage = "";
+    public static SchematicBuilder instance;
+
+    public static String         schematicsFolder      = "";
+    public static List<Material> MarkMats              = new ArrayList<>();
+    public        String         StartedMessage        = "";
+    public        String         CompleteMessage       = "";
+    public static String         CancelMessage         = "";
+    public static String         MarkMessage           = "";
+    public static String         SurveyMessage         = "";
+    public        String         SupplyListMessage     = "";
+    public        String         SupplyNeedMessage     = "";
+    public        String         SupplyDontNeedMessage = "";
+    public        String         SupplyTakenMessage    = "";
+    public        String         CollectingMessage     = "";
 
 
-	@Override
-	public void onEnable() {
-		instance=this;
-		NMS nms = new NMS();
-		if (nms.setInstance()) {
+    @Override
+    public void onEnable() {
+        instance = this;
+        NMS nms = new NMS();
+        if (nms.setInstance()) {
             getLogger().info("NMS setup was successful!");
             getLogger().info("The plugin setup process is complete!");
 
@@ -67,13 +67,13 @@ public class SchematicBuilder extends JavaPlugin {
 			getLogger().severe("Verify the resource's link");
 			e.printStackTrace();
 		}*/
-		
-		if(getServer().getPluginManager().getPlugin("Citizens") != null || getServer().getPluginManager().getPlugin("Citizens").isEnabled()) {
-			getLogger().log(Level.INFO, "Citizens is now enabled");
-		}else {
-			getLogger().log(Level.SEVERE, "Citizens not found or not enabled");
-			getServer().getPluginManager().disablePlugin(this);	
-			return;
+
+        if (getServer().getPluginManager().getPlugin("Citizens") != null || getServer().getPluginManager().getPlugin("Citizens").isEnabled()) {
+            getLogger().log(Level.INFO, "Citizens is now enabled");
+        } else {
+            getLogger().log(Level.SEVERE, "Citizens not found or not enabled");
+            getServer().getPluginManager().disablePlugin(this);
+            return;
         }
 
 
@@ -85,7 +85,7 @@ public class SchematicBuilder extends JavaPlugin {
 
         if (denizen != null) {
             getLogger().log(Level.INFO, "ProSchematicBuilder registered sucessfully with Denizen");
-        } else { getLogger().log(Level.INFO, "ProSchematicBuilder could not register with Denizen"); }
+        } else {getLogger().log(Level.INFO, "ProSchematicBuilder could not register with Denizen");}
 
         getServer().getPluginManager().registerEvents(new TraitListener(), this);
         getServer().getPluginManager().registerEvents(new SelectionListener(), this);
@@ -93,131 +93,121 @@ public class SchematicBuilder extends JavaPlugin {
     }
 
 
+    public BuilderTrait getBuilder(Entity ent) {
+        if (ent == null) return null;
+        NPC npc = net.citizensnpcs.api.CitizensAPI.getNPCRegistry().getNPC(ent);
+        if (npc != null && npc.hasTrait(BuilderTrait.class)) {
+            return npc.getTrait(BuilderTrait.class);
+        }
 
-	public BuilderTrait getBuilder(Entity ent){
-		if( ent == null) return null;
-		NPC npc = net.citizensnpcs.api.CitizensAPI.getNPCRegistry().getNPC(ent);
-		if (npc !=null && npc.hasTrait(BuilderTrait.class)){
-			return npc.getTrait(BuilderTrait.class);
-		}
+        return null;
+    }
 
-		return null;
-	}
+    public BuilderTrait getBuilder(NPC npc) {
 
-	public BuilderTrait getBuilder(NPC npc){
+        if (npc != null && npc.hasTrait(BuilderTrait.class)) {
+            return npc.getTrait(BuilderTrait.class);
+        }
 
-		if (npc !=null && npc.hasTrait(BuilderTrait.class)){
-			return npc.getTrait(BuilderTrait.class);
-		}
+        return null;
 
-		return null;
+    }
 
-	}
+    //***Denizen Hook
+    private Plugin denizen = null;
 
-	//***Denizen Hook
-	private Plugin denizen = null;
-
-	private void setupDenizenHook() throws Exception {
-		denizen = this.getServer().getPluginManager().getPlugin("Denizen");
-	}
+    private void setupDenizenHook() throws Exception {
+        denizen = this.getServer().getPluginManager().getPlugin("Denizen");
+    }
 
 
-	public String runTask(String taskname, NPC npc){
-		return runTaskv9(taskname, npc);
-	}
+    public String runTask(String taskname, NPC npc) {
+        return runTaskv9(taskname, npc);
+    }
 
-	private String runTaskv9(String taskname, NPC npc) {
+    private String runTaskv9(String taskname, NPC npc) {
         try {
             if (denizen == null) {
                 return "Denizen plugin not found!";
-            }
-            else if (!DenizenSupport.runTask(taskname, npc)) {
+            } else if (!DenizenSupport.runTask(taskname, npc)) {
                 return "Task: " + taskname + " was not found!";
             }
             return null;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return "Error while executing task: " + e.getMessage();
         }
     }
 
-	public void DenizenAction(NPC npc, String action){
-		if(denizen!=null){
-			try {
-				if(npc.hasTrait(AssignmentTrait.class)){
-					NPCTag dnpc = new NPCTag(npc);
-					dnpc.action(action, null);			
-				}
-			} catch (Exception e) {
-				getLogger().log(Level.WARNING, "Error running action!");
-				e.printStackTrace();
-			}		
-		}
-	}
-
-	@Override
-	public void onDisable() {
-		getLogger().log(Level.INFO, " v" + getDescription().getVersion() + " disabled.");
-		Bukkit.getServer().getScheduler().cancelTasks(this);
-	}
-
-
-
-
-
-
-	public void reloadMyConfig(){
-		this.saveDefaultConfig();
-		this.reloadConfig();
-		schematicsFolder = getConfig().getString("SchematicsFolder",this.getDataFolder() + File.separator + "schematics" + File.separator);
-		CompleteMessage = getConfig().getString("DefaultTexts.BuildComplete","");
-		CancelMessage = getConfig().getString("DefaultTexts.BuildCanceled","");
-		StartedMessage = getConfig().getString("DefaultTexts.BuildStarted","");
-		CollectingMessage =  getConfig().getString("DefaultTexts.BuildCollecting","");
-		MarkMessage = getConfig().getString("DefaultTexts.Mark","");
-		SurveyMessage = getConfig().getString("DefaultTexts.Survey","");
-		SupplyListMessage = getConfig().getString("DefaultTexts.Supply_List","");
-		SupplyNeedMessage = getConfig().getString("DefaultTexts.Supply_Need_Item","");
-		SupplyDontNeedMessage = getConfig().getString("DefaultTexts.Supply_Dont_Need_Item","");
-		SupplyTakenMessage = getConfig().getString("DefaultTexts.Supply_Item_Taken","");
-		for (String M:getConfig().getStringList("MarkMaterials")){
-			if (M!=null) MarkMats.add(Material.valueOf(M));
-		}
-
-		if (MarkMats.isEmpty()) MarkMats.add(Material.GLASS);
-
-		loadSchematic();
-
-	}
-
-
-	
-	public void loadSchematic() {
-        if (!(new File(this.getDataFolder()+File.separator+"schematics/house.schem").exists())) {
-            saveResource("schematics/house.schem", false);
+    public void DenizenAction(NPC npc, String action) {
+        if (denizen != null) {
+            try {
+                if (npc.hasTrait(AssignmentTrait.class)) {
+                    NPCTag dnpc = new NPCTag(npc);
+                    dnpc.action(action, null);
+                }
+            } catch (Exception e) {
+                getLogger().log(Level.WARNING, "Error running action!");
+                e.printStackTrace();
+            }
         }
+    }
 
-        if(!(new File(this.getDataFolder() + File.separator + "schematics/structure_house.nbt").exists()))
-        	saveResource("schematics/structure_house.nbt", false);
+    @Override
+    public void onDisable() {
+        getLogger().log(Level.INFO, " v" + getDescription().getVersion() + " disabled.");
+        Bukkit.getServer().getScheduler().cancelTasks(this);
     }
 
 
+    public void reloadMyConfig() {
+        this.saveDefaultConfig();
+        this.reloadConfig();
+        schematicsFolder = getConfig().getString("SchematicsFolder", this.getDataFolder() + File.separator + "schematics" + File.separator);
+        CompleteMessage = getConfig().getString("DefaultTexts.BuildComplete", "");
+        CancelMessage = getConfig().getString("DefaultTexts.BuildCanceled", "");
+        StartedMessage = getConfig().getString("DefaultTexts.BuildStarted", "");
+        CollectingMessage = getConfig().getString("DefaultTexts.BuildCollecting", "");
+        MarkMessage = getConfig().getString("DefaultTexts.Mark", "");
+        SurveyMessage = getConfig().getString("DefaultTexts.Survey", "");
+        SupplyListMessage = getConfig().getString("DefaultTexts.Supply_List", "");
+        SupplyNeedMessage = getConfig().getString("DefaultTexts.Supply_Need_Item", "");
+        SupplyDontNeedMessage = getConfig().getString("DefaultTexts.Supply_Dont_Need_Item", "");
+        SupplyTakenMessage = getConfig().getString("DefaultTexts.Supply_Item_Taken", "");
+        for (String M : getConfig().getStringList("MarkMaterials")) {
+            if (M != null) MarkMats.add(Material.valueOf(M));
+        }
 
-	public static SchematicBuilder getInstance() {
-		return SchematicBuilder.instance;
-	}
+        if (MarkMats.isEmpty()) MarkMats.add(Material.GLASS);
 
-	public String format(String input, NPC npc, BuilderSchematic schem, CommandSender player, String item, String amount){
-		input = input.replace("<NPC>",npc.getName());
-		input = input.replace("<SCHEMATIC>", schem == null ? "" : schem.Name);
-		input = input.replace("<PLAYER>", player == null ? "" : player.getName());
-		input = input.replace("<ITEM>", item == null ? "" : item);
-		input = input.replace("<AMOUNT>", amount);
-		input =	ChatColor.translateAlternateColorCodes('&', input);
-		return input;
-	}
+        loadSchematic();
 
+    }
+
+
+    public void loadSchematic() {
+        if (!(new File(this.getDataFolder() + File.separator + "schematics/house.schem").exists())) {
+            saveResource("schematics/house.schem", false);
+        }
+
+        if (!(new File(this.getDataFolder() + File.separator + "schematics/structure_house.nbt").exists()))
+            saveResource("schematics/structure_house.nbt", false);
+    }
+
+
+    public static SchematicBuilder getInstance() {
+        return SchematicBuilder.instance;
+    }
+
+    public String format(String input, NPC npc, BuilderSchematic schem, CommandSender player, String item, String amount) {
+        input = input.replace("<NPC>", npc.getName());
+        input = input.replace("<SCHEMATIC>", schem == null ? "" : schem.Name);
+        input = input.replace("<PLAYER>", player == null ? "" : player.getName());
+        input = input.replace("<ITEM>", item == null ? "" : item);
+        input = input.replace("<AMOUNT>", amount);
+        input = ChatColor.translateAlternateColorCodes('&', input);
+        return input;
+    }
 
 
 }

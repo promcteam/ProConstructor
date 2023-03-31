@@ -15,15 +15,15 @@ import java.util.Objects;
 
 public class SelectionListener implements Listener {
 
-    private boolean leftClick = false;
-    private Location leftLocation;
-    public static HashMap<Player, Vector> vector = new HashMap<>();
-    public static HashMap<Player, Location> location = new HashMap<>();
+    private       boolean                   leftClick = false;
+    private       Location                  leftLocation;
+    public static HashMap<Player, Vector>   vector    = new HashMap<>();
+    public static HashMap<Player, Location> location  = new HashMap<>();
 
     @EventHandler
     public void onSelectEvent(PlayerInteractEvent e) {
 
-        if(e.getAction().equals(Action.LEFT_CLICK_BLOCK)) {
+        if (e.getAction().equals(Action.LEFT_CLICK_BLOCK)) {
 
 
             if (e.getMaterial().equals(Material.BLAZE_ROD)) {
@@ -49,27 +49,26 @@ public class SelectionListener implements Listener {
 
             }
 
-        }else if (e.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
-
+        } else if (e.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
 
 
             if (e.getMaterial().equals(Material.BLAZE_ROD)) {
 
 
-                if(e.getPlayer().hasPermission("schematicbuilder.select")){
+                if (e.getPlayer().hasPermission("schematicbuilder.select")) {
                     e.setCancelled(true);
 
 
-                    if(leftClick){
+                    if (leftClick) {
                         leftClick = false;
                         Location rightLocation = Objects.requireNonNull(e.getClickedBlock()).getLocation();
 
                         Cuboid selection = new Cuboid(leftLocation, rightLocation);
 
                         Vector fin = new Vector(selection.getSizeX(), selection.getSizeY(), selection.getSizeZ());
-                        if(selection.getLowerY() < selection.getUpperY()){
+                        if (selection.getLowerY() < selection.getUpperY()) {
                             location.put(e.getPlayer(), selection.getLowerNE());
-                        }else {
+                        } else {
                             location.put(e.getPlayer(), selection.getUpperSW());
                         }
                         vector.put(e.getPlayer(), fin);
@@ -77,7 +76,6 @@ public class SelectionListener implements Listener {
                         e.getPlayer().sendMessage(ChatColor.BLUE + "Area selected!");
                     }
                 }
-
 
 
             }

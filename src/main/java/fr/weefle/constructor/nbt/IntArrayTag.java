@@ -38,8 +38,7 @@ import java.util.List;
 /**
  * The {@code TAG_Int_Array} tag.
  */
-public final class IntArrayTag extends Tag
-{
+public final class IntArrayTag extends Tag {
 
     private final int[] value;
 
@@ -48,35 +47,29 @@ public final class IntArrayTag extends Tag
      *
      * @param value the value of the tag
      */
-    public IntArrayTag(int[] value)
-    {
+    public IntArrayTag(int[] value) {
         super();
         this.value = value;
     }
 
-    public IntArrayTag(List<Integer> value)
-    {
+    public IntArrayTag(List<Integer> value) {
         super();
         this.value = toArray(value);
     }
 
     @Override
-    public int[] getValue()
-    {
+    public int[] getValue() {
         return value;
     }
 
     @Override
-    public int getTypeId()
-    {
+    public int getTypeId() {
         return 11;
     }
 
-    public int[] toArray(List<Integer> list)
-    {
+    public int[] toArray(List<Integer> list) {
         int[] array = new int[list.size()];
-        for (int i = 0; i < list.size(); i++)
-        {
+        for (int i = 0; i < list.size(); i++) {
             array[i] = list.get(i);
         }
 
@@ -84,13 +77,10 @@ public final class IntArrayTag extends Tag
     }
 
     @Override
-    public String asString()
-    {
+    public String asString() {
         StringBuilder stringbuilder = new StringBuilder("[I;");
-        for (int i2 = 0; i2 < this.value.length; ++i2)
-        {
-            if (i2 != 0)
-            {
+        for (int i2 = 0; i2 < this.value.length; ++i2) {
+            if (i2 != 0) {
                 stringbuilder.append(',');
             }
             stringbuilder.append(this.value[i2]);
@@ -100,14 +90,11 @@ public final class IntArrayTag extends Tag
 
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         StringBuilder hex = new StringBuilder();
-        for (int b : value)
-        {
+        for (int b : value) {
             String hexDigits = Integer.toHexString(b).toUpperCase();
-            if (hexDigits.length() == 1)
-            {
+            if (hexDigits.length() == 1) {
                 hex.append("0");
             }
             hex.append(hexDigits).append(" ");

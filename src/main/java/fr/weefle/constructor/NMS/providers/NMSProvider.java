@@ -156,21 +156,21 @@ public abstract class NMSProvider {
     }
 
     public final Class<?> getClassByNames(String[] names) throws ClassNotFoundException {
-        if (names.length == 0) { throw new IllegalArgumentException("At least one class name is required"); }
+        if (names.length == 0) {throw new IllegalArgumentException("At least one class name is required");}
         for (String name : names) {
             try {
                 return Class.forName(name);
-            } catch (ClassNotFoundException ignored) { }
+            } catch (ClassNotFoundException ignored) {}
         }
         throw new ClassNotFoundException(names[0]);
     }
 
     public final Method getMethodByNames(Class<?> clazz, String[] names, Class<?>... parameterTypes) throws NoSuchMethodException {
-        if (names.length == 0) { throw new IllegalArgumentException("At least one method name is required"); }
+        if (names.length == 0) {throw new IllegalArgumentException("At least one method name is required");}
         for (String name : names) {
             try {
                 return clazz.getMethod(name, parameterTypes);
-            } catch (NoSuchMethodException ignored) { }
+            } catch (NoSuchMethodException ignored) {}
         }
         throw new NoSuchMethodException(names[0]);
     }
@@ -614,7 +614,7 @@ public abstract class NMSProvider {
         }
     }
 
-    private Method blockEntity_loadMethod;
+    private Method  blockEntity_loadMethod;
     private boolean blockEntity_loadMethod_old;
 
     public final void blockEntity_load(Object blockEntity, Object nbtTagCompound) {

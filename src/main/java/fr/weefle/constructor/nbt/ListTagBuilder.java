@@ -12,7 +12,7 @@ import java.util.List;
 public class ListTagBuilder {
 
     private final Class<? extends Tag> type;
-    private final List<Tag> entries;
+    private final List<Tag>            entries;
 
     /**
      * Create a new instance.
@@ -78,7 +78,7 @@ public class ListTagBuilder {
      * @return a new builder
      */
     @SafeVarargs
-	public static <T extends Tag> ListTagBuilder createWith(T ... entries) {
+    public static <T extends Tag> ListTagBuilder createWith(T... entries) {
 
         if (entries.length == 0) {
             throw new IllegalArgumentException("This method needs an array of at least one entry");

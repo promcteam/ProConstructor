@@ -41,14 +41,12 @@ import java.util.regex.Pattern;
 /**
  * The {@code TAG_Compound} tag.
  */
-public final class CompoundTag extends Tag
-{
+public final class CompoundTag extends Tag {
 
     private final Map<String, Tag> value;
 
 
-    public CompoundTag()
-    {
+    public CompoundTag() {
         this.value = Maps.newHashMap();
     }
 
@@ -57,8 +55,7 @@ public final class CompoundTag extends Tag
      *
      * @param value the value of the tag
      */
-    public CompoundTag(Map<String, Tag> value)
-    {
+    public CompoundTag(Map<String, Tag> value) {
         super();
         this.value = Collections.unmodifiableMap(value);
     }
@@ -69,25 +66,21 @@ public final class CompoundTag extends Tag
      * @param key the given key
      * @return true if the tag contains the given key
      */
-    public boolean containsKey(String key)
-    {
+    public boolean containsKey(String key) {
         return value.containsKey(key);
     }
 
     @Override
-    public Map<String, Tag> getValue()
-    {
+    public Map<String, Tag> getValue() {
         return value;
     }
 
     @Override
-    public int getTypeId()
-    {
+    public int getTypeId() {
         return 10;
     }
 
-    public void set(String key, Tag tag)
-    {
+    public void set(String key, Tag tag) {
         this.value.put(key, tag);
     }
 
@@ -97,8 +90,7 @@ public final class CompoundTag extends Tag
      * @param value the value
      * @return the new compound tag
      */
-    public CompoundTag setValue(Map<String, Tag> value)
-    {
+    public CompoundTag setValue(Map<String, Tag> value) {
         return new CompoundTag(value);
     }
 
@@ -107,8 +99,7 @@ public final class CompoundTag extends Tag
      *
      * @return the builder
      */
-    public CompoundTagBuilder createBuilder()
-    {
+    public CompoundTagBuilder createBuilder() {
         return new CompoundTagBuilder(new HashMap<String, Tag>(value));
     }
 
@@ -121,15 +112,11 @@ public final class CompoundTag extends Tag
      * @param key the key
      * @return a byte array
      */
-    public byte[] getByteArray(String key)
-    {
+    public byte[] getByteArray(String key) {
         Tag tag = value.get(key);
-        if (tag instanceof ByteArrayTag)
-        {
+        if (tag instanceof ByteArrayTag) {
             return ((ByteArrayTag) tag).getValue();
-        }
-        else
-        {
+        } else {
             return new byte[0];
         }
     }
@@ -143,15 +130,11 @@ public final class CompoundTag extends Tag
      * @param key the key
      * @return a byte
      */
-    public byte getByte(String key)
-    {
+    public byte getByte(String key) {
         Tag tag = value.get(key);
-        if (tag instanceof ByteTag)
-        {
+        if (tag instanceof ByteTag) {
             return ((ByteTag) tag).getValue();
-        }
-        else
-        {
+        } else {
             return (byte) 0;
         }
     }
@@ -165,15 +148,11 @@ public final class CompoundTag extends Tag
      * @param key the key
      * @return a double
      */
-    public double getDouble(String key)
-    {
+    public double getDouble(String key) {
         Tag tag = value.get(key);
-        if (tag instanceof DoubleTag)
-        {
+        if (tag instanceof DoubleTag) {
             return ((DoubleTag) tag).getValue();
-        }
-        else
-        {
+        } else {
             return 0;
         }
     }
@@ -188,42 +167,27 @@ public final class CompoundTag extends Tag
      * @param key the key
      * @return a double
      */
-    public double asDouble(String key)
-    {
+    public double asDouble(String key) {
         Tag tag = value.get(key);
-        if (tag instanceof ByteTag)
-        {
+        if (tag instanceof ByteTag) {
             return ((ByteTag) tag).getValue();
 
-        }
-        else if (tag instanceof ShortTag)
-        {
+        } else if (tag instanceof ShortTag) {
             return ((ShortTag) tag).getValue();
 
-        }
-        else if (tag instanceof IntTag)
-        {
+        } else if (tag instanceof IntTag) {
             return ((IntTag) tag).getValue();
 
-        }
-        else if (tag instanceof LongTag)
-        {
+        } else if (tag instanceof LongTag) {
             return ((LongTag) tag).getValue();
 
-        }
-        else if (tag instanceof FloatTag)
-        {
+        } else if (tag instanceof FloatTag) {
             return ((FloatTag) tag).getValue();
 
-        }
-        else if (tag instanceof DoubleTag)
-        {
+        } else if (tag instanceof DoubleTag) {
             return ((DoubleTag) tag).getValue();
 
-        }
-
-        else
-        {
+        } else {
             return 0;
         }
     }
@@ -237,15 +201,11 @@ public final class CompoundTag extends Tag
      * @param key the key
      * @return a float
      */
-    public float getFloat(String key)
-    {
+    public float getFloat(String key) {
         Tag tag = value.get(key);
-        if (tag instanceof FloatTag)
-        {
+        if (tag instanceof FloatTag) {
             return ((FloatTag) tag).getValue();
-        }
-        else
-        {
+        } else {
             return 0;
         }
     }
@@ -259,15 +219,11 @@ public final class CompoundTag extends Tag
      * @param key the key
      * @return an int array
      */
-    public int[] getIntArray(String key)
-    {
+    public int[] getIntArray(String key) {
         Tag tag = value.get(key);
-        if (tag instanceof IntArrayTag)
-        {
+        if (tag instanceof IntArrayTag) {
             return ((IntArrayTag) tag).getValue();
-        }
-        else
-        {
+        } else {
             return new int[0];
         }
     }
@@ -281,15 +237,11 @@ public final class CompoundTag extends Tag
      * @param key the key
      * @return an int
      */
-    public int getInt(String key)
-    {
+    public int getInt(String key) {
         Tag tag = value.get(key);
-        if (tag instanceof IntTag)
-        {
+        if (tag instanceof IntTag) {
             return ((IntTag) tag).getValue();
-        }
-        else
-        {
+        } else {
             return 0;
         }
     }
@@ -304,41 +256,27 @@ public final class CompoundTag extends Tag
      * @param key the key
      * @return an int
      */
-    public int asInt(String key)
-    {
+    public int asInt(String key) {
         Tag tag = value.get(key);
-        if (tag instanceof ByteTag)
-        {
+        if (tag instanceof ByteTag) {
             return ((ByteTag) tag).getValue();
 
-        }
-        else if (tag instanceof ShortTag)
-        {
+        } else if (tag instanceof ShortTag) {
             return ((ShortTag) tag).getValue();
 
-        }
-        else if (tag instanceof IntTag)
-        {
+        } else if (tag instanceof IntTag) {
             return ((IntTag) tag).getValue();
 
-        }
-        else if (tag instanceof LongTag)
-        {
+        } else if (tag instanceof LongTag) {
             return ((LongTag) tag).getValue().intValue();
 
-        }
-        else if (tag instanceof FloatTag)
-        {
+        } else if (tag instanceof FloatTag) {
             return ((FloatTag) tag).getValue().intValue();
 
-        }
-        else if (tag instanceof DoubleTag)
-        {
+        } else if (tag instanceof DoubleTag) {
             return ((DoubleTag) tag).getValue().intValue();
 
-        }
-        else
-        {
+        } else {
             return 0;
         }
     }
@@ -352,15 +290,11 @@ public final class CompoundTag extends Tag
      * @param key the key
      * @return a list of tags
      */
-    public List<Tag> getList(String key)
-    {
+    public List<Tag> getList(String key) {
         Tag tag = value.get(key);
-        if (tag instanceof ListTag)
-        {
+        if (tag instanceof ListTag) {
             return ((ListTag) tag).getValue();
-        }
-        else
-        {
+        } else {
             return Collections.emptyList();
         }
     }
@@ -374,15 +308,11 @@ public final class CompoundTag extends Tag
      * @param key the key
      * @return a tag list instance
      */
-    public ListTag getListTag(String key)
-    {
+    public ListTag getListTag(String key) {
         Tag tag = value.get(key);
-        if (tag instanceof ListTag)
-        {
+        if (tag instanceof ListTag) {
             return (ListTag) tag;
-        }
-        else
-        {
+        } else {
             return new ListTag(StringTag.class, Collections.emptyList());
         }
     }
@@ -401,23 +331,16 @@ public final class CompoundTag extends Tag
      * @return a list of tags
      */
     @SuppressWarnings("unchecked")
-    public <T extends Tag> List<T> getList(String key, Class<T> listType)
-    {
+    public <T extends Tag> List<T> getList(String key, Class<T> listType) {
         Tag tag = value.get(key);
-        if (tag instanceof ListTag)
-        {
+        if (tag instanceof ListTag) {
             ListTag listTag = (ListTag) tag;
-            if (listTag.getType().equals(listType))
-            {
+            if (listTag.getType().equals(listType)) {
                 return (List<T>) listTag.getValue();
-            }
-            else
-            {
+            } else {
                 return Collections.emptyList();
             }
-        }
-        else
-        {
+        } else {
             return Collections.emptyList();
         }
     }
@@ -431,15 +354,11 @@ public final class CompoundTag extends Tag
      * @param key the key
      * @return an long array
      */
-    public long[] getLongArray(String key)
-    {
+    public long[] getLongArray(String key) {
         Tag tag = value.get(key);
-        if (tag instanceof IntArrayTag)
-        {
+        if (tag instanceof IntArrayTag) {
             return ((LongArrayTag) tag).getValue();
-        }
-        else
-        {
+        } else {
             return new long[0];
         }
     }
@@ -453,15 +372,11 @@ public final class CompoundTag extends Tag
      * @param key the key
      * @return a long
      */
-    public long getLong(String key)
-    {
+    public long getLong(String key) {
         Tag tag = value.get(key);
-        if (tag instanceof LongTag)
-        {
+        if (tag instanceof LongTag) {
             return ((LongTag) tag).getValue();
-        }
-        else
-        {
+        } else {
             return 0L;
         }
     }
@@ -476,41 +391,27 @@ public final class CompoundTag extends Tag
      * @param key the key
      * @return a long
      */
-    public long asLong(String key)
-    {
+    public long asLong(String key) {
         Tag tag = value.get(key);
-        if (tag instanceof ByteTag)
-        {
+        if (tag instanceof ByteTag) {
             return ((ByteTag) tag).getValue();
 
-        }
-        else if (tag instanceof ShortTag)
-        {
+        } else if (tag instanceof ShortTag) {
             return ((ShortTag) tag).getValue();
 
-        }
-        else if (tag instanceof IntTag)
-        {
+        } else if (tag instanceof IntTag) {
             return ((IntTag) tag).getValue();
 
-        }
-        else if (tag instanceof LongTag)
-        {
+        } else if (tag instanceof LongTag) {
             return ((LongTag) tag).getValue();
 
-        }
-        else if (tag instanceof FloatTag)
-        {
+        } else if (tag instanceof FloatTag) {
             return ((FloatTag) tag).getValue().longValue();
 
-        }
-        else if (tag instanceof DoubleTag)
-        {
+        } else if (tag instanceof DoubleTag) {
             return ((DoubleTag) tag).getValue().longValue();
 
-        }
-        else
-        {
+        } else {
             return 0L;
         }
     }
@@ -524,15 +425,11 @@ public final class CompoundTag extends Tag
      * @param key the key
      * @return a short
      */
-    public short getShort(String key)
-    {
+    public short getShort(String key) {
         Tag tag = value.get(key);
-        if (tag instanceof ShortTag)
-        {
+        if (tag instanceof ShortTag) {
             return ((ShortTag) tag).getValue();
-        }
-        else
-        {
+        } else {
             return 0;
         }
     }
@@ -546,36 +443,28 @@ public final class CompoundTag extends Tag
      * @param key the key
      * @return a string
      */
-    public String getString(String key)
-    {
+    public String getString(String key) {
         Tag tag = value.get(key);
-        if (tag instanceof StringTag)
-        {
+        if (tag instanceof StringTag) {
             return ((StringTag) tag).getValue();
-        }
-        else
-        {
+        } else {
             return "";
         }
     }
 
-    public void setInt(String key, int value)
-    {
+    public void setInt(String key, int value) {
         this.value.put(key, new IntTag(value));
     }
 
     @Override
-    public String asString()
-    {
+    public String asString() {
         Iterator<String> var2;
-        StringBuilder var0 = new StringBuilder("{");
-        Set<String> var1 = this.value.keySet();
+        StringBuilder    var0 = new StringBuilder("{");
+        Set<String>      var1 = this.value.keySet();
         var2 = var1.iterator();
-        while (var2.hasNext())
-        {
+        while (var2.hasNext()) {
             String var3 = var2.next();
-            if (var0.length() != 1)
-            {
+            if (var0.length() != 1) {
                 var0.append(',');
             }
             var0.append(s(var3)).append(':').append(this.value.get(var3));
@@ -584,20 +473,17 @@ public final class CompoundTag extends Tag
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         StringBuilder bldr = new StringBuilder();
         bldr.append("TAG_Compound").append(": ").append(value.size()).append(" entries\r\n{\r\n");
-        for (Map.Entry<String, Tag> entry : value.entrySet())
-        {
+        for (Map.Entry<String, Tag> entry : value.entrySet()) {
             bldr.append("   ").append(entry.getValue().toString().replaceAll("\r\n", "\r\n   ")).append("\r\n");
         }
         bldr.append("}");
         return bldr.toString();
     }
 
-    protected static String s(String var0)
-    {
+    protected static String s(String var0) {
         return c.matcher(var0).matches() ? var0 : StringTag.a(var0);
     }
 

@@ -6,19 +6,19 @@ import org.bukkit.Bukkit;
 
 public class NMS {
 
-    private static NMS instance;
-    public String version;
-    private NMSProvider nmsProvider;
-    private fr.weefle.constructor.API.Util util;
-    private fr.weefle.constructor.API.TileChecker checker;
-    private fr.weefle.constructor.API.SchematicChooser chooser;
-    private StructureUtil structure;
+    private static NMS                                        instance;
+    public         String                                     version;
+    private        NMSProvider                                nmsProvider;
+    private        fr.weefle.constructor.API.Util             util;
+    private        fr.weefle.constructor.API.TileChecker      checker;
+    private        fr.weefle.constructor.API.SchematicChooser chooser;
+    private        StructureUtil                              structure;
 
     public boolean setInstance() {
         String[] packageArray = Bukkit.getServer().getClass().getPackage().getName().split("\\.");
-        version = packageArray[packageArray.length-1];
+        version = packageArray[packageArray.length - 1];
 
-        Bukkit.getLogger().info("Your server is running version "+version);
+        Bukkit.getLogger().info("Your server is running version " + version);
 
         if (version.compareTo("v1_19_R1") >= 0) {
             nmsProvider = new NMSProvider_1_19();
@@ -42,7 +42,7 @@ public class NMS {
         return instance;
     }
 
-    public NMSProvider getNMSProvider() { return nmsProvider; }
+    public NMSProvider getNMSProvider() {return nmsProvider;}
 
     public fr.weefle.constructor.API.Util getUtil() {
         return util;
@@ -77,8 +77,8 @@ public class NMS {
     }
 
     public static Class<?> getNMSClass(String classname) {
-        String version = Bukkit.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3]+".";
-        String name = "org.bukkit.craftbukkit."+version+classname;
+        String   version  = Bukkit.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3] + ".";
+        String   name     = "org.bukkit.craftbukkit." + version + classname;
         Class<?> nmsClass = null;
         try {
             nmsClass = Class.forName(name);
