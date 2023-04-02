@@ -30,6 +30,10 @@
             <url>https://maven.citizensnpcs.co/repo</url>
         </repository>
         <repository>
+            <id>sonatype</id>
+            <url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
+        </repository>
+        <repository>
             <id>MikeRepo</id>
             <url>https://repo.mikeprimm.com/</url>
         </repository>
