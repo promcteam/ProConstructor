@@ -15,7 +15,7 @@ Example: `/npc create Bob --trait builder`
 2) Select the NPC, either by right clicking them or through `/npc select <npc>`
 3) Load a schematic with `/schematicbuilder load <file name>`.
 
-Example: `/schematicbuilder load house`
+Example: `/schematicbuilder load house.schem`
 
 This will load the included example file `house.schem`.
 
