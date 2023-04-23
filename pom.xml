@@ -122,6 +122,7 @@
                     <nonFilteredFileExtensions>
                         <nonFilteredFileExtension>jar</nonFilteredFileExtension>
                         <nonFilteredFileExtension>schem</nonFilteredFileExtension>
+                        <nonFilteredFileExtension>nbt</nonFilteredFileExtension>
                     </nonFilteredFileExtensions>
                 </configuration>
             </plugin>

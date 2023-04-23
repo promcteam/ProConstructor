@@ -166,6 +166,11 @@ public class SchematicBuilder extends JavaPlugin {
         this.saveDefaultConfig();
         this.reloadConfig();
         schematicsFolder = getConfig().getString("SchematicsFolder", this.getDataFolder() + File.separator + "schematics" + File.separator);
+        File schematicsFolder = new File(SchematicBuilder.schematicsFolder);
+        if (!schematicsFolder.exists()) {
+            saveResource("schematics/house.schem", false);
+            saveResource("schematics/structure_house.nbt", false);
+        }
         CompleteMessage = getConfig().getString("DefaultTexts.BuildComplete", "");
         CancelMessage = getConfig().getString("DefaultTexts.BuildCanceled", "");
         StartedMessage = getConfig().getString("DefaultTexts.BuildStarted", "");
@@ -182,18 +187,6 @@ public class SchematicBuilder extends JavaPlugin {
 
         if (MarkMats.isEmpty()) MarkMats.add(Material.GLASS);
 
-        loadSchematic();
-
-    }
-
-
-    public void loadSchematic() {
-        if (!(new File(this.getDataFolder() + File.separator + "schematics/house.schem").exists())) {
-            saveResource("schematics/house.schem", false);
-        }
-
-        if (!(new File(this.getDataFolder() + File.separator + "schematics/structure_house.nbt").exists()))
-            saveResource("schematics/structure_house.nbt", false);
     }
 
 
