@@ -155,7 +155,7 @@ public abstract class AbstractCommand implements CommandExecutor, TabCompleter {
             if (subcommand == null) {
                 List<String> completions = new ArrayList<>();
                 StringUtil.copyPartialMatches(args[args.length-1], getArguments(sender), completions);
-                for (int i = 0, last = args.length-2; i < last; i++) {
+                for (int i = 0, last = args.length-1; i < last; i++) {
                     String arg = args[i];
                     completions.removeIf(arg::startsWith);
                 }
