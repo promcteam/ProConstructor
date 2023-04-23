@@ -13,6 +13,7 @@ permissions:
   schematicbuilder.*:
     default: op
     children:
+      schematicbuilder.reload: true
       schematicbuilder.load: true
       schematicbuilder.npc: true
       schematicbuilder.cancel: true

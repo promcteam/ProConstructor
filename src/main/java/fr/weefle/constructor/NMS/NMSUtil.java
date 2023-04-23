@@ -3,6 +3,7 @@ package fr.weefle.constructor.NMS;
 import fr.weefle.constructor.block.EmptyBuildBlock;
 import fr.weefle.constructor.nbt.*;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 
 import java.util.*;
 import java.util.Map.Entry;
@@ -10,13 +11,13 @@ import java.util.Map.Entry;
 
 public class NMSUtil implements fr.weefle.constructor.API.Util {
 
-    public String printList(Map<String, Integer> map) {
+    public String printList(Map<Material, Integer> map) {
         StringBuilder sb = new StringBuilder();
 
-        Iterator<Entry<String, Integer>> it = map.entrySet().iterator();
+        Iterator<Entry<Material, Integer>> it = map.entrySet().iterator();
 
         while (it.hasNext()) {
-            Entry<String, Integer> i = it.next();
+            Entry<Material, Integer> i = it.next();
             if (i.getValue() > 0) {
                 sb.append(ChatColor.GREEN).append(i.getKey()).append(":").append(ChatColor.WHITE).append(i.getValue());
                 if (it.hasNext()) sb.append(", ");
@@ -168,25 +169,25 @@ public class NMSUtil implements fr.weefle.constructor.API.Util {
         return out;
     }
 
-    public Map<String, Integer> MaterialsList(Queue<EmptyBuildBlock> Q) {
+    public Map<Material, Integer> MaterialsList(Queue<EmptyBuildBlock> Q) {
 
-        Map<String, Integer> out = new HashMap<String, Integer>();
+        Map<Material, Integer> out = new HashMap<Material, Integer>();
 
         do {
 
             EmptyBuildBlock b = Q.poll();
 
             if (b == null) break;
-            String item = b.getMat().getMaterial().name();
+            Material material = b.getMat().getMaterial();
 
-            if (org.bukkit.Material.valueOf(item).createBlockData().getMaterial() == org.bukkit.Material.AIR || !org.bukkit.Material.valueOf(item).createBlockData().getMaterial().isItem())
+            if (material == org.bukkit.Material.AIR || !material.isItem())
                 continue;
 
-            if (out.containsKey(item)) {
-                int amt = out.get(item);
-                out.put(item, amt + 1);
+            if (out.containsKey(material)) {
+                int amt = out.get(material);
+                out.put(material, amt + 1);
             } else {
-                out.put(item, 1);
+                out.put(material, 1);
             }
 
         } while (true);

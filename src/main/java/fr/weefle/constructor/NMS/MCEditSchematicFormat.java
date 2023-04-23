@@ -33,7 +33,7 @@ public class MCEditSchematicFormat {
 
     public BuilderSchematic load(File path, String filename) throws IOException {
 
-        File file = new File(path, filename + ".schem");
+        File file = new File(path, filename);
 
         if (!file.exists()) {throw (new java.io.FileNotFoundException("File not found"));}
 

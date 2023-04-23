@@ -137,7 +137,7 @@ public class Structure {
 
 
     public BuilderSchematic load(File path, String filename) throws Exception {
-        File            file            = new File(path, filename + ".nbt");
+        File            file            = new File(path, filename);
         Vector          origin          = new Vector(0, 0, 0);
         FileInputStream fileInputStream = new FileInputStream(file);
 

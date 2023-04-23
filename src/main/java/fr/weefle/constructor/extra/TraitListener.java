@@ -1,6 +1,7 @@
 package fr.weefle.constructor.extra;
 
 import fr.weefle.constructor.SchematicBuilder;
+import fr.weefle.constructor.commands.SchematicBuilderCommand;
 import fr.weefle.constructor.essentials.BuilderListener;
 import fr.weefle.constructor.essentials.BuilderTrait;
 import net.citizensnpcs.api.CitizensAPI;

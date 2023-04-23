@@ -22,8 +22,9 @@ import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.logging.Level;
 
-@SuppressWarnings("deprecation")
+// TODO fix hanging blocks (like ladders or torches) dropping during excavation
 public class BuilderTrait extends Trait implements Toggleable {
 
     private SchematicBuilder plugin;
@@ -35,7 +36,7 @@ public class BuilderTrait extends Trait implements Toggleable {
     }
 
     @Override
-    public void load(DataKey key) {
+    public void load(DataKey key) { // Fixme make consistent
 
         plugin = (SchematicBuilder) Bukkit.getServer().getPluginManager().getPlugin("ProSchematicBuilder");
 
@@ -75,7 +76,7 @@ public class BuilderTrait extends Trait implements Toggleable {
                 Set<String>                            keys = derp.getKeys(false);
                 for (String k : keys) {
                     //TODO verify if this is working
-                    NeededMaterials.put(k, derp.getInt(k));
+                    NeededMaterials.put(Material.valueOf(k), derp.getInt(k));
                 }
             }
         } catch (Exception e) {
@@ -99,30 +100,16 @@ public class BuilderTrait extends Trait implements Toggleable {
         if (SchematicName != null) {
             File dir = new File(SchematicBuilder.schematicsFolder);
             try {
-
-
-                File fil;
-                fil = new File(dir, SchematicName + ".schem");
-
-                if (!fil.exists()) {
-                    fil = new File(dir, SchematicName + ".nbt");
-                    if (!fil.exists()) {
-                        throw (new java.io.FileNotFoundException("File not found"));
-
-                    } else {
-                        schematic = new Structure(dir, SchematicName).load(dir, SchematicName);
-                    }
-
-                } else {
+                if (SchematicName.endsWith(".schem")) {
                     schematic = NMS.getInstance().getChooser().setSchematic(dir, SchematicName);
-
-                }
-
-                if (schematic == null) {
-                    plugin.getLogger().log(java.util.logging.Level.WARNING, "Error loading schematic " + SchematicName + " for " + npc.getName());
+                } else {
+                    schematic = new Structure(dir, SchematicName).load(dir, SchematicName);
                 }
             } catch (Exception e) {
-                plugin.getLogger().log(java.util.logging.Level.WARNING, "Error loading schematic " + SchematicName + " for " + npc.getName() + ": " + e.getMessage());
+                sender.sendMessage(ChatColor.RED + "Failed to load schematic "+SchematicName+", check console for more details.");
+                SchematicBuilder.getInstance().getLogger().log(Level.WARNING, "Failed to load schematic: " + SchematicName);
+                e.printStackTrace();
+                return;
             }
         }
 
@@ -176,12 +163,9 @@ public class BuilderTrait extends Trait implements Toggleable {
         key.setInt("YOffset", Yoffset);
         key.setInt("YLayers", BuildYLayers);
 
-        HashMap<String, Integer> items = new HashMap<String, Integer>();
-
-        for (String bdata : NeededMaterials.keySet()) {
-
-            items.put(bdata, NeededMaterials.get(bdata));
-
+        HashMap<String, Integer> items = new HashMap<>();
+        for (Map.Entry<Material,Integer> entry : NeededMaterials.entrySet()) {
+            items.put(entry.getKey().name(), entry.getValue());
         }
 
         if (items.size() > 0) key.setRaw("NeededMaterials", items);
@@ -234,7 +218,7 @@ public class BuilderTrait extends Trait implements Toggleable {
     public BuilderSchematic schematic     = null;
     public String           SchematicName = null;
     public Boolean          IgnoreAir, IgnoreLiquid, Excavate;
-    public Queue<BlockData> ExcavateMaterials = new LinkedList<>();
+    public Map<Material,Integer> ExcavateMaterials = new HashMap<>(); // Fixme only stores first layer I think?
     public Boolean          RequireMaterials  = false;
     public Location         Origin            = null;
     public Location         ContinueLoc       = null;
@@ -250,7 +234,7 @@ public class BuilderTrait extends Trait implements Toggleable {
     public double           MoveTimeout       = 1.0;
     public Boolean          Silent            = false;
 
-    public Map<String, Integer> NeededMaterials = new HashMap<String, Integer>();
+    public Map<Material, Integer> NeededMaterials = new HashMap<>();
 
     public Queue<EmptyBuildBlock> Q = new LinkedList<EmptyBuildBlock>();
 
@@ -297,8 +281,8 @@ public class BuilderTrait extends Trait implements Toggleable {
 
         this.sender = sender;
 
-        if (this.RequireMaterials) {
-            java.util.Iterator<Entry<String, Integer>> it = NeededMaterials.entrySet().iterator();
+        if (this.RequireMaterials) { // TODO remove materials as they reach 0
+            java.util.Iterator<Entry<Material, Integer>> it = NeededMaterials.entrySet().iterator();
             long                                       c  = 0;
             while (it.hasNext()) {
                 c += it.next().getValue();
@@ -341,8 +325,8 @@ public class BuilderTrait extends Trait implements Toggleable {
         Q = schematic.BuildQueue(start, IgnoreLiquid, IgnoreAir, Excavate, this.BuildPatternXY, this.GroupByLayer, this.BuildYLayers, this.Yoffset);
         if (!schematic.excludedMaterials.isEmpty()) {
             for (BlockData bdata : schematic.excludedMaterials) {
-                if (bdata.getMaterial() == org.bukkit.Material.AIR || !bdata.getMaterial().isItem()) continue;
-                ExcavateMaterials.add(bdata);
+                if (bdata.getMaterial() == org.bukkit.Material.AIR || !bdata.getMaterial().isItem()) {continue;}
+                ExcavateMaterials.put(bdata.getMaterial(), ExcavateMaterials.getOrDefault(bdata.getMaterial(), 0)+1);
             }
         }
 

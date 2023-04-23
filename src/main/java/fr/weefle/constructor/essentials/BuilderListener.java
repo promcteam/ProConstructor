@@ -3,33 +3,37 @@ package fr.weefle.constructor.essentials;
 
 import fr.weefle.constructor.SchematicBuilder;
 import fr.weefle.constructor.essentials.BuilderTrait.BuilderState;
+import fr.weefle.constructor.menu.Menu;
+import fr.weefle.constructor.menu.Slot;
+import fr.weefle.constructor.menu.menus.ExcavatedMenu;
+import fr.weefle.constructor.menu.menus.MaterialsMenu;
+import fr.weefle.constructor.menu.menus.ParameterMenu;
 import mc.promcteam.engine.utils.ItemUT;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.event.NPCLeftClickEvent;
 import net.citizensnpcs.api.npc.NPC;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.Sound;
-import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.ClickType;
+import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 @SuppressWarnings("deprecation")
 public class BuilderListener implements Listener {
@@ -85,550 +89,89 @@ public class BuilderListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onInventoryClick(InventoryClickEvent event) {
-        ItemStack clicked   = event.getCurrentItem(); // The item that was clicked
-        Inventory inventory = event.getInventory(); // The inventory that was clicked in
-        if (inventory.getHolder() instanceof Player) {
-            Player        p    = (Player) inventory.getHolder();
-            InventoryView view = p.getOpenInventory();
-            if (view.getTitle().equals("SchematicBuilder - Schematics")) {
-                assert clicked != null;
-                try {
-                    if (clicked.getType() == Material.MAP) { // The item that the player clicked it dirt
-                        event.setCancelled(true);
-                        Objects.requireNonNull(Bukkit.getServer().getWorld(p.getWorld().getUID())).playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_BELL, 1, 1);
-                        p.performCommand("schematicbuilder load " + Objects.requireNonNull(clicked.getItemMeta()).getDisplayName());
-                        p.closeInventory();
+        Inventory inventory = event.getInventory();
 
-                    } else if (clicked.getType() == Material.PLAYER_HEAD && Objects.requireNonNull(Objects.requireNonNull(clicked.getItemMeta()).getLore()).get(0).equals("Next Page")) { // The item that the player clicked it dirt
-                        Objects.requireNonNull(Bukkit.getServer().getWorld(p.getWorld().getUID())).playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_BELL, 1, 1);
-                        Inventory inv = Bukkit.createInventory(p, 54, "ProSchematicBuilder - Schematics");
-                        int       nb  = 0;
-                        for (String fileName : materials.keySet()) {
-                            int count = BuilderListener.materials.get(fileName);
-                            if (nb < 53) {
-                                if (count > 0) {
-                                    ItemStack is = new ItemStack(Material.MAP);
-                                    ItemMeta  im = is.getItemMeta();
-                                    assert im != null;
-                                    im.setDisplayName(fileName);
-                                    is.setItemMeta(im);
-                                    inv.setItem(nb, is);
-                                    nb++;
-                                }
-                            }
-                            BuilderListener.materials.put(fileName, 0);
-                            if (nb == 53) {
-                                ItemStack ims = getItem("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGVmMzU2YWQyYWE3YjE2NzhhZWNiODgyOTBlNWZhNWEzNDI3ZTVlNDU2ZmY0MmZiNTE1NjkwYzY3NTE3YjgifX19");
-                                inv.setItem(nb, ims);
-                                break;
-                            }
-                        }
-                        p.openInventory(inv);
-                    } else {
-                        event.setCancelled(true);
+        InventoryView view = event.getView();
+        Inventory otherInventory = view.getTopInventory() == inventory ? view.getBottomInventory() : view.getTopInventory();
+        if (otherInventory.getHolder() instanceof Menu && event.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY) {
+            event.setCancelled(true);
+        }
+
+        InventoryHolder holder = inventory.getHolder();
+        if (holder instanceof Menu) {
+            event.setCancelled(true);
+            Menu menu = (Menu) holder;
+            Slot slot = menu.getSlot(event.getSlot());
+            if (slot != null) {
+                switch (event.getClick()) {
+                    case LEFT: {
+                        slot.onLeftClick();
+                        break;
                     }
-                } catch (NullPointerException e) {
-                    event.setCancelled(true);
-                }
-            } else if (view.getTitle().equals("ProSchematicBuilder - NPCs")) {
-                assert clicked != null;
-                try {
-                    if (clicked.getType() == Material.PLAYER_HEAD) {
-                        event.setCancelled(true);
-                        Objects.requireNonNull(Bukkit.getServer().getWorld(p.getWorld().getUID())).playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_BELL, 1, 1);
-                        if ((event.getClick().equals(ClickType.RIGHT)) && (p.hasPermission("schematicbuilder.npc.click"))) {
-                            for (NPC npc : CitizensAPI.getNPCRegistry().sorted()) {
-                                if (npc.getName().equals(Objects.requireNonNull(clicked.getItemMeta()).getDisplayName())) {
-                                    if (npc.hasTrait(BuilderTrait.class)) {
-                                        npc.removeTrait(BuilderTrait.class);
-                                        p.closeInventory();
-                                    } else {
-                                        npc.addTrait(BuilderTrait.class);
-                                        p.closeInventory();
-                                    }
-                                }
-                            }
-                        } else if ((event.getClick().equals(ClickType.LEFT)) && (p.hasPermission("schematicbuilder.npc.click"))) {
-                            for (NPC npc : CitizensAPI.getNPCRegistry().sorted()) {
-                                if (npc.getName().equals(Objects.requireNonNull(clicked.getItemMeta()).getDisplayName())) {
-                                    if (npc.hasTrait(BuilderTrait.class)) {
-                                        p.performCommand("npc select " + npc.getId());
-                                        Inventory inv = Bukkit.createInventory(p, 54, "ProSchematicBuilder - Parameters");
-                                        if (plugin.getBuilder(npc) != null && (plugin.getBuilder(npc).Excavate == null || plugin.getBuilder(npc).RequireMaterials == null || plugin.getBuilder(npc).IgnoreLiquid == null || plugin.getBuilder(npc).IgnoreAir == null)) {
-                                            plugin.getBuilder(npc).IgnoreLiquid = false;
-                                            plugin.getBuilder(npc).Excavate = false;
-                                            plugin.getBuilder(npc).RequireMaterials = false;
-                                            plugin.getBuilder(npc).IgnoreAir = false;
-                                        }
-                                        ItemStack itemStack1, itemStack2, itemStack3, itemStack4, itemStack5, itemStack6;
-                                        ItemMeta  im1, im2, im3, im4, im5, im6;
-                                        if (plugin.getBuilder(npc).State == BuilderState.building) {
-                                            itemStack1 = getHead(npc.getName());
-                                            im1 = itemStack1.getItemMeta();
-                                            assert im1 != null;
-                                            im1.setDisplayName(npc.getName());
-                                            ArrayList<String> Lore = new ArrayList<>();
-                                            Lore.add(npc.getName() + " is building...");
-                                            Lore.add("Click to cancel building");
-                                            im1.setLore(Lore);
-                                        } else {
-                                            itemStack1 = getHead(npc.getName());
-                                            im1 = itemStack1.getItemMeta();
-                                            assert im1 != null;
-                                            im1.setDisplayName(npc.getName());
-                                            ArrayList<String> Lore = new ArrayList<>();
-                                            Lore.add(npc.getName() + " isn't building.");
-                                            Lore.add("Click to start building !");
-                                            im1.setLore(Lore);
-                                        }
-                                        itemStack1.setItemMeta(im1);
-                                        inv.setItem(0, itemStack1);
-                                        if (plugin.getBuilder(npc).Excavate) {
-                                            itemStack2 = new ItemStack(Material.GREEN_CONCRETE);
-                                            im2 = itemStack2.getItemMeta();
-                                            assert im2 != null;
-                                            im2.setDisplayName("Excavate");
-                                        } else {
-                                            itemStack2 = new ItemStack(Material.RED_CONCRETE);
-                                            im2 = itemStack2.getItemMeta();
-                                            assert im2 != null;
-                                            im2.setDisplayName("Excavate");
-                                        }
-                                        itemStack2.setItemMeta(im2);
-                                        inv.setItem(1, itemStack2);
-
-                                        if (plugin.getBuilder(npc).IgnoreAir) {
-                                            itemStack3 = new ItemStack(Material.GREEN_CONCRETE);
-                                            im3 = itemStack3.getItemMeta();
-                                            assert im3 != null;
-                                            im3.setDisplayName("IgnoreAir");
-                                        } else {
-                                            itemStack3 = new ItemStack(Material.RED_CONCRETE);
-                                            im3 = itemStack3.getItemMeta();
-                                            assert im3 != null;
-                                            im3.setDisplayName("IgnoreAir");
-                                        }
-
-                                        itemStack3.setItemMeta(im3);
-                                        inv.setItem(2, itemStack3);
-
-                                        if (plugin.getBuilder(npc).IgnoreLiquid) {
-                                            itemStack4 = new ItemStack(Material.GREEN_CONCRETE);
-                                            im4 = itemStack4.getItemMeta();
-                                            assert im4 != null;
-                                            im4.setDisplayName("IgnoreLiquid");
-                                        } else {
-                                            itemStack4 = new ItemStack(Material.RED_CONCRETE);
-                                            im4 = itemStack4.getItemMeta();
-                                            assert im4 != null;
-                                            im4.setDisplayName("IgnoreLiquid");
-                                        }
-                                        itemStack4.setItemMeta(im4);
-                                        inv.setItem(3, itemStack4);
-
-                                        if (plugin.getBuilder(npc).RequireMaterials) {
-                                            itemStack5 = new ItemStack(Material.GREEN_CONCRETE);
-                                            im5 = itemStack4.getItemMeta();
-                                            assert im5 != null;
-                                            im5.setDisplayName("RequireMaterials");
-                                        } else {
-                                            itemStack5 = new ItemStack(Material.RED_CONCRETE);
-                                            im5 = itemStack5.getItemMeta();
-                                            assert im5 != null;
-                                            im5.setDisplayName("RequireMaterials");
-                                        }
-                                        itemStack5.setItemMeta(im5);
-                                        inv.setItem(4, itemStack5);
-
-                                        itemStack6 = new ItemStack(Material.BOOK);
-                                        im6 = itemStack6.getItemMeta();
-                                        assert im6 != null;
-                                        im6.setDisplayName("Choose your schematic !");
-
-
-                                        itemStack6.setItemMeta(im6);
-                                        inv.setItem(5, itemStack6);
-
-
-                                        p.openInventory(inv);
-
-                                    } else {
-                                        p.sendMessage(ChatColor.GOLD + Objects.requireNonNull(clicked.getItemMeta()).getDisplayName() + ChatColor.RED + " isn't a builder, right-click on it to make it one!");
-                                        p.closeInventory();
-                                    }
-                                }
-                            }
-                        } else {
-                            event.setCancelled(true);
-
-
-                        }
-                    } else if (clicked.getType() == Material.PLAYER_HEAD && Objects.requireNonNull(Objects.requireNonNull(clicked.getItemMeta()).getLore()).get(0).equals("Next Page")) { // The item that the player clicked it dirt
-                        Objects.requireNonNull(Bukkit.getServer().getWorld(p.getWorld().getUID())).playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_BELL, 1, 1);
-                        Inventory inv = Bukkit.createInventory(p, 54, "ProSchematicBuilder - NPCs");
-                        int       nb  = 0;
-                        for (String npcName : BuilderListener.materials.keySet()) {
-                            int count = BuilderListener.materials.get(npcName);
-
-                            if (nb < 53) {
-                                if (count > 0) {
-                                    ItemStack is = getHead(npcName);
-                                    ItemMeta  im = is.getItemMeta();
-                                    assert im != null;
-                                    im.setDisplayName(npcName);
-                                    ArrayList<String> Lore = new ArrayList<String>();
-                                    for (NPC npcc : CitizensAPI.getNPCRegistry().sorted()) {
-                                        if (npcc.getName().equals(npcName)) {
-                                            if (npcc.hasTrait(BuilderTrait.class)) {
-                                                Lore.add("This NPC can build.");
-                                                Lore.add("Right-click to remove builder's trait");
-                                                Lore.add("Left-click to enter parameters");
-                                            } else {
-                                                Lore.add("This NPC can't build!");
-                                                Lore.add("Right-click to add builder's trait");
-                                            }
-                                        }
-                                    }
-                                    im.setLore(Lore);
-                                    is.setItemMeta(im);
-                                    inv.setItem(nb, is);
-                                    nb++;
-                                }
-                            }
-                            BuilderListener.materials.put(npcName, 0);
-                            if (nb == 53) {
-                                ItemStack ims = getItem("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGVmMzU2YWQyYWE3YjE2NzhhZWNiODgyOTBlNWZhNWEzNDI3ZTVlNDU2ZmY0MmZiNTE1NjkwYzY3NTE3YjgifX19");
-                                inv.setItem(nb, ims);
-                                break;
-                            }
-
-                        }
-                        p.openInventory(inv);
-                    } else {
-                        event.setCancelled(true);
+                    case SHIFT_LEFT: {
+                        slot.onShiftLeftClick();
+                        break;
                     }
-                } catch (NullPointerException e) {
-                    event.setCancelled(true);
-                }
-
-            } else if (view.getTitle().equals("ProSchematicBuilder - Materials")) {
-                assert clicked != null;
-                try {
-                    if (clicked.getType() == Material.PLAYER_HEAD && Objects.requireNonNull(Objects.requireNonNull(clicked.getItemMeta()).getLore()).get(0).equals("Next Page")) { // The item that the player clicked it dirt
-                        event.setCancelled(true);
-                        Objects.requireNonNull(Bukkit.getServer().getWorld(p.getWorld().getUID())).playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_BELL, 1, 1);
-                        Inventory inv = Bukkit.createInventory(p, 54, "ProSchematicBuilder - Materials");
-                        int       nb  = 0;
-                        for (String item : materials.keySet()) {
-
-                            int count = materials.get(item);
-                            //Bukkit.getLogger().warning(item + " : " + count);
-                            while (count > 64) {
-                                if (nb == 52) break;
-                                ItemStack itemStack = new ItemStack(Objects.requireNonNull(Material.getMaterial(item)), count);
-                                ItemMeta  im        = itemStack.getItemMeta();
-                                //im.setDisplayName(item);
-                                itemStack.setItemMeta(im);
-                                inv.setItem(nb, itemStack);
-                                count -= 64;
-                                nb++;
-                            }
-                            if (nb < 53) {
-                                if (count > 0) {
-                                    ItemStack itemStack = new ItemStack(Objects.requireNonNull(Material.getMaterial(item)), count);
-                                    ItemMeta  im        = itemStack.getItemMeta();
-                                    //im.setDisplayName(item);
-                                    itemStack.setItemMeta(im);
-                                    inv.setItem(nb, itemStack);
-                                    nb++;
-                                }
-                            }
-                            materials.put(item, 0);
-                            if (nb == 53) {
-                                ItemStack ims = getItem("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGVmMzU2YWQyYWE3YjE2NzhhZWNiODgyOTBlNWZhNWEzNDI3ZTVlNDU2ZmY0MmZiNTE1NjkwYzY3NTE3YjgifX19");
-                                inv.setItem(nb, ims);
-                                break;
-                            }
-
-
-                        }
-                        p.openInventory(inv);
-                    } else {
-                        event.setCancelled(true);
+                    case RIGHT: {
+                        slot.onRightClick();
+                        break;
                     }
-                } catch (NullPointerException e) {
-                    event.setCancelled(true);
-                }
-            } else if (view.getTitle().equals("ProSchematicBuilder - Parameters")) {
-                assert clicked != null;
-                try {
-
-                    if (clicked.getType() == Material.PLAYER_HEAD) {
-                        event.setCancelled(true);
-                        Objects.requireNonNull(Bukkit.getServer().getWorld(p.getWorld().getUID())).playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_BELL, 1, 1);
-                        for (NPC npc : CitizensAPI.getNPCRegistry().sorted()) {
-                            if (npc.getName().equals(Objects.requireNonNull(clicked.getItemMeta()).getDisplayName())) {
-                                if (npc.hasTrait(BuilderTrait.class)) {
-                                    plugin.getBuilder(npc).oncancel = null;
-                                    plugin.getBuilder(npc).oncomplete = null;
-                                    plugin.getBuilder(npc).onStart = null;
-                                    plugin.getBuilder(npc).ContinueLoc = null;
-                                    plugin.getBuilder(npc).GroupByLayer = true;
-                                    plugin.getBuilder(npc).BuildYLayers = 1;
-                                    plugin.getBuilder(npc).Silent = false;
-                                    plugin.getBuilder(npc).BuildPatternXY = BuilderTrait.BuildPatternsXZ.spiral;
-                                    if (plugin.getBuilder(npc).State == BuilderTrait.BuilderState.building) {
-                                        plugin.getBuilder(npc).CancelBuild();
-                                        p.sendMessage(ChatColor.RED + npc.getName() + " isn't building anymore.");
-                                    } else {
-                                        if (plugin.getBuilder(npc).RequireMaterials) {
-                                            plugin.getBuilder(npc).GetMatsList(plugin.getBuilder(npc).Excavate);
-                                        }
-                                        //Bukkit.getLogger().warning(plugin.getBuilder(npc).RequireMaterials.toString());
-                                        if (!plugin.getBuilder(npc).TryBuild(p))
-                                            p.sendMessage(ChatColor.RED + npc.getName() + " need a structure to build first !");
-                                    }
-                                    p.closeInventory();
-                                }
-                            }
-                        }
-
-                    } else if (clicked.getType() == Material.GREEN_CONCRETE) {
-                        event.setCancelled(true);
-                        Objects.requireNonNull(Bukkit.getServer().getWorld(p.getWorld().getUID())).playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_BELL, 1, 1);
-                        if (Objects.requireNonNull(clicked.getItemMeta()).getDisplayName().equals("Excavate")) {
-                            for (ItemStack isss : inventory.getContents()) {
-                                for (NPC npc : CitizensAPI.getNPCRegistry().sorted()) {
-                                    if (Objects.requireNonNull(isss.getItemMeta()).getDisplayName().equals(npc.getName())) {
-                                        if (npc.hasTrait(BuilderTrait.class)) {
-                                            plugin.getBuilder(npc).Excavate = false;
-                                            clicked.setType(Material.RED_CONCRETE);
-                                            p.updateInventory();
-                                        }
-                                    }
-                                }
-
-                            }
-
-                        } else if (Objects.requireNonNull(clicked.getItemMeta()).getDisplayName().equals("IgnoreAir")) {
-                            for (ItemStack isss : inventory.getContents()) {
-                                for (NPC npc : CitizensAPI.getNPCRegistry().sorted()) {
-                                    if (Objects.requireNonNull(isss.getItemMeta()).getDisplayName().equals(npc.getName())) {
-                                        if (npc.hasTrait(BuilderTrait.class)) {
-                                            plugin.getBuilder(npc).IgnoreAir = false;
-                                            clicked.setType(Material.RED_CONCRETE);
-                                            p.updateInventory();
-                                        }
-                                    }
-                                }
-
-                            }
-
-                        } else if (Objects.requireNonNull(clicked.getItemMeta()).getDisplayName().equals("IgnoreLiquid")) {
-                            for (ItemStack isss : inventory.getContents()) {
-                                for (NPC npc : CitizensAPI.getNPCRegistry().sorted()) {
-                                    if (Objects.requireNonNull(isss.getItemMeta()).getDisplayName().equals(npc.getName())) {
-                                        if (npc.hasTrait(BuilderTrait.class)) {
-                                            plugin.getBuilder(npc).IgnoreLiquid = false;
-                                            clicked.setType(Material.RED_CONCRETE);
-                                            p.updateInventory();
-                                        }
-                                    }
-                                }
-
-                            }
-
-                        } else if (Objects.requireNonNull(clicked.getItemMeta()).getDisplayName().equals("RequireMaterials")) {
-                            for (ItemStack isss : inventory.getContents()) {
-                                for (NPC npc : CitizensAPI.getNPCRegistry().sorted()) {
-                                    if (Objects.requireNonNull(isss.getItemMeta()).getDisplayName().equals(npc.getName())) {
-                                        if (npc.hasTrait(BuilderTrait.class)) {
-                                            plugin.getBuilder(npc).RequireMaterials = false;
-                                            clicked.setType(Material.RED_CONCRETE);
-                                            p.updateInventory();
-                                        }
-                                    }
-                                }
-
-                            }
-
-                        }
-
-
-                    } else if (clicked.getType() == Material.RED_CONCRETE) {
-                        event.setCancelled(true);
-                        Objects.requireNonNull(Bukkit.getServer().getWorld(p.getWorld().getUID())).playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_BELL, 1, 1);
-                        if (Objects.requireNonNull(clicked.getItemMeta()).getDisplayName().equals("Excavate")) {
-                            for (ItemStack isss : inventory.getContents()) {
-                                for (NPC npc : CitizensAPI.getNPCRegistry().sorted()) {
-                                    if (Objects.requireNonNull(isss.getItemMeta()).getDisplayName().equals(npc.getName())) {
-                                        if (npc.hasTrait(BuilderTrait.class)) {
-                                            plugin.getBuilder(npc).Excavate = true;
-                                            clicked.setType(Material.GREEN_CONCRETE);
-                                            p.updateInventory();
-                                        }
-                                    }
-                                }
-
-                            }
-
-                        } else if (Objects.requireNonNull(clicked.getItemMeta()).getDisplayName().equals("IgnoreAir")) {
-                            for (ItemStack isss : inventory.getContents()) {
-                                for (NPC npc : CitizensAPI.getNPCRegistry().sorted()) {
-                                    if (Objects.requireNonNull(isss.getItemMeta()).getDisplayName().equals(npc.getName())) {
-                                        if (npc.hasTrait(BuilderTrait.class)) {
-                                            plugin.getBuilder(npc).IgnoreAir = true;
-                                            clicked.setType(Material.GREEN_CONCRETE);
-                                            p.updateInventory();
-                                        }
-                                    }
-                                }
-
-                            }
-
-                        } else if (Objects.requireNonNull(clicked.getItemMeta()).getDisplayName().equals("IgnoreLiquid")) {
-                            for (ItemStack isss : inventory.getContents()) {
-                                for (NPC npc : CitizensAPI.getNPCRegistry().sorted()) {
-                                    if (Objects.requireNonNull(isss.getItemMeta()).getDisplayName().equals(npc.getName())) {
-                                        if (npc.hasTrait(BuilderTrait.class)) {
-                                            plugin.getBuilder(npc).IgnoreLiquid = true;
-                                            clicked.setType(Material.GREEN_CONCRETE);
-                                            p.updateInventory();
-                                        }
-                                    }
-                                }
-
-                            }
-
-                        } else if (Objects.requireNonNull(clicked.getItemMeta()).getDisplayName().equals("RequireMaterials")) {
-                            for (ItemStack isss : inventory.getContents()) {
-                                for (NPC npc : CitizensAPI.getNPCRegistry().sorted()) {
-                                    if (Objects.requireNonNull(isss.getItemMeta()).getDisplayName().equals(npc.getName())) {
-                                        if (npc.hasTrait(BuilderTrait.class)) {
-                                            plugin.getBuilder(npc).RequireMaterials = true;
-                                            clicked.setType(Material.GREEN_CONCRETE);
-                                            p.updateInventory();
-                                        }
-                                    }
-                                }
-
-                            }
-
-                        }
-
-
-                    } else if (clicked.getType() == Material.BOOK) {
-                        event.setCancelled(true);
-                        Objects.requireNonNull(Bukkit.getServer().getWorld(p.getWorld().getUID())).playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_BELL, 1, 1);
-                        p.performCommand("proschematicbuilder list");
-                        p.sendMessage(ChatColor.GREEN + "Choose a schematic you want to load !");
-                    } else {
-                        event.setCancelled(true);
+                    case SHIFT_RIGHT: {
+                        slot.onShiftRightClick();
+                        break;
                     }
-                } catch (NullPointerException e) {
-                    event.setCancelled(true);
+                    case NUMBER_KEY: {
+                        slot.onNumberClick(event.getHotbarButton());
+                        break;
+                    }
+                    case DOUBLE_CLICK: {
+                        slot.onDoubleClick();
+                        break;
+                    }
+                    case DROP: {
+                        slot.onDrop();
+                        break;
+                    }
+                    case CONTROL_DROP: {
+                        slot.onControlDrop();
+                        break;
+                    }
+                    case SWAP_OFFHAND: {
+                        slot.onSwapOffhand();
+                        break;
+                    }
                 }
             }
         }
     }
 
     @EventHandler
-    public void clickedme2(NPCLeftClickEvent event) {
+    public void onInventoryClose(InventoryCloseEvent event) {
+        InventoryHolder holder = event.getInventory().getHolder();
+        if (holder instanceof Menu) {
+            Menu menu = (Menu) holder;
+            if (!menu.isOpening()) {
+                new BukkitRunnable() {
+                    @Override
+                    public void run() {
+                        menu.onClose();
+                    }
+                }.runTask(plugin);
+            }
+        }
+    }
 
-        Player       player = event.getClicker();
-        BuilderTrait inst   = plugin.getBuilder(event.getNPC());
+    @EventHandler
+    public void clickedme2(NPCLeftClickEvent event) {
+        Player player = event.getClicker();
+        NPC npc = event.getNPC();
+        BuilderTrait inst = plugin.getBuilder(npc);
         if (inst != null) {
             if (inst.State == BuilderState.collecting) {
-                //list what is still needed
-                player.sendMessage(plugin.format(plugin.SupplyListMessage, inst.getNPC(), inst.schematic, player, null, "0"));
-                //player.sendMessage(NMS.getInstance().getUtil().printList(inst.NeededMaterials));
-                for (String item : inst.NeededMaterials.keySet()) {
-                    materials.put(item, inst.NeededMaterials.get(item));
-                }
-
-                Inventory inv = Bukkit.createInventory(player, 54, "ProSchematicBuilder - Materials");
-                int       nb  = 0;
-                for (String item : materials.keySet()) {
-
-
-                    int count = materials.get(item);
-                    //Bukkit.getLogger().warning(item + " : " + count);
-                    while (count > 64) {
-                        if (nb == 52) break;
-                        ItemStack itemStack = new ItemStack(Objects.requireNonNull(Material.getMaterial(item)), count);
-                        ItemMeta  im        = itemStack.getItemMeta();
-                        //im.setDisplayName(item);
-                        itemStack.setItemMeta(im);
-                        inv.setItem(nb, itemStack);
-                        count -= 64;
-                        nb++;
-                    }
-                    if (nb < 53) {
-                        if (count > 0) {
-                            ItemStack itemStack = new ItemStack(Objects.requireNonNull(Material.getMaterial(item)), count);
-                            ItemMeta  im        = itemStack.getItemMeta();
-                            //im.setDisplayName(item);
-                            itemStack.setItemMeta(im);
-                            inv.setItem(nb, itemStack);
-                            nb++;
-                        }
-                    }
-                    materials.put(item, 0);
-                    if (nb == 53) {
-                        ItemStack ims = getItem("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGVmMzU2YWQyYWE3YjE2NzhhZWNiODgyOTBlNWZhNWEzNDI3ZTVlNDU2ZmY0MmZiNTE1NjkwYzY3NTE3YjgifX19");
-                        inv.setItem(nb, ims);
-                        break;
-                    }
-
-                }
-                player.openInventory(inv);
-            } else if (inst.State == BuilderState.building && inst.Excavate) {
-                if (!inst.ExcavateMaterials.isEmpty()) {
-
-
-                    for (BlockData embb : inst.ExcavateMaterials) {
-                        //Bukkit.getLogger().warning(embb.getMaterial().name());
-                        int count = (int) inst.ExcavateMaterials.stream().filter(emptyBuildBlock -> emptyBuildBlock.getMaterial().equals(embb.getMaterial())).count();
-                        materials.put(embb.getMaterial().name(), count);
-                    }
-
-                    Inventory inv = Bukkit.createInventory(player, 54, "ProSchematicBuilder - Materials");
-                    int       nb  = 0;
-                    for (String item : materials.keySet()) {
-
-
-                        int count = materials.get(item);
-                        //Bukkit.getLogger().warning(item + " : " + count);
-                        while (count > 64) {
-                            if (nb == 52) break;
-                            ItemStack itemStack = new ItemStack(Objects.requireNonNull(Material.getMaterial(item)), count);
-                            ItemMeta  im        = itemStack.getItemMeta();
-                            //im.setDisplayName(item);
-                            itemStack.setItemMeta(im);
-                            inv.setItem(nb, itemStack);
-                            count -= 64;
-                            nb++;
-                        }
-                        if (nb < 53) {
-                            if (count > 0) {
-                                ItemStack itemStack = new ItemStack(Objects.requireNonNull(Material.getMaterial(item)), count);
-                                ItemMeta  im        = itemStack.getItemMeta();
-                                //im.setDisplayName(item);
-                                itemStack.setItemMeta(im);
-                                inv.setItem(nb, itemStack);
-                                nb++;
-                            }
-                        }
-                        materials.put(item, 0);
-                        if (nb == 53) {
-                            ItemStack ims = getItem("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGVmMzU2YWQyYWE3YjE2NzhhZWNiODgyOTBlNWZhNWEzNDI3ZTVlNDU2ZmY0MmZiNTE1NjkwYzY3NTE3YjgifX19");
-                            inv.setItem(nb, ims);
-                            break;
-                        }
-
-                    }
-                    player.openInventory(inv);
-                }
+                player.sendMessage(plugin.format(plugin.SupplyListMessage, npc, inst.schematic, player, null, "0"));
+                new MaterialsMenu(player, npc).open();
+            } else if (inst.State == BuilderState.building && inst.Excavate && !inst.ExcavateMaterials.isEmpty()) {
+                new ExcavatedMenu(player, npc).open();
             }
         }
 			/*TextComponent message = new TextComponent("Winner (Click to view inventory)");
@@ -638,227 +181,13 @@ public class BuilderListener implements Listener {
 
     @EventHandler
     public void clickedme(net.citizensnpcs.api.event.NPCRightClickEvent event) {
-        BuilderTrait inst   = plugin.getBuilder(event.getNPC());
-        Player       player = event.getClicker();
-        if (inst == null || inst.State == BuilderState.idle) {
-
-            NPC npc = event.getNPC();
-
-            if ((npc.hasTrait(BuilderTrait.class)) && (player.hasPermission("schematicbuilder.npc.click"))) {
-                player.performCommand("npc select " + npc.getId());
-                Inventory inv = Bukkit.createInventory(player, 54, "ProSchematicBuilder - Parameters");
-                if (plugin.getBuilder(npc) != null && (plugin.getBuilder(npc).Excavate == null || plugin.getBuilder(npc).RequireMaterials == null || plugin.getBuilder(npc).IgnoreLiquid == null || plugin.getBuilder(npc).IgnoreAir == null)) {
-                    plugin.getBuilder(npc).IgnoreLiquid = false;
-                    plugin.getBuilder(npc).Excavate = false;
-                    plugin.getBuilder(npc).RequireMaterials = false;
-                    plugin.getBuilder(npc).IgnoreAir = false;
-                }
-                ItemStack itemStack1, itemStack2, itemStack3, itemStack4, itemStack5, itemStack6;
-                ItemMeta  im1, im2, im3, im4, im5, im6;
-                if (plugin.getBuilder(npc).State == BuilderState.building) {
-                    itemStack1 = getHead(npc.getName());
-                    im1 = itemStack1.getItemMeta();
-                    assert im1 != null;
-                    im1.setDisplayName(npc.getName());
-                    ArrayList<String> Lore = new ArrayList<>();
-                    Lore.add(npc.getName() + " is building...");
-                    Lore.add("Click to cancel building");
-                    im1.setLore(Lore);
-                } else {
-                    itemStack1 = getHead(npc.getName());
-                    im1 = itemStack1.getItemMeta();
-                    assert im1 != null;
-                    im1.setDisplayName(npc.getName());
-                    ArrayList<String> Lore = new ArrayList<>();
-                    Lore.add(npc.getName() + " isn't building.");
-                    Lore.add("Click to start building !");
-                    im1.setLore(Lore);
-                }
-                itemStack1.setItemMeta(im1);
-                inv.setItem(0, itemStack1);
-                if (plugin.getBuilder(npc).Excavate) {
-                    itemStack2 = new ItemStack(Material.GREEN_CONCRETE);
-                    im2 = itemStack2.getItemMeta();
-                    assert im2 != null;
-                    im2.setDisplayName("Excavate");
-                } else {
-                    itemStack2 = new ItemStack(Material.RED_CONCRETE);
-                    im2 = itemStack2.getItemMeta();
-                    assert im2 != null;
-                    im2.setDisplayName("Excavate");
-                }
-                itemStack2.setItemMeta(im2);
-                inv.setItem(1, itemStack2);
-
-                if (plugin.getBuilder(npc).IgnoreAir) {
-                    itemStack3 = new ItemStack(Material.GREEN_CONCRETE);
-                    im3 = itemStack3.getItemMeta();
-                    assert im3 != null;
-                    im3.setDisplayName("IgnoreAir");
-                } else {
-                    itemStack3 = new ItemStack(Material.RED_CONCRETE);
-                    im3 = itemStack3.getItemMeta();
-                    assert im3 != null;
-                    im3.setDisplayName("IgnoreAir");
-                }
-
-                itemStack3.setItemMeta(im3);
-                inv.setItem(2, itemStack3);
-
-                if (plugin.getBuilder(npc).IgnoreLiquid) {
-                    itemStack4 = new ItemStack(Material.GREEN_CONCRETE);
-                    im4 = itemStack4.getItemMeta();
-                    assert im4 != null;
-                    im4.setDisplayName("IgnoreLiquid");
-                } else {
-                    itemStack4 = new ItemStack(Material.RED_CONCRETE);
-                    im4 = itemStack4.getItemMeta();
-                    assert im4 != null;
-                    im4.setDisplayName("IgnoreLiquid");
-                }
-                itemStack4.setItemMeta(im4);
-                inv.setItem(3, itemStack4);
-
-                if (plugin.getBuilder(npc).RequireMaterials) {
-                    itemStack5 = new ItemStack(Material.GREEN_CONCRETE);
-                    im5 = itemStack4.getItemMeta();
-                    assert im5 != null;
-                    im5.setDisplayName("RequireMaterials");
-                } else {
-                    itemStack5 = new ItemStack(Material.RED_CONCRETE);
-                    im5 = itemStack5.getItemMeta();
-                    assert im5 != null;
-                    im5.setDisplayName("RequireMaterials");
-                }
-                itemStack5.setItemMeta(im5);
-                inv.setItem(4, itemStack5);
-
-
-                itemStack6 = new ItemStack(Material.BOOK);
-                im6 = itemStack6.getItemMeta();
-                assert im6 != null;
-                im6.setDisplayName("Choose your schematic !");
-
-
-                itemStack6.setItemMeta(im6);
-                inv.setItem(5, itemStack6);
-
-
-                player.openInventory(inv);
-
-            }
-
-
-        } else if (inst.State == BuilderState.building) {
-            //Bukkit.getLogger().warning("yo excavate man !");
-
-            NPC npc = event.getNPC();
-
-            if ((npc.hasTrait(BuilderTrait.class)) && (player.hasPermission("schematicbuilder.npc.click"))) {
-                player.performCommand("npc select " + npc.getId());
-                Inventory inv = Bukkit.createInventory(player, 54, "ProSchematicBuilder - Parameters");
-                if (plugin.getBuilder(npc) != null && (plugin.getBuilder(npc).Excavate == null || plugin.getBuilder(npc).RequireMaterials == null || plugin.getBuilder(npc).IgnoreLiquid == null || plugin.getBuilder(npc).IgnoreAir == null)) {
-                    plugin.getBuilder(npc).IgnoreLiquid = false;
-                    plugin.getBuilder(npc).Excavate = false;
-                    plugin.getBuilder(npc).RequireMaterials = false;
-                    plugin.getBuilder(npc).IgnoreAir = false;
-                }
-                ItemStack itemStack1, itemStack2, itemStack3, itemStack4, itemStack5, itemStack6;
-                ItemMeta  im1, im2, im3, im4, im5, im6;
-                if (plugin.getBuilder(npc).State == BuilderState.building) {
-                    itemStack1 = getHead(npc.getName());
-                    im1 = itemStack1.getItemMeta();
-                    assert im1 != null;
-                    im1.setDisplayName(npc.getName());
-                    ArrayList<String> Lore = new ArrayList<>();
-                    Lore.add(npc.getName() + " is building...");
-                    Lore.add("Click to cancel building");
-                    im1.setLore(Lore);
-                } else {
-                    itemStack1 = getHead(npc.getName());
-                    im1 = itemStack1.getItemMeta();
-                    assert im1 != null;
-                    im1.setDisplayName(npc.getName());
-                    ArrayList<String> Lore = new ArrayList<>();
-                    Lore.add(npc.getName() + " isn't building.");
-                    Lore.add("Click to start building !");
-                    im1.setLore(Lore);
-                }
-                itemStack1.setItemMeta(im1);
-                inv.setItem(0, itemStack1);
-                if (plugin.getBuilder(npc).Excavate) {
-                    itemStack2 = new ItemStack(Material.GREEN_CONCRETE);
-                    im2 = itemStack2.getItemMeta();
-                    assert im2 != null;
-                    im2.setDisplayName("Excavate");
-                } else {
-                    itemStack2 = new ItemStack(Material.RED_CONCRETE);
-                    im2 = itemStack2.getItemMeta();
-                    assert im2 != null;
-                    im2.setDisplayName("Excavate");
-                }
-                itemStack2.setItemMeta(im2);
-                inv.setItem(1, itemStack2);
-
-                if (plugin.getBuilder(npc).IgnoreAir) {
-                    itemStack3 = new ItemStack(Material.GREEN_CONCRETE);
-                    im3 = itemStack3.getItemMeta();
-                    assert im3 != null;
-                    im3.setDisplayName("IgnoreAir");
-                } else {
-                    itemStack3 = new ItemStack(Material.RED_CONCRETE);
-                    im3 = itemStack3.getItemMeta();
-                    assert im3 != null;
-                    im3.setDisplayName("IgnoreAir");
-                }
-
-                itemStack3.setItemMeta(im3);
-                inv.setItem(2, itemStack3);
-
-                if (plugin.getBuilder(npc).IgnoreLiquid) {
-                    itemStack4 = new ItemStack(Material.GREEN_CONCRETE);
-                    im4 = itemStack4.getItemMeta();
-                    assert im4 != null;
-                    im4.setDisplayName("IgnoreLiquid");
-                } else {
-                    itemStack4 = new ItemStack(Material.RED_CONCRETE);
-                    im4 = itemStack4.getItemMeta();
-                    assert im4 != null;
-                    im4.setDisplayName("IgnoreLiquid");
-                }
-                itemStack4.setItemMeta(im4);
-                inv.setItem(3, itemStack4);
-
-                if (plugin.getBuilder(npc).RequireMaterials) {
-                    itemStack5 = new ItemStack(Material.GREEN_CONCRETE);
-                    im5 = itemStack4.getItemMeta();
-                    assert im5 != null;
-                    im5.setDisplayName("RequireMaterials");
-                } else {
-                    itemStack5 = new ItemStack(Material.RED_CONCRETE);
-                    im5 = itemStack5.getItemMeta();
-                    assert im5 != null;
-                    im5.setDisplayName("RequireMaterials");
-                }
-                itemStack5.setItemMeta(im5);
-                inv.setItem(4, itemStack5);
-
-
-                itemStack6 = new ItemStack(Material.BOOK);
-                im6 = itemStack6.getItemMeta();
-                assert im6 != null;
-                im6.setDisplayName("Choose your schematic !");
-
-
-                itemStack6.setItemMeta(im6);
-                inv.setItem(5, itemStack6);
-
-
-                player.openInventory(inv);
-
-            }
-
-
+        NPC npc = event.getNPC();
+        BuilderTrait inst = plugin.getBuilder(npc);
+        if (inst == null) { return; }
+        Player player = event.getClicker();
+        if (inst.State == BuilderState.idle || inst.State == BuilderState.building) {
+            player.performCommand("npc select " + npc.getId());
+            new ParameterMenu(event.getClicker(), npc).open();
         } else if (inst.State == BuilderState.collecting) {
             ItemStack is = player.getItemInHand();
 
@@ -892,7 +221,7 @@ public class BuilderListener implements Listener {
 
                         //update needed
 
-                        inst.NeededMaterials.put(itemname, (needed - taking));
+                        inst.NeededMaterials.put(is.getType(), (needed - taking));
                         player.sendMessage(plugin.format(plugin.SupplyTakenMessage, inst.getNPC(), inst.schematic, player, itemname, taking + ""));
 
                         //check if can start

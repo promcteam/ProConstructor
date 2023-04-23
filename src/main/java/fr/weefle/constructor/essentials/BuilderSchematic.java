@@ -19,7 +19,8 @@ import java.util.Queue;
 public class BuilderSchematic {
     public Vector                offset;
     public EmptyBuildBlock[][][] Blocks            = new EmptyBuildBlock[1][1][1];
-    public Queue<BlockData>      excludedMaterials = new LinkedList<>();
+    public Queue<BlockData>      excludedMaterials = new LinkedList<>(); // TODO I got a feeling that this is unnecessary
+    // Instead, send excavated materials directly to BuilderTrait.ExcavateMaterials
 
     public String Name            = "";
     public Vector SchematicOrigin = null;
