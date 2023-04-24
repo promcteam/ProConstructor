@@ -1,10 +1,8 @@
 package fr.weefle.constructor.commands;
 
-import fr.weefle.constructor.NMS.NMS;
 import fr.weefle.constructor.SchematicBuilder;
+import fr.weefle.constructor.citizens.BuilderTrait;
 import fr.weefle.constructor.essentials.BuilderSchematic;
-import fr.weefle.constructor.essentials.BuilderTrait;
-import fr.weefle.constructor.util.Structure;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -76,7 +74,7 @@ public class LoadSubCommand extends AbstractCommand {
             return;
         }
 
-        if (builder.State != BuilderTrait.BuilderState.idle) {
+        if (builder.getState() != BuilderTrait.BuilderState.IDLE) {
             sender.sendMessage(ChatColor.RED + "Please cancel current build before loading new schematic.");
             return;
         }
@@ -86,48 +84,29 @@ public class LoadSubCommand extends AbstractCommand {
             stringBuilder.append(" ").append(args.get(i));
         }
         String arg = stringBuilder.toString().trim();
-        File dir = new File(SchematicBuilder.getInstance().config().getSchematicsFolder());
-        File file = new File(dir, arg);
-        if (!file.exists()) {
-            sender.sendMessage(ChatColor.RED + "no such file "+arg);
-            return;
-        }
         new BukkitRunnable() {
             @Override
             public void run() {
-                BuilderSchematic schematic;
                 try {
-                    if (arg.endsWith(".schem")) {
-                        schematic = NMS.getInstance().getChooser().setSchematic(dir, arg);
-                    } else {
-                        schematic = new Structure(dir, arg).load(dir, arg);
-                    }
-                    /*if(NMS.getInstance().getVersion().equals("v1_15_R1")){
-                    MCEditSchematicFormat_1_15_R1 format = new MCEditSchematicFormat_1_15_R1();
-                    inst.schematic = format.load(dir, arg);
-                    }else if(NMS.getInstance().getVersion().equals("v1_14_R1")) {
-                        MCEditSchematicFormat_1_14_R1 format = new MCEditSchematicFormat_1_14_R1();
-                        inst.schematic = format.load(dir, arg);
-                    }
-                    else if(NMS.getInstance().getVersion().equals("v1_13_R2")) {
-                        MCEditSchematicFormat_1_13_R2 format = new MCEditSchematicFormat_1_13_R2();
-                        inst.schematic = format.load(dir, arg);
-                    }*/
+                    BuilderSchematic schematic = SchematicBuilder.getSchematic(arg);
                     new BukkitRunnable() {
                         @Override
                         public void run() {
-                            builder.schematic = schematic;
-                            builder.SchematicName = builder.schematic.Name;
-                            sender.sendMessage(ChatColor.GREEN + "Loaded Sucessfully");
-                            sender.sendMessage(builder.schematic.GetInfo());
+                            if (schematic == null) {
+                                sender.sendMessage(ChatColor.RED + "no such file " + arg);
+                            } else {
+                                builder.setSchematic(schematic);
+                                sender.sendMessage(ChatColor.GREEN + "Loaded Sucessfully");
+                                sender.sendMessage(schematic.getInfo());
+                            }
                         }
                     }.runTask(SchematicBuilder.getInstance());
                 } catch (Exception e) {
                     new BukkitRunnable() {
                         @Override
                         public void run() {
-                            sender.sendMessage(ChatColor.RED + "Failed to load schematic "+arg+", check console for more details.");
-                            SchematicBuilder.getInstance().getLogger().log(Level.WARNING, "Failed to load schematic: " + file);
+                            sender.sendMessage(ChatColor.RED + "Failed to load schematic " + arg + ", check console for more details.");
+                            SchematicBuilder.getInstance().getLogger().log(Level.WARNING, "Failed to load schematic: " + arg);
                             e.printStackTrace();
                         }
                     }.runTask(SchematicBuilder.getInstance());

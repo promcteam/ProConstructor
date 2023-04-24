@@ -1,6 +1,6 @@
 package fr.weefle.constructor.commands;
 
-import fr.weefle.constructor.essentials.BuilderTrait;
+import fr.weefle.constructor.citizens.BuilderTrait;
 import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -41,7 +41,7 @@ public class SupplySubCommand extends AbstractCommand {
         NPC npc = builder.getNPC();
 
         if (args.size() == 0) {
-            sender.sendMessage(ChatColor.GOLD + npc.getName() + " currently does" + (builder.RequireMaterials ?
+            sender.sendMessage(ChatColor.GOLD + npc.getName() + " currently does" + (builder.isRequireMaterials() ?
                     "" :
                     " NOT") + " need to be supplied with materials.");
             return;
@@ -57,7 +57,7 @@ public class SupplySubCommand extends AbstractCommand {
             sender.sendMessage(ChatColor.RED + args.get(0) + " is not a valid boolean");
             return;
         }
-        builder.RequireMaterials = requireMaterials;
+        builder.setRequireMaterials(requireMaterials);
         sender.sendMessage(ChatColor.GOLD + npc.getName() + " now does" + (requireMaterials ?
                 "" :
                 " NOT") + " need to be supplied with materials.");

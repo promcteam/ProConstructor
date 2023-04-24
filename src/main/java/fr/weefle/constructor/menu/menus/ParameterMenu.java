@@ -2,7 +2,7 @@ package fr.weefle.constructor.menu.menus;
 
 import com.google.common.base.Preconditions;
 import fr.weefle.constructor.SchematicBuilder;
-import fr.weefle.constructor.essentials.BuilderTrait;
+import fr.weefle.constructor.citizens.BuilderTrait;
 import fr.weefle.constructor.menu.Menu;
 import fr.weefle.constructor.menu.Slot;
 import net.citizensnpcs.api.npc.NPC;
@@ -36,12 +36,12 @@ public class ParameterMenu extends Menu {
             }
             meta.setDisplayName(ChatColor.RESET+npc.getName());
             List<String> lore = new ArrayList<>();
-            if (builderTrait.State == BuilderTrait.BuilderState.building) {
-                lore.add(ChatColor.RESET+npc.getName() + " is building...");
-                lore.add(ChatColor.GOLD+"Left-Click: "+ChatColor.YELLOW+"Cancel building");
+            if (builderTrait.getState() == BuilderTrait.BuilderState.BUILDING) {
+                lore.add(ChatColor.RESET + npc.getName() + " is building...");
+                lore.add(ChatColor.GOLD + "Left-Click: " + ChatColor.YELLOW + "Cancel building");
             } else {
-                lore.add(ChatColor.RESET+npc.getName() + " isn't building.");
-                lore.add(ChatColor.GOLD+"Left-Click: "+ChatColor.YELLOW+"Start building!");
+                lore.add(ChatColor.RESET + npc.getName() + " isn't building.");
+                lore.add(ChatColor.GOLD + "Left-Click: " + ChatColor.YELLOW + "Start building!");
             }
             meta.setLore(lore);
             itemStack.setItemMeta(meta);
@@ -49,13 +49,13 @@ public class ParameterMenu extends Menu {
         this.setSlot(0, new Slot(itemStack) {
             @Override
             public void onLeftClick() {
-                if (builderTrait.State == BuilderTrait.BuilderState.building) {
+                if (builderTrait.getState() == BuilderTrait.BuilderState.BUILDING) {
                     builderTrait.CancelBuild();
                     player.sendMessage(ChatColor.RED + npc.getName() + " isn't building anymore.");
                     player.closeInventory();
                 } else {
-                    if (builderTrait.RequireMaterials) {
-                        builderTrait.GetMatsList(builderTrait.Excavate);
+                    if (builderTrait.isRequireMaterials()) {
+                        builderTrait.GetMatsList(builderTrait.isExcavate());
                     }
                     //Bukkit.getLogger().warning(plugin.getBuilder(npc).RequireMaterials.toString());
                     if (!builderTrait.TryBuild(player)) {
@@ -65,73 +65,73 @@ public class ParameterMenu extends Menu {
             }
         });
 
-        itemStack = new ItemStack(builderTrait.Excavate ? Material.GREEN_CONCRETE : Material.RED_CONCRETE) ;
+        itemStack = new ItemStack(builderTrait.isExcavate() ? Material.GREEN_CONCRETE : Material.RED_CONCRETE);
         meta = itemStack.getItemMeta();
         if (meta != null) {
             meta.setDisplayName(ChatColor.RESET+"Excavate");
             List<String> lore = new ArrayList<>();
-            lore.add(ChatColor.AQUA+"Current: "+ChatColor.YELLOW+builderTrait.Excavate);
+            lore.add(ChatColor.AQUA + "Current: " + ChatColor.YELLOW + builderTrait.isExcavate());
             meta.setLore(lore);
             itemStack.setItemMeta(meta);
         }
         this.setSlot(1, new Slot(itemStack) {
             @Override
             public void onLeftClick() {
-                builderTrait.Excavate = !builderTrait.Excavate;
+                builderTrait.setExcavate(!builderTrait.isExcavate());
                 setContents();
                 open();
             }
         });
 
-        itemStack = new ItemStack(builderTrait.IgnoreAir ? Material.GREEN_CONCRETE : Material.RED_CONCRETE) ;
+        itemStack = new ItemStack(builderTrait.isIgnoreAir() ? Material.GREEN_CONCRETE : Material.RED_CONCRETE);
         meta = itemStack.getItemMeta();
         if (meta != null) {
             meta.setDisplayName(ChatColor.RESET+"Ignore Air");
             List<String> lore = new ArrayList<>();
-            lore.add(ChatColor.AQUA+"Current: "+ChatColor.GREEN+builderTrait.IgnoreAir);
+            lore.add(ChatColor.AQUA + "Current: " + ChatColor.GREEN + builderTrait.isIgnoreAir());
             meta.setLore(lore);
             itemStack.setItemMeta(meta);
         }
         this.setSlot(2, new Slot(itemStack) {
             @Override
             public void onLeftClick() {
-                builderTrait.IgnoreAir = !builderTrait.IgnoreAir;
+                builderTrait.setIgnoreAir(!builderTrait.isIgnoreAir());
                 setContents();
                 open();
             }
         });
 
-        itemStack = new ItemStack(builderTrait.IgnoreLiquid ? Material.GREEN_CONCRETE : Material.RED_CONCRETE) ;
+        itemStack = new ItemStack(builderTrait.isIgnoreLiquid() ? Material.GREEN_CONCRETE : Material.RED_CONCRETE);
         meta = itemStack.getItemMeta();
         if (meta != null) {
             meta.setDisplayName(ChatColor.RESET+"Ignore Liquids");
             List<String> lore = new ArrayList<>();
-            lore.add(ChatColor.AQUA+"Current: "+ChatColor.GREEN+builderTrait.IgnoreLiquid);
+            lore.add(ChatColor.AQUA + "Current: " + ChatColor.GREEN + builderTrait.isIgnoreLiquid());
             meta.setLore(lore);
             itemStack.setItemMeta(meta);
         }
         this.setSlot(3, new Slot(itemStack) {
             @Override
             public void onLeftClick() {
-                builderTrait.IgnoreLiquid = !builderTrait.IgnoreLiquid;
+                builderTrait.setIgnoreLiquid(!builderTrait.isIgnoreLiquid());
                 setContents();
                 open();
             }
         });
 
-        itemStack = new ItemStack(builderTrait.RequireMaterials ? Material.GREEN_CONCRETE : Material.RED_CONCRETE) ;
+        itemStack = new ItemStack(builderTrait.isRequireMaterials() ? Material.GREEN_CONCRETE : Material.RED_CONCRETE);
         meta = itemStack.getItemMeta();
         if (meta != null) {
             meta.setDisplayName(ChatColor.RESET+"Require Materials");
             List<String> lore = new ArrayList<>();
-            lore.add(ChatColor.AQUA+"Current: "+ChatColor.GREEN+builderTrait.RequireMaterials);
+            lore.add(ChatColor.AQUA + "Current: " + ChatColor.GREEN + builderTrait.isRequireMaterials());
             meta.setLore(lore);
             itemStack.setItemMeta(meta);
         }
         this.setSlot(4, new Slot(itemStack) {
             @Override
             public void onLeftClick() {
-                builderTrait.RequireMaterials = !builderTrait.RequireMaterials;
+                builderTrait.setRequireMaterials(!builderTrait.isRequireMaterials());
                 setContents();
                 open();
             }

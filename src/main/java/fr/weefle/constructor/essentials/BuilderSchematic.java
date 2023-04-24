@@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
 import fr.weefle.constructor.NMS.NMS;
 import fr.weefle.constructor.block.DataBuildBlock;
 import fr.weefle.constructor.block.EmptyBuildBlock;
+import fr.weefle.constructor.citizens.BuilderTrait;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -59,8 +60,8 @@ public class BuilderSchematic {
     int yoffset     = 0;
     int useryoffset = 0;
 
-    public Queue<EmptyBuildBlock> BuildQueue(Location origin, boolean ignoreLiquids, boolean ignoreAir, boolean excavate, BuilderTrait.BuildPatternsXZ pattern, boolean GroupByLayer, int ylayers, int useryoffset) {
-        Preconditions.checkArgument(ylayers > 0, "ylayers must be positive, but got "+ylayers);
+    public Queue<EmptyBuildBlock> BuildQueue(Location origin, boolean ignoreLiquids, boolean ignoreAir, boolean excavate, BuilderTrait.BuildPatternXZ pattern, boolean GroupByLayer, int ylayers, int useryoffset) {
+        Preconditions.checkArgument(ylayers > 0, "ylayers must be positive, but got " + ylayers);
         dwidth = width();
         dlength = length();
         yoffset = 0;
@@ -93,16 +94,16 @@ public class BuilderSchematic {
         for (int y = yoffset; y < height(); y += ylayers) {
             List<EmptyBuildBlock> thisLayer;
             switch (pattern) {
-                case linear:
+                case LINEAR:
                     thisLayer = NMS.getInstance().getUtil().LinearPrintLayer(y, ylayers, Blocks, false);
                     break;
-                case reverselinear:
+                case REVERSE_LINEAR:
                     thisLayer = NMS.getInstance().getUtil().LinearPrintLayer(y, ylayers, Blocks, true);
                     break;
-                case reversespiral:
+                case REVERSE_SPIRAL:
                     thisLayer = NMS.getInstance().getUtil().spiralPrintLayer(y, ylayers, Blocks, true);
                     break;
-                case spiral:
+                case SPIRAL:
                 default:
                     thisLayer = NMS.getInstance().getUtil().spiralPrintLayer(y, ylayers, Blocks, false);
                     break;
@@ -328,7 +329,7 @@ public class BuilderSchematic {
         return Blocks[0][0].length;
     }
 
-    public String GetInfo() {
+    public String getInfo() {
         return ChatColor.GREEN + "Name: " + ChatColor.WHITE + Name + ChatColor.GREEN + " size: " + ChatColor.WHITE + width() + " wide, " + length() + " long, " + height() + " tall";
     }
 

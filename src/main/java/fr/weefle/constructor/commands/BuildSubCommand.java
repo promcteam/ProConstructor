@@ -1,6 +1,6 @@
 package fr.weefle.constructor.commands;
 
-import fr.weefle.constructor.essentials.BuilderTrait;
+import fr.weefle.constructor.citizens.BuilderTrait;
 import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -8,34 +8,26 @@ import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class BuildSubCommand extends AbstractCommand {
     public BuildSubCommand(@Nullable SchematicBuilderCommand parent) {
         super("build", parent);
         this.permission = "schematicbuilder.build";
-    }
-
-    @Override
-    public List<String> getArguments(CommandSender sender) {
-        List<String> list = new ArrayList<>();
-        list.add("-silent");
-        list.add("-onComplete=");
-        list.add("-onCancel=");
-        list.add("-onStart=");
-        list.add("-layers=");
-        list.add("-yOffset=");
-        list.add("-groupAll");
-        list.add("-ignoreAir");
-        list.add("-ignoreLiquid");
-        list.add("-excavate");
-        list.add("-spiral");
-        list.add("-reverseSpiral");
-        list.add("-linear");
-        list.add("-reverseLinear");
-        list.add("-offset");
-        return list;
+        registerHyphenArgument(new HyphenArgument("silent", "true", "false"));
+        registerHyphenArgument(new HyphenArgument("onComplete"));
+        registerHyphenArgument(new HyphenArgument("onCancel"));
+        registerHyphenArgument(new HyphenArgument("onStart"));
+        registerHyphenArgument(new HyphenArgument("layers"));
+        registerHyphenArgument(new HyphenArgument("yOffset"));
+        registerHyphenArgument(new HyphenArgument("groupAll", "true", "false"));
+        registerHyphenArgument(new HyphenArgument("ignoreAir", "true", "false"));
+        registerHyphenArgument(new HyphenArgument("ignoreLiquid", "true", "false"));
+        registerHyphenArgument(new HyphenArgument("excavate", "true", "false"));
+        registerHyphenArgument(new HyphenArgument("buildPatternXZ",
+                "spiral", "reverse_spiral", "linear", "reverse_linear"));
+        registerHyphenArgument(new HyphenArgument("offset", "true", "false"));
     }
 
     @Override
@@ -43,85 +35,71 @@ public class BuildSubCommand extends AbstractCommand {
         BuilderTrait builder = getSelectedBuilder(sender);
         if (builder == null) {return;}
         NPC npc = builder.getNPC();
-        if (builder.State == BuilderTrait.BuilderState.building) {
-            if (!builder.Silent) {
+        if (builder.getState() == BuilderTrait.BuilderState.BUILDING) {
+            if (!builder.isSilent()) {
                 sender.sendMessage(ChatColor.RED + npc.getName() + " is already building");
             }
             return;
         }
 
-        builder.oncancel = null;
-        builder.oncomplete = null;
-        builder.onStart = null;
-        builder.ContinueLoc = null;
-        builder.IgnoreAir = false;
-        builder.IgnoreLiquid = false;
-        builder.Excavate = false;
-        builder.GroupByLayer = true;
-        builder.BuildYLayers = 1;
-        builder.Silent = false;
-        builder.BuildPatternXY = BuilderTrait.BuildPatternsXZ.spiral;
-
-        String value;
-        for (String arg : args) {
+        for (Map.Entry<String, String> entry : getHyphenArguments(args).entrySet()) {
+            String arg   = entry.getKey();
+            String value = entry.getValue();
             if (arg.equalsIgnoreCase("silent")) {
-                builder.Silent = true;
-            } else if ((value = getOptionalValue("onComplete=", arg)) != null) {
-                builder.oncomplete = value;
+                builder.setSilent(Boolean.parseBoolean(value));
+            } else if (arg.equalsIgnoreCase("onComplete")) {
+                builder.setOnComplete(value);
                 sender.sendMessage(ChatColor.GREEN + npc.getName() + " will run task " + value + " on build completion");
-            } else if ((value = getOptionalValue("onCancel=", arg)) != null) {
-                builder.oncancel = value;
+            } else if (arg.equalsIgnoreCase("onCancel")) {
+                builder.setOnCancel(value);
                 sender.sendMessage(ChatColor.GREEN + npc.getName() + " will run task " + value + " on build cancellation");
-            } else if ((value = getOptionalValue("onStart=", arg)) != null) {
-                builder.onStart = value;
+            } else if (arg.equalsIgnoreCase("onStart")) {
+                builder.setOnStart(value);
                 sender.sendMessage(ChatColor.GREEN + npc.getName() + " will run task " + value + " on build start");
-            } else if ((value = getOptionalValue("layers=", arg)) != null) {
+            } else if (arg.equalsIgnoreCase("layers")) {
                 int layers;
                 try {
                     layers = Integer.parseInt(value);
                     if (layers < 1) {
-                        sender.sendMessage(ChatColor.RED +"Number of layers must me positive");
+                        sender.sendMessage(ChatColor.RED + "Number of layers must me positive");
+                        return;
                     }
                 } catch (NumberFormatException e) {
                     sender.sendMessage(ChatColor.RED + arg + " is not a valid number of layers");
                     return;
                 }
-                builder.BuildYLayers = layers;
-            } else if ((value = getOptionalValue("yoffset=", arg)) != null) {
+                builder.setBuildYLayers(layers);
+            } else if (arg.equalsIgnoreCase("yOffset")) {
                 int yOffset;
                 try {
                     yOffset = Integer.parseInt(value);
+                    builder.setYOffset(yOffset);
                 } catch (NumberFormatException e) {
                     sender.sendMessage(ChatColor.RED + arg + " is not a valid yOffset");
                     return;
                 }
-                builder.Yoffset = yOffset;
             } else if (arg.equalsIgnoreCase("groupAll")) {
                 builder.GroupByLayer = true;
             } else if (arg.equalsIgnoreCase("ignoreAir")) {
-                builder.IgnoreAir = true;
+                builder.setIgnoreAir(Boolean.parseBoolean(value));
             } else if (arg.equalsIgnoreCase("ignoreLiquid")) {
-                builder.IgnoreLiquid = true;
+                builder.setIgnoreLiquid(Boolean.parseBoolean(value));
             } else if (arg.equalsIgnoreCase("excavate")) {
-                builder.Excavate = true;
-                if (!builder.Silent) {
+                builder.setExcavate(Boolean.parseBoolean(value));
+                if (!builder.isSilent()) {
                     sender.sendMessage(ChatColor.GREEN + npc.getName() + " will excavate first");
                 }
-            } else if (arg.equalsIgnoreCase("spiral")) {
-                builder.BuildPatternXY= BuilderTrait.BuildPatternsXZ.spiral;
-            } else if (arg.equalsIgnoreCase("reversEspiral")) {
-                builder.BuildPatternXY = BuilderTrait.BuildPatternsXZ.reversespiral;
-            } else if (arg.equalsIgnoreCase("linear")) {
-                builder.BuildPatternXY = BuilderTrait.BuildPatternsXZ.linear;
-            } else if (arg.equalsIgnoreCase("reverseLinear")) {
-                builder.BuildPatternXY = BuilderTrait.BuildPatternsXZ.reverselinear;
-            } else if (arg.equalsIgnoreCase("offset")) {
-                builder.offset = true;
+            } else if (arg.equalsIgnoreCase("buildPatternXZ")) {
+                try {
+                    builder.setBuildPatternXZ(BuilderTrait.BuildPatternXZ.valueOf(entry.getValue().toUpperCase()));
+                } catch (IllegalArgumentException e) {
+                    sender.sendMessage(ChatColor.RED + arg + " is not a valid buildPatternXZ");
+                }
             }
         }
 
-        if (builder.RequireMaterials) {
-            builder.GetMatsList(builder.Excavate);
+        if (builder.isRequireMaterials()) {
+            builder.GetMatsList(builder.isExcavate());
         }
 
         builder.TryBuild(sender);

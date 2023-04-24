@@ -1,7 +1,7 @@
 package fr.weefle.constructor.commands;
 
 import fr.weefle.constructor.SchematicBuilder;
-import fr.weefle.constructor.essentials.BuilderTrait;
+import fr.weefle.constructor.citizens.BuilderTrait;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
 import net.citizensnpcs.api.trait.trait.Owner;
@@ -17,29 +17,38 @@ import java.util.*;
 public abstract class AbstractCommand implements CommandExecutor, TabCompleter {
     protected final String                              command;
     protected final AbstractCommand                     parent;
-    protected final Map<String,AbstractCommand>         subCommands    = new HashMap<>();
-    protected final Set<Class<? extends CommandSender>> allowedSenders = new HashSet<>();
-    protected String permission;
+    protected final Map<String,AbstractCommand>         subCommands     = new HashMap<>();
+    protected final Set<Class<? extends CommandSender>> allowedSenders  = new HashSet<>();
+    protected final Map<String, HyphenArgument>         hyphenArguments = new HashMap<>();
+    protected       String                              permission;
 
     public AbstractCommand(@NotNull String command, @Nullable AbstractCommand parent) {
         this.command = command;
         this.parent = parent;
     }
 
-    public AbstractCommand(@NotNull String command) { this(command, null); }
+    public AbstractCommand(@NotNull String command) {this(command, null);}
 
-    public final String getCommand() { return command; }
+    public final String getCommand() {return command;}
 
-    public final String getFullCommand() { return parent == null ? command + " [id]" : parent.getFullCommand()+' '+command; }
+    public final String getFullCommand() {
+        return parent == null
+                ? command + " [id]"
+                : parent.getFullCommand() + ' ' + command;
+    }
 
     protected final void registerSubCommand(AbstractCommand subCommand) {
         subCommands.put(subCommand.getCommand(), subCommand);
     }
 
-    protected final void addAllowedSender(Class<? extends CommandSender> senderClass) { allowedSenders.add(senderClass); }
+    protected final void registerHyphenArgument(HyphenArgument hyphenArgument) {
+        this.hyphenArguments.put(hyphenArgument.getName(), hyphenArgument);
+    }
+
+    protected final void addAllowedSender(Class<? extends CommandSender> senderClass) {allowedSenders.add(senderClass);}
 
     @Nullable
-    public String getPermission() { return this.permission; }
+    public String getPermission() {return this.permission;}
 
     @Override
     public final boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
@@ -97,11 +106,14 @@ public abstract class AbstractCommand implements CommandExecutor, TabCompleter {
 
     public List<String> getArguments(CommandSender sender) {
         List<String> list = new ArrayList<>();
-        for (Map.Entry<String,AbstractCommand> entry : subCommands.entrySet()) {
+        for (Map.Entry<String, AbstractCommand> entry : subCommands.entrySet()) {
             String permission = entry.getValue().getPermission();
             if (permission == null || sender.hasPermission(permission)) {
                 list.add(entry.getKey());
             }
+        }
+        for (HyphenArgument hyphenArgument : hyphenArguments.values()) {
+            list.add(hyphenArgument.getName());
         }
         return list;
     }
@@ -151,18 +163,29 @@ public abstract class AbstractCommand implements CommandExecutor, TabCompleter {
         if (args.length == 0) {
             return getArguments(sender);
         } else {
-            AbstractCommand subcommand = subCommands.get(args[0]);
-            if (subcommand == null) {
-                List<String> completions = new ArrayList<>();
-                StringUtil.copyPartialMatches(args[args.length-1], getArguments(sender), completions);
-                for (int i = 0, last = args.length-1; i < last; i++) {
-                    String arg = args[i];
-                    completions.removeIf(arg::startsWith);
-                }
-                return completions;
-            } else {
+            AbstractCommand subcommand = this.subCommands.get(args[0]);
+            if (subcommand != null) {
                 return subcommand.onTabComplete(sender, command, label, Arrays.copyOfRange(args, 1, args.length));
             }
+
+            if (args.length > 1) {
+                String beforeLast = args[args.length - 2];
+                HyphenArgument hyphenArgument = this.hyphenArguments.get(beforeLast);
+                if (hyphenArgument != null) {
+                    List<String> completions = new ArrayList<>();
+                    StringUtil.copyPartialMatches(args[args.length - 1], hyphenArgument.getArguments(), completions);
+                    return completions;
+                }
+            }
+
+            List<String> completions = new ArrayList<>();
+            StringUtil.copyPartialMatches(args[args.length - 1], getArguments(sender), completions);
+            StringUtil.copyPartialMatches(args[args.length - 1], this.hyphenArguments.keySet(), completions);
+            for (int i = 0, lastIndex = args.length - 1; i < lastIndex; i++) {
+                String arg = args[i];
+                completions.removeIf(arg::startsWith);
+            }
+            return completions;
         }
     }
 
@@ -188,9 +211,14 @@ public abstract class AbstractCommand implements CommandExecutor, TabCompleter {
         return builderTrait;
     }
 
-    @Nullable
-    protected String getOptionalValue(String name, String arg) {
-        if (!arg.substring(0, name.length()).equalsIgnoreCase(name)) { return null; }
-        return arg.substring(name.length());
+    protected Map<String, String> getHyphenArguments(List<String> args) {
+        Map<String, String> map = new HashMap<>();
+        for (int i = 0, last = args.size()-1; i < last; i++) {
+            String arg = args.get(i);
+            if (hyphenArguments.keySet().stream().anyMatch(arg::equalsIgnoreCase)) {
+                map.put(arg, args.get(i+1));
+            }
+        }
+        return map;
     }
 }

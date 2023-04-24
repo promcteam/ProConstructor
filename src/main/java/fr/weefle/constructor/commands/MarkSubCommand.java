@@ -1,7 +1,7 @@
 package fr.weefle.constructor.commands;
 
 import fr.weefle.constructor.SchematicBuilder;
-import fr.weefle.constructor.essentials.BuilderTrait;
+import fr.weefle.constructor.citizens.BuilderTrait;
 import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -51,7 +51,7 @@ public class MarkSubCommand extends AbstractCommand {
         }
         if (builder.StartMark(material)) {
             sender.sendMessage(SchematicBuilder.format(SchematicBuilder.getInstance().config().getMarkMessage(), npc,
-                    builder.schematic, sender, null, "0"));
+                    builder.getSchematic(), sender, null, "0"));
         } else {
             sender.sendMessage(ChatColor.RED + npc.getName() + " could not mark. Already building or no schematic loaded?");
         }

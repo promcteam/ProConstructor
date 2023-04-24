@@ -1,6 +1,6 @@
 package fr.weefle.constructor.commands;
 
-import fr.weefle.constructor.essentials.BuilderTrait;
+import fr.weefle.constructor.citizens.BuilderTrait;
 import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -23,7 +23,7 @@ public class HoldSubCommand extends AbstractCommand {
         NPC npc = builder.getNPC();
 
         if (args.size() == 0) {
-            sender.sendMessage(ChatColor.GOLD + npc.getName() + " currently does" + (builder.HoldItems ?
+            sender.sendMessage(ChatColor.GOLD + npc.getName() + " currently does" + (builder.isHoldItems() ?
                     "" :
                     " NOT") + " hold blocks.");
             return;
@@ -39,7 +39,7 @@ public class HoldSubCommand extends AbstractCommand {
             sender.sendMessage(ChatColor.RED + args.get(0) + " is not a valid boolean");
             return;
         }
-        builder.HoldItems = holdItems;
+        builder.setHoldItems(holdItems);
         sender.sendMessage(ChatColor.GOLD + npc.getName() + " now does" + (holdItems ?
                 "" :
                 " NOT") + " hold blocks.");

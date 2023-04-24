@@ -3,11 +3,12 @@ package fr.weefle.constructor;
 import com.denizenscript.denizen.npc.traits.AssignmentTrait;
 import com.denizenscript.denizen.objects.NPCTag;
 import fr.weefle.constructor.NMS.NMS;
+import fr.weefle.constructor.citizens.BuilderTrait;
 import fr.weefle.constructor.essentials.BuilderSchematic;
-import fr.weefle.constructor.essentials.BuilderTrait;
 import fr.weefle.constructor.extra.DenizenSupport;
 import fr.weefle.constructor.extra.SelectionListener;
 import fr.weefle.constructor.extra.TraitListener;
+import fr.weefle.constructor.util.Structure;
 import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -94,6 +95,31 @@ public class SchematicBuilder extends JavaPlugin {
             return npc.getTrait(BuilderTrait.class);
         }
         return null;
+    }
+
+    @Nullable
+    public static BuilderSchematic getSchematic(String name) throws Exception {
+        File dir  = new File(SchematicBuilder.getInstance().config().getSchematicsFolder());
+        File file = new File(dir, name);
+        if (!file.exists()) {return null;}
+        BuilderSchematic schematic;
+        if (name.endsWith(".schem")) {
+            schematic = NMS.getInstance().getChooser().setSchematic(dir, name);
+        } else {
+            schematic = new Structure(dir, name).load(dir, name);
+        }
+        /*if(NMS.getInstance().getVersion().equals("v1_15_R1")){
+        MCEditSchematicFormat_1_15_R1 format = new MCEditSchematicFormat_1_15_R1();
+        inst.schematic = format.load(dir, arg);
+        }else if(NMS.getInstance().getVersion().equals("v1_14_R1")) {
+            MCEditSchematicFormat_1_14_R1 format = new MCEditSchematicFormat_1_14_R1();
+            inst.schematic = format.load(dir, arg);
+        }
+        else if(NMS.getInstance().getVersion().equals("v1_13_R2")) {
+            MCEditSchematicFormat_1_13_R2 format = new MCEditSchematicFormat_1_13_R2();
+            inst.schematic = format.load(dir, arg);
+        }*/
+        return schematic;
     }
 
     public static String runTask(String taskname, NPC npc) {

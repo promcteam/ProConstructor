@@ -1,6 +1,6 @@
 package fr.weefle.constructor.commands;
 
-import fr.weefle.constructor.essentials.BuilderTrait;
+import fr.weefle.constructor.citizens.BuilderTrait;
 import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -22,7 +22,7 @@ public class OriginSubCommand extends AbstractCommand {
             public void execute(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull List<String> args) {
                 BuilderTrait builder = getSelectedBuilder(sender);
                 if (builder == null) {return;}
-                builder.Origin = null;
+                builder.setOrigin(null);
                 sender.sendMessage(ChatColor.GREEN + builder.getNPC().getName() + " build origin has been cleared");
             }
         });
@@ -32,16 +32,16 @@ public class OriginSubCommand extends AbstractCommand {
                 BuilderTrait builder = getSelectedBuilder(sender);
                 if (builder == null) {return;}
                 NPC npc = builder.getNPC();
-                if (builder.schematic == null) {
+                if (builder.getSchematic() == null) {
                     sender.sendMessage(ChatColor.RED + npc.getName() + " has no schematic loaded");
                     return;
                 }
-                if (builder.schematic.SchematicOrigin == null) {
-                    sender.sendMessage(ChatColor.RED + builder.schematic.Name + " has no origin data");
+                if (builder.getSchematic().SchematicOrigin == null) {
+                    sender.sendMessage(ChatColor.RED + builder.getSchematic().Name + " has no origin data");
                     return;
                 }
-                builder.Origin = builder.schematic.getSchematicOrigin(builder);
-                sender.sendMessage(ChatColor.GREEN + npc.getName() + " build origin has been set to:" + builder.Origin);
+                builder.setOrigin(builder.getSchematic().getSchematicOrigin(builder));
+                sender.sendMessage(ChatColor.GREEN + npc.getName() + " build origin has been set to:" + ChatColor.WHITE + builder.getOrigin());
             }
         });
         registerSubCommand(new AbstractCommand("me", OriginSubCommand.this) {
@@ -50,7 +50,7 @@ public class OriginSubCommand extends AbstractCommand {
                 BuilderTrait builder = getSelectedBuilder(sender);
                 if (builder == null) {return;}
                 NPC npc = builder.getNPC();
-                builder.Origin = ((Player) sender).getLocation();
+                builder.setOrigin(((Player) sender).getLocation());
                 sender.sendMessage(ChatColor.GREEN + npc.getName() + " build origin has been set to your location");
             }
         });
@@ -60,8 +60,8 @@ public class OriginSubCommand extends AbstractCommand {
                 BuilderTrait builder = getSelectedBuilder(sender);
                 if (builder == null) {return;}
                 NPC npc = builder.getNPC();
-                if (builder.State == BuilderTrait.BuilderState.building) {
-                    builder.Origin = builder.ContinueLoc.clone();
+                if (builder.getState() == BuilderTrait.BuilderState.BUILDING) {
+                    builder.setOrigin(builder.getContinueLoc());
                     sender.sendMessage(ChatColor.GREEN + npc.getName() + " build origin has been set to the origin of the current build");
                 } else sender.sendMessage(ChatColor.RED + npc.getName() + " is not currently building!");
             }
@@ -83,7 +83,7 @@ public class OriginSubCommand extends AbstractCommand {
         NPC npc = builder.getNPC();
         if (args.size() <= 0) {
             if (builder.getNPC().isSpawned()) {
-                builder.Origin = builder.getNPC().getEntity().getLocation();
+                builder.setOrigin(builder.getNPC().getEntity().getLocation());
                 sender.sendMessage(ChatColor.GREEN + npc.getName() + " build origin has been set to its current location.");
             } else sender.sendMessage(ChatColor.RED + npc.getName() + " not spawned.");
         } else {
@@ -94,9 +94,9 @@ public class OriginSubCommand extends AbstractCommand {
                     int y = Integer.parseInt(coordinates[1]);
                     int z = Integer.parseInt(coordinates[2]);
 
-                    builder.Origin = new Location(builder.getNPC().getEntity().getWorld(), x, y, z);
+                    builder.setOrigin(new Location(builder.getNPC().getEntity().getWorld(), x, y, z));
 
-                    sender.sendMessage(ChatColor.GREEN + npc.getName() + " build origin has been set to " + builder.Origin.toString());   // Talk to the sender.
+                    sender.sendMessage(ChatColor.GREEN + npc.getName() + " build origin has been set to " + ChatColor.WHITE + builder.getOrigin());
                 } catch (NumberFormatException e) {
                     sender.sendMessage(ChatColor.RED + "Invalid Coordinates");
                 }

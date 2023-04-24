@@ -1,7 +1,7 @@
 package fr.weefle.constructor.commands;
 
 import fr.weefle.constructor.SchematicBuilder;
-import fr.weefle.constructor.essentials.BuilderTrait;
+import fr.weefle.constructor.citizens.BuilderTrait;
 import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -26,9 +26,9 @@ public class CancelSubCommand extends AbstractCommand {
             return;
         }
         NPC npc = builder.getNPC();
-        if (builder.State != BuilderTrait.BuilderState.idle) {
+        if (builder.getState() != BuilderTrait.BuilderState.IDLE) {
             sender.sendMessage(SchematicBuilder.format(SchematicBuilder.getInstance().config().getCancelMessage(), npc,
-                    builder.schematic, sender, null, "0"));
+                    builder.getSchematic(), sender, null, "0"));
         } else {
             sender.sendMessage(ChatColor.RED + npc.getName() + " is not building.");
         }

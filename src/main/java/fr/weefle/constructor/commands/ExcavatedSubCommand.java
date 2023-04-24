@@ -1,6 +1,6 @@
 package fr.weefle.constructor.commands;
 
-import fr.weefle.constructor.essentials.BuilderTrait;
+import fr.weefle.constructor.citizens.BuilderTrait;
 import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -32,10 +32,10 @@ public class ExcavatedSubCommand extends AbstractCommand {
         }
         NPC npc = builder.getNPC();
 
-        if (builder.State == BuilderTrait.BuilderState.building && builder.Excavate) {
+        if (builder.getState() == BuilderTrait.BuilderState.BUILDING && builder.isExcavate()) {
             if (!builder.ExcavateMaterials.isEmpty()) {
                 Inventory inventory = ((Player) sender).getInventory();
-                for (Map.Entry<Material,Integer> entry : builder.ExcavateMaterials.entrySet()) {
+                for (Map.Entry<Material, Integer> entry : builder.ExcavateMaterials.entrySet()) {
                     int total = entry.getValue();
                     while (total > 0) {
                         int amount = Math.min(total, 64);

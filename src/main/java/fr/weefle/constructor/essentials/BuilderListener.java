@@ -1,19 +1,18 @@
 package fr.weefle.constructor.essentials;
 
 
-import fr.weefle.constructor.Config;
 import fr.weefle.constructor.SchematicBuilder;
-import fr.weefle.constructor.essentials.BuilderTrait.BuilderState;
+import fr.weefle.constructor.citizens.BuilderTrait;
+import fr.weefle.constructor.citizens.BuilderTrait.BuilderState;
 import fr.weefle.constructor.menu.Menu;
 import fr.weefle.constructor.menu.Slot;
 import fr.weefle.constructor.menu.menus.ExcavatedMenu;
 import fr.weefle.constructor.menu.menus.MaterialsMenu;
-import fr.weefle.constructor.menu.menus.ParameterMenu;
 import mc.promcteam.engine.utils.ItemUT;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.event.NPCLeftClickEvent;
+import net.citizensnpcs.api.event.NPCRightClickEvent;
 import net.citizensnpcs.api.npc.NPC;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -160,15 +159,15 @@ public class BuilderListener implements Listener {
         NPC npc = event.getNPC();
         BuilderTrait inst = SchematicBuilder.getBuilder(npc);
         if (inst != null) {
-            if (inst.State == BuilderState.collecting) {
+            if (inst.getState() == BuilderState.COLLECTING) {
                 player.sendMessage(SchematicBuilder.format(SchematicBuilder.getInstance().config().getSupplyListMessage(),
                         npc,
-                        inst.schematic,
+                        inst.getSchematic(),
                         player,
                         null,
                         "0"));
                 new MaterialsMenu(player, npc).open();
-            } else if (inst.State == BuilderState.building && inst.Excavate && !inst.ExcavateMaterials.isEmpty()) {
+            } else if (inst.getState() == BuilderState.BUILDING && inst.isExcavate() && !inst.ExcavateMaterials.isEmpty()) {
                 new ExcavatedMenu(player, npc).open();
             }
         }
@@ -178,80 +177,11 @@ public class BuilderListener implements Listener {
     }
 
     @EventHandler
-    public void clickedme(net.citizensnpcs.api.event.NPCRightClickEvent event) {
-        NPC npc = event.getNPC();
+    public void clickedme(NPCRightClickEvent event) {
+        NPC          npc  = event.getNPC();
         BuilderTrait inst = SchematicBuilder.getBuilder(npc);
-        if (inst == null) { return; }
-        Player player = event.getClicker();
-        if (inst.State == BuilderState.idle || inst.State == BuilderState.building) {
-            player.performCommand("npc select " + npc.getId());
-            new ParameterMenu(event.getClicker(), npc).open();
-        } else if (inst.State == BuilderState.collecting) {
-            ItemStack is = player.getItemInHand();
-
-            if (is.getType().isBlock() && !(is.getType() == Material.AIR)) {
-
-
-                String itemname = is.getType().name();
-
-
-                if (!player.hasPermission("schematicbuilder.donate")) {
-                    player.sendMessage(ChatColor.RED + "You do not have permission to donate");
-                    return;
-                }
-
-                int needed = inst.NeededMaterials.getOrDefault(itemname, 0);
-                Config config = SchematicBuilder.getInstance().config();
-                if (needed > 0) {
-
-                    //yup, i need it
-                    int taking = Math.min(is.getAmount(), needed);
-
-                    if (inst.Sessions.containsKey(player) && System.currentTimeMillis() < inst.Sessions.get(player) + 5 * 1000) {
-                        //take it
-
-                        //update player hand item
-                        ItemStack newis;
-
-                        if (is.getAmount() - taking > 0) newis = is.clone();
-                        else newis = new ItemStack(Material.AIR);
-                        newis.setAmount(is.getAmount() - taking);
-                        event.getClicker().setItemInHand(newis);
-
-                        //update needed
-
-                        inst.NeededMaterials.put(is.getType(), (needed - taking));
-                        player.sendMessage(SchematicBuilder.format(config.getSupplyTakenMessage(), inst.getNPC(),
-                                inst.schematic,
-                                player,
-                                itemname,
-                                taking + ""));
-                        //check if can start
-                        inst.TryBuild(null);
-
-                    } else {
-                        player.sendMessage(SchematicBuilder.format(config.getSupplyNeedMessage(),
-                                inst.getNPC(),
-                                inst.schematic,
-                                player,
-                                itemname,
-                                needed + ""));
-                        inst.Sessions.put(player, System.currentTimeMillis());
-                    }
-
-                } else {
-                    player.sendMessage(SchematicBuilder.format(config.getSupplyDontNeedMessage(),
-                            inst.getNPC(),
-                            inst.schematic,
-                            player,
-                            itemname,
-                            "0"));
-                    //don't need it or already have it.
-                }
-            }
-        }
-
-
+        if (inst == null) {return;}
+        inst.handleRightClick(event);
     }
 
 
@@ -271,7 +201,7 @@ public class BuilderListener implements Listener {
         BuilderTrait inst = SchematicBuilder.getBuilder(npc);
 
         if (inst == null) return;
-        if (inst.State != BuilderState.idle) {
+        if (inst.getState() != BuilderState.IDLE) {
             inst.PlaceNextBlock();
         }
 
@@ -293,7 +223,7 @@ public class BuilderListener implements Listener {
 
         if (inst == null) return;
 
-        if (inst.State != BuilderState.idle) {
+        if (inst.getState() != BuilderState.IDLE) {
             inst.PlaceNextBlock();
         }
 

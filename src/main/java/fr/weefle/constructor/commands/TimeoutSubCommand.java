@@ -1,6 +1,6 @@
 package fr.weefle.constructor.commands;
 
-import fr.weefle.constructor.essentials.BuilderTrait;
+import fr.weefle.constructor.citizens.BuilderTrait;
 import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -32,7 +32,7 @@ public class TimeoutSubCommand extends AbstractCommand {
         NPC npc = builder.getNPC();
 
         if (args.size() == 0) {
-            sender.sendMessage(ChatColor.GOLD + npc.getName() + "'s Move Timeout is " + builder.MoveTimeout);
+            sender.sendMessage(ChatColor.GOLD + npc.getName() + "'s Move Timeout is " + builder.getMoveTimeoutSeconds());
             return;
         } else if (args.size() != 1) {
             sendUsage(sender);
@@ -48,7 +48,7 @@ public class TimeoutSubCommand extends AbstractCommand {
         }
         timeout = Math.min(Math.max(0.1, timeout), 2000000);
 
-        builder.MoveTimeout = timeout;
+        builder.setMoveTimeoutSeconds(timeout);
         sender.sendMessage(ChatColor.GREEN + npc.getName() + " move timeout set to " + timeout + " s.");
     }
 }

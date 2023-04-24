@@ -1,7 +1,8 @@
 package fr.weefle.constructor.commands;
 
 import fr.weefle.constructor.SchematicBuilder;
-import fr.weefle.constructor.essentials.BuilderTrait;
+import fr.weefle.constructor.citizens.BuilderTrait;
+import fr.weefle.constructor.essentials.BuilderSchematic;
 import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -33,19 +34,20 @@ public class PreviewSubCommand extends AbstractCommand {
             sendUsage(sender);
             return;
         }
-        NPC npc = builder.getNPC();
-        Player player = (Player) sender;
+        NPC      npc    = builder.getNPC();
+        Player   player = (Player) sender;
         Location tmpLoc = npc.getEntity().getLocation();
         //Bukkit.getLogger().warning(tmpLoc.toString());
 
-        if (builder.State == BuilderTrait.BuilderState.idle) {
-            if (builder.schematic != null) {
+        if (builder.getState() == BuilderTrait.BuilderState.IDLE) {
+            BuilderSchematic schematic = builder.getSchematic();
+            if (schematic != null) {
                 HashMap<Location, BlockData> blocks = new HashMap<>();
-                for (int x = 0; x < builder.schematic.width(); ++x) {
-                    for (int y = 0; y < builder.schematic.height(); ++y) {
-                        for (int z = 0; z < builder.schematic.length(); ++z) {
-                            Location loc = tmpLoc.clone().add(x, y, z);
-                            BlockData bdata = builder.schematic.Blocks[x][y][z].getMat();
+                for (int x = 0; x < schematic.width(); ++x) {
+                    for (int y = 0; y < schematic.height(); ++y) {
+                        for (int z = 0; z < schematic.length(); ++z) {
+                            Location  loc   = tmpLoc.clone().add(x, y, z);
+                            BlockData bdata = schematic.Blocks[x][y][z].getMat();
                             blocks.put(loc, bdata);
                             player.sendBlockChange(loc, bdata);
                         }
