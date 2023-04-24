@@ -27,7 +27,8 @@ public class CancelSubCommand extends AbstractCommand {
         }
         NPC npc = builder.getNPC();
         if (builder.State != BuilderTrait.BuilderState.idle) {
-            sender.sendMessage(SchematicBuilder.getInstance().format(SchematicBuilder.CancelMessage, npc, builder.schematic, sender, null, "0"));
+            sender.sendMessage(SchematicBuilder.format(SchematicBuilder.getInstance().config().getCancelMessage(), npc,
+                    builder.schematic, sender, null, "0"));
         } else {
             sender.sendMessage(ChatColor.RED + npc.getName() + " is not building.");
         }

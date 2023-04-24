@@ -70,7 +70,7 @@ public class NPCMenu extends Menu {
 
         @Override
         public void onLeftClick() {
-            BuilderTrait builderTrait = SchematicBuilder.getInstance().getBuilder(npc);
+            BuilderTrait builderTrait = SchematicBuilder.getBuilder(npc);
             Player player = menu.getPlayer();
             if (builderTrait == null) {
                 player.sendMessage(ChatColor.GOLD + npc.getName() + ChatColor.RED + " isn't a builder, right-click on it to make it one!");

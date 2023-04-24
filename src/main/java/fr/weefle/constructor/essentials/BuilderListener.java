@@ -1,6 +1,7 @@
 package fr.weefle.constructor.essentials;
 
 
+import fr.weefle.constructor.Config;
 import fr.weefle.constructor.SchematicBuilder;
 import fr.weefle.constructor.essentials.BuilderTrait.BuilderState;
 import fr.weefle.constructor.menu.Menu;
@@ -38,19 +39,11 @@ import java.util.Map;
 @SuppressWarnings("deprecation")
 public class BuilderListener implements Listener {
 
-    public        SchematicBuilder     plugin;
     public static Map<String, Integer> materials = new HashMap<>();
-
-    public BuilderListener(SchematicBuilder builderplugin) {
-
-        plugin = builderplugin;
-
-    }
-
 
     @EventHandler(priority = org.bukkit.event.EventPriority.HIGHEST)
     public void place(org.bukkit.event.block.BlockPlaceEvent event) {
-        BuilderTrait inst = plugin.getBuilder(event.getPlayer());
+        BuilderTrait inst = SchematicBuilder.getBuilder(event.getPlayer());
         if (inst != null) event.setCancelled(false);
     }
 
@@ -156,7 +149,7 @@ public class BuilderListener implements Listener {
                     public void run() {
                         menu.onClose();
                     }
-                }.runTask(plugin);
+                }.runTask(SchematicBuilder.getInstance());
             }
         }
     }
@@ -165,10 +158,15 @@ public class BuilderListener implements Listener {
     public void clickedme2(NPCLeftClickEvent event) {
         Player player = event.getClicker();
         NPC npc = event.getNPC();
-        BuilderTrait inst = plugin.getBuilder(npc);
+        BuilderTrait inst = SchematicBuilder.getBuilder(npc);
         if (inst != null) {
             if (inst.State == BuilderState.collecting) {
-                player.sendMessage(plugin.format(plugin.SupplyListMessage, npc, inst.schematic, player, null, "0"));
+                player.sendMessage(SchematicBuilder.format(SchematicBuilder.getInstance().config().getSupplyListMessage(),
+                        npc,
+                        inst.schematic,
+                        player,
+                        null,
+                        "0"));
                 new MaterialsMenu(player, npc).open();
             } else if (inst.State == BuilderState.building && inst.Excavate && !inst.ExcavateMaterials.isEmpty()) {
                 new ExcavatedMenu(player, npc).open();
@@ -182,7 +180,7 @@ public class BuilderListener implements Listener {
     @EventHandler
     public void clickedme(net.citizensnpcs.api.event.NPCRightClickEvent event) {
         NPC npc = event.getNPC();
-        BuilderTrait inst = plugin.getBuilder(npc);
+        BuilderTrait inst = SchematicBuilder.getBuilder(npc);
         if (inst == null) { return; }
         Player player = event.getClicker();
         if (inst.State == BuilderState.idle || inst.State == BuilderState.building) {
@@ -203,6 +201,7 @@ public class BuilderListener implements Listener {
                 }
 
                 int needed = inst.NeededMaterials.getOrDefault(itemname, 0);
+                Config config = SchematicBuilder.getInstance().config();
                 if (needed > 0) {
 
                     //yup, i need it
@@ -222,18 +221,31 @@ public class BuilderListener implements Listener {
                         //update needed
 
                         inst.NeededMaterials.put(is.getType(), (needed - taking));
-                        player.sendMessage(plugin.format(plugin.SupplyTakenMessage, inst.getNPC(), inst.schematic, player, itemname, taking + ""));
-
+                        player.sendMessage(SchematicBuilder.format(config.getSupplyTakenMessage(), inst.getNPC(),
+                                inst.schematic,
+                                player,
+                                itemname,
+                                taking + ""));
                         //check if can start
                         inst.TryBuild(null);
 
                     } else {
-                        player.sendMessage(plugin.format(plugin.SupplyNeedMessage, inst.getNPC(), inst.schematic, player, itemname, needed + ""));
+                        player.sendMessage(SchematicBuilder.format(config.getSupplyNeedMessage(),
+                                inst.getNPC(),
+                                inst.schematic,
+                                player,
+                                itemname,
+                                needed + ""));
                         inst.Sessions.put(player, System.currentTimeMillis());
                     }
 
                 } else {
-                    player.sendMessage(plugin.format(plugin.SupplyDontNeedMessage, inst.getNPC(), inst.schematic, player, itemname, "0"));
+                    player.sendMessage(SchematicBuilder.format(config.getSupplyDontNeedMessage(),
+                            inst.getNPC(),
+                            inst.schematic,
+                            player,
+                            itemname,
+                            "0"));
                     //don't need it or already have it.
                 }
             }
@@ -256,7 +268,7 @@ public class BuilderListener implements Listener {
 
         //	plugin.getLogger().info("nav complete " + npc);
 
-        BuilderTrait inst = plugin.getBuilder(npc);
+        BuilderTrait inst = SchematicBuilder.getBuilder(npc);
 
         if (inst == null) return;
         if (inst.State != BuilderState.idle) {
@@ -275,7 +287,7 @@ public class BuilderListener implements Listener {
                 break;
             }
         }
-        BuilderTrait inst = plugin.getBuilder(npc);
+        BuilderTrait inst = SchematicBuilder.getBuilder(npc);
 
         //	plugin.getLogger().info("nav cancel " + npc);
 

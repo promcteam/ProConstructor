@@ -173,7 +173,7 @@ public abstract class AbstractCommand implements CommandExecutor, TabCompleter {
             sender.sendMessage(ChatColor.RED + "You must have a NPC selected to use this command");
             return null;
         }
-        BuilderTrait builderTrait = SchematicBuilder.getInstance().getBuilder(npc);
+        BuilderTrait builderTrait = SchematicBuilder.getBuilder(npc);
         if (builderTrait == null) {
             sender.sendMessage(ChatColor.RED + "The selected NPC is not a builder");
             return null;

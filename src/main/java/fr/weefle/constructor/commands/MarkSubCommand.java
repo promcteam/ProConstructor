@@ -23,8 +23,9 @@ public class MarkSubCommand extends AbstractCommand {
 
     @Override
     public List<String> getArguments(CommandSender sender) {
-        List<String> list = new ArrayList<>(SchematicBuilder.MarkMats.size());
-        for (Material material : SchematicBuilder.MarkMats) {
+        List<Material> markMaterials = SchematicBuilder.getInstance().config().getMarkMats();
+        List<String> list = new ArrayList<>(markMaterials.size());
+        for (Material material : markMaterials) {
             list.add(material.name().toLowerCase());
         }
         return list;
@@ -44,12 +45,13 @@ public class MarkSubCommand extends AbstractCommand {
         try {
             material = Material.valueOf(args.get(0).toUpperCase());
         } catch (IllegalArgumentException ignored) {}
-        if (material == null || !SchematicBuilder.MarkMats.contains(material)) {
+        if (material == null || !SchematicBuilder.getInstance().config().getMarkMats().contains(material)) {
             sender.sendMessage(ChatColor.GOLD + npc.getName() + " can not mark with " + args.get(0) + ".The specified item is not allowed.");
             return;
         }
         if (builder.StartMark(material)) {
-            sender.sendMessage(SchematicBuilder.getInstance().format(SchematicBuilder.MarkMessage, npc, builder.schematic, sender, null, "0"));
+            sender.sendMessage(SchematicBuilder.format(SchematicBuilder.getInstance().config().getMarkMessage(), npc,
+                    builder.schematic, sender, null, "0"));
         } else {
             sender.sendMessage(ChatColor.RED + npc.getName() + " could not mark. Already building or no schematic loaded?");
         }

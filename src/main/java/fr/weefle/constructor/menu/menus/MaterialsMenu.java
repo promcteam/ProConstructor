@@ -17,14 +17,14 @@ public class MaterialsMenu extends Menu {
 
     public MaterialsMenu(Player player, NPC npc) {
         super(player, 6, "SchematicBuilder - Materials");
-        Preconditions.checkArgument(SchematicBuilder.getInstance().getBuilder(npc) != null, npc.getName()+" is not a builder");
+        Preconditions.checkArgument(SchematicBuilder.getBuilder(npc) != null, npc.getName()+" is not a builder");
         this.npc = npc;
     }
 
     @Override
     public void setContents() {
         int i = 0;
-        for (Map.Entry<Material,Integer> entry : Objects.requireNonNull(SchematicBuilder.getInstance().getBuilder(npc), npc.getName()+" is not a builder").NeededMaterials.entrySet()) {
+        for (Map.Entry<Material,Integer> entry : Objects.requireNonNull(SchematicBuilder.getBuilder(npc), npc.getName()+" is not a builder").NeededMaterials.entrySet()) {
             int total = entry.getValue();
             while (total > 0) {
                 i++;

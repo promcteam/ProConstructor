@@ -43,7 +43,7 @@ public class SurveySubCommand extends AbstractCommand {
         if (builder.schematic == null) {
             sender.sendMessage(ChatColor.RED + "No Schematic Loaded!");
         } else {
-            sender.sendMessage(SchematicBuilder.getInstance().format(SchematicBuilder.SurveyMessage + (ex ? " (excavate)" : ""), npc, builder.schematic, sender, null, "0"));
+            sender.sendMessage(SchematicBuilder.format(SchematicBuilder.getInstance().config().getSurveyMessage() + (ex ? " (excavate)" : ""), npc, builder.schematic, sender, null, "0"));
             sender.sendMessage(builder.GetMatsList(ex));   // Talk to the player.
         }
     }

@@ -1,5 +1,6 @@
 package fr.weefle.constructor.essentials;
 
+import com.google.common.base.Preconditions;
 import fr.weefle.constructor.NMS.NMS;
 import fr.weefle.constructor.block.DataBuildBlock;
 import fr.weefle.constructor.block.EmptyBuildBlock;
@@ -59,6 +60,7 @@ public class BuilderSchematic {
     int useryoffset = 0;
 
     public Queue<EmptyBuildBlock> BuildQueue(Location origin, boolean ignoreLiquids, boolean ignoreAir, boolean excavate, BuilderTrait.BuildPatternsXZ pattern, boolean GroupByLayer, int ylayers, int useryoffset) {
+        Preconditions.checkArgument(ylayers > 0, "ylayers must be positive, but got "+ylayers);
         dwidth = width();
         dlength = length();
         yoffset = 0;
@@ -88,9 +90,7 @@ public class BuilderSchematic {
         Queue<EmptyBuildBlock> Decor     = new LinkedList<EmptyBuildBlock>();
         Queue<EmptyBuildBlock> buildQ    = new LinkedList<EmptyBuildBlock>();
 
-
         for (int y = yoffset; y < height(); y += ylayers) {
-
             List<EmptyBuildBlock> thisLayer;
             switch (pattern) {
                 case linear:
@@ -301,7 +301,6 @@ public class BuilderSchematic {
 
         exair.clear();
         buildQ.clear();
-
         return Q;
     }
 

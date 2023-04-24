@@ -26,7 +26,7 @@ public class ParameterMenu extends Menu {
 
     @Override
     public void setContents() {
-        BuilderTrait builderTrait = SchematicBuilder.getInstance().getBuilder(npc);
+        BuilderTrait builderTrait = SchematicBuilder.getBuilder(npc);
         Preconditions.checkArgument(builderTrait != null, npc.getName()+" is not a builder");
         ItemStack itemStack = new ItemStack(Material.PLAYER_HEAD);
         ItemMeta meta = itemStack.getItemMeta();

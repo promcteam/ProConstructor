@@ -22,7 +22,7 @@ public class ExcavatedMenu extends Menu {
     @Override
     public void setContents() {
         int i = 0;
-        for (Map.Entry<Material, Integer> entry : Objects.requireNonNull(SchematicBuilder.getInstance().getBuilder(npc),
+        for (Map.Entry<Material, Integer> entry : Objects.requireNonNull(SchematicBuilder.getBuilder(npc),
                 npc.getName() + " is not a builder").ExcavateMaterials.entrySet()) {
             int total = entry.getValue();
             while (total > 0) {

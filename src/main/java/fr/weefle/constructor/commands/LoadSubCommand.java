@@ -31,7 +31,7 @@ public class LoadSubCommand extends AbstractCommand {
     public List<String> getArguments(CommandSender sender) {
         List<String> files = new ArrayList<>();
         try {
-            Path dir = new File(SchematicBuilder.schematicsFolder).toPath();
+            Path dir = new File(SchematicBuilder.getInstance().config().getSchematicsFolder()).toPath();
             Files.walk(dir).forEach(path -> {
                 String stringPath = path.toString();
                 if (path.toFile().isFile() && (stringPath.endsWith(".schem") || stringPath.endsWith(".nbt") || stringPath.endsWith(".yml"))) {
@@ -86,7 +86,7 @@ public class LoadSubCommand extends AbstractCommand {
             stringBuilder.append(" ").append(args.get(i));
         }
         String arg = stringBuilder.toString().trim();
-        File dir = new File(SchematicBuilder.schematicsFolder);
+        File dir = new File(SchematicBuilder.getInstance().config().getSchematicsFolder());
         File file = new File(dir, arg);
         if (!file.exists()) {
             sender.sendMessage(ChatColor.RED + "no such file "+arg);
@@ -121,7 +121,7 @@ public class LoadSubCommand extends AbstractCommand {
                             sender.sendMessage(ChatColor.GREEN + "Loaded Sucessfully");
                             sender.sendMessage(builder.schematic.GetInfo());
                         }
-                    }.runTask(SchematicBuilder.instance);
+                    }.runTask(SchematicBuilder.getInstance());
                 } catch (Exception e) {
                     new BukkitRunnable() {
                         @Override
