@@ -13,7 +13,7 @@ import java.util.List;
 
 public class TimeoutSubCommand extends AbstractCommand {
     public TimeoutSubCommand(@Nullable SchematicBuilderCommand parent) {
-        super("timeout", parent);
+        super("timeout", "Sets the maximum number of seconds between placed blocks", parent);
         this.permission = "schematicbuilder.timeout";
     }
 

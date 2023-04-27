@@ -21,7 +21,7 @@ import java.util.logging.Level;
 
 public class LoadSubCommand extends AbstractCommand {
     public LoadSubCommand(@Nullable SchematicBuilderCommand parent) {
-        super("load", parent);
+        super("load", "Loads a schematic file", parent);
         this.permission = "schematicbuilder.load";
     }
 

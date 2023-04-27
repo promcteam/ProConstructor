@@ -21,7 +21,7 @@ import java.util.Objects;
 
 public class PreviewSubCommand extends AbstractCommand {
     public PreviewSubCommand(@Nullable SchematicBuilderCommand parent) {
-        super("preview", parent);
+        super("preview", "Shows the preview of the current structure", parent);
         this.permission = "schematicbuilder.preview";
         addAllowedSender(Player.class);
     }

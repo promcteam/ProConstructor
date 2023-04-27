@@ -15,7 +15,7 @@ import java.util.Map;
 
 public class SurveySubCommand extends AbstractCommand {
     public SurveySubCommand(@Nullable SchematicBuilderCommand parent) {
-        super("survey", parent);
+        super("survey", "View the list of materials required to build the loaded schematic at the current origin with the specified options", parent);
         this.permission = "schematicbuilder.survey";
         addAllowedSender(Player.class);
         registerHyphenArgument(new HyphenArgument("excavate", "true", "false"));

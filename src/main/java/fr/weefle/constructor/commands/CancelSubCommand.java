@@ -13,7 +13,7 @@ import java.util.List;
 
 public class CancelSubCommand extends AbstractCommand {
     public CancelSubCommand(@Nullable SchematicBuilderCommand parent) {
-        super("cancel", parent);
+        super("cancel", "Cancel building", parent);
         this.permission = "schematicbuilder.cancel";
     }
 

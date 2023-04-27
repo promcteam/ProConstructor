@@ -13,7 +13,7 @@ import java.util.Map;
 
 public class BuildSubCommand extends AbstractCommand {
     public BuildSubCommand(@Nullable SchematicBuilderCommand parent) {
-        super("build", parent);
+        super("build", "Begin building with the selected options", parent);
         this.permission = "schematicbuilder.build";
         registerHyphenArgument(new HyphenArgument("silent", "true", "false"));
         registerHyphenArgument(new HyphenArgument("onComplete"));

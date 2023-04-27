@@ -12,7 +12,7 @@ import java.util.List;
 
 public class HoldSubCommand extends AbstractCommand {
     public HoldSubCommand(@Nullable SchematicBuilderCommand parent) {
-        super("hold", parent);
+        super("hold", "Set whether the Constructor holds blocks while building", parent);
         this.permission = "schematicbuilder.hold";
     }
 

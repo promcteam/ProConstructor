@@ -16,20 +16,26 @@ import java.util.*;
 
 public abstract class AbstractCommand implements CommandExecutor, TabCompleter {
     protected final String                              command;
+    protected final String                              description;
     protected final AbstractCommand                     parent;
     protected final Map<String,AbstractCommand>         subCommands     = new HashMap<>();
     protected final Set<Class<? extends CommandSender>> allowedSenders  = new HashSet<>();
     protected final Map<String, HyphenArgument>         hyphenArguments = new HashMap<>();
     protected       String                              permission;
 
-    public AbstractCommand(@NotNull String command, @Nullable AbstractCommand parent) {
+    public AbstractCommand(@NotNull String command, @Nullable String description, @Nullable AbstractCommand parent) {
         this.command = command;
+        this.description = description;
         this.parent = parent;
     }
 
-    public AbstractCommand(@NotNull String command) {this(command, null);}
+    public AbstractCommand(@NotNull String command, @Nullable String description) {this(command, description, null);}
+
+    public AbstractCommand(@NotNull String command, @Nullable AbstractCommand parent) {this(command, null, parent);}
 
     public final String getCommand() {return command;}
+
+    public final String getDescription() {return description;}
 
     public final String getFullCommand() {
         return parent == null
@@ -152,8 +158,8 @@ public abstract class AbstractCommand implements CommandExecutor, TabCompleter {
         if (usages.isEmpty()) {
             sender.sendMessage(ChatColor.RED+"Incorrect command syntax");
         } else {
-            sender.sendMessage(ChatColor.RED+"Command syntax:");
-            for (String usage : usages) { sender.sendMessage(ChatColor.RED+"  "+usage); }
+            sender.sendMessage("Command info:");
+            for (String usage : usages) { sender.sendMessage("  "+usage); }
         }
     }
 

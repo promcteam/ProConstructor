@@ -13,7 +13,7 @@ import java.util.List;
 
 public class SupplySubCommand extends AbstractCommand {
     public SupplySubCommand(@Nullable SchematicBuilderCommand parent) {
-        super("supply", parent);
+        super("supply", "Set whether the constructor needs to be supplied with materials before building", parent);
         this.permission = "schematicbuilder.supply";
     }
 

@@ -17,7 +17,7 @@ import java.util.Map;
 
 public class ExcavatedSubCommand extends AbstractCommand {
     public ExcavatedSubCommand(@Nullable SchematicBuilderCommand parent) {
-        super("excavated", parent);
+        super("excavated", "Get all excavated blocks from current build", parent);
         this.permission = "schematicbuilder.excavated";
         addAllowedSender(Player.class);
     }

@@ -15,7 +15,7 @@ import java.util.List;
 
 public class StructureSubCommand extends AbstractCommand {
     public StructureSubCommand(@Nullable SchematicBuilderCommand parent) {
-        super("structure", parent);
+        super("structure", "Save named structure with WorldEdit region selection", parent);
         this.permission = "schematicbuilder.structure";
         addAllowedSender(Player.class);
     }

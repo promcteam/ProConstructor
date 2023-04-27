@@ -14,7 +14,7 @@ import java.util.List;
 
 public class OriginSubCommand extends AbstractCommand {
     public OriginSubCommand(@Nullable SchematicBuilderCommand parent) {
-        super("origin", parent);
+        super("origin", "Sets the build origin", parent);
         this.permission = "schematicbuilder.origin";
         addAllowedSender(Player.class);
         registerSubCommand(new AbstractCommand("clear", OriginSubCommand.this) {

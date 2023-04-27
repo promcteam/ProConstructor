@@ -11,7 +11,7 @@ import java.util.List;
 
 public class ListSubCommand extends AbstractCommand {
     public ListSubCommand(@Nullable SchematicBuilderCommand parent) {
-        super("list", parent);
+        super("list", "Shows the list of all schematics and structures", parent);
         this.permission = "schematicbuilder.list";
         addAllowedSender(Player.class);
     }

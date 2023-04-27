@@ -11,7 +11,7 @@ import java.util.List;
 
 public class NPCSubCommand extends AbstractCommand {
     public NPCSubCommand(@Nullable SchematicBuilderCommand parent) {
-        super("npc", parent);
+        super("npc", "Select the NPC which will build something for you", parent);
         this.permission = "schematicbuilder.npc";
         addAllowedSender(Player.class);
     }

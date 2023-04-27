@@ -11,7 +11,7 @@ import java.util.List;
 
 public class ReloadSubCommand extends AbstractCommand {
     public ReloadSubCommand(@Nullable SchematicBuilderCommand parent) {
-        super("reload", parent);
+        super("reload", "Reload the config.yml", parent);
         this.permission = "schematicbuilder.reload";
     }
 
