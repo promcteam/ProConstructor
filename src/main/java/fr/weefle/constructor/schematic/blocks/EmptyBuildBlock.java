@@ -1,4 +1,4 @@
-package fr.weefle.constructor.block;
+package fr.weefle.constructor.schematic.blocks;
 
 import org.bukkit.Material;
 import org.bukkit.block.data.BlockData;

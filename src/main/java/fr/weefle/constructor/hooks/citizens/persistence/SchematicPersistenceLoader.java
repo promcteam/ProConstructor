@@ -1,16 +1,16 @@
 package fr.weefle.constructor.hooks.citizens.persistence;
 
 import fr.weefle.constructor.SchematicBuilder;
-import fr.weefle.constructor.schematic.BuilderSchematic;
+import fr.weefle.constructor.schematic.Schematic;
 import net.citizensnpcs.api.persistence.Persister;
 import net.citizensnpcs.api.util.DataKey;
 
 import java.util.logging.Level;
 
-public class SchematicPersistenceLoader implements Persister<BuilderSchematic> {
+public class SchematicPersistenceLoader implements Persister<Schematic> {
 
     @Override
-    public BuilderSchematic create(DataKey dataKey) {
+    public Schematic create(DataKey dataKey) {
         String name = dataKey.getString("", null);
         if (name == null) {return null;}
         try {
@@ -23,7 +23,7 @@ public class SchematicPersistenceLoader implements Persister<BuilderSchematic> {
     }
 
     @Override
-    public void save(BuilderSchematic schematic, DataKey dataKey) {
-        dataKey.setString("", schematic == null ? null : schematic.getName());
+    public void save(Schematic schematic, DataKey dataKey) {
+        dataKey.setString("", schematic == null ? null : schematic.getPath());
     }
 }

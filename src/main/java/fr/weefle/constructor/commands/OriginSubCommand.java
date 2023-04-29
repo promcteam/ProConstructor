@@ -1,12 +1,14 @@
 package fr.weefle.constructor.commands;
 
 import fr.weefle.constructor.hooks.citizens.BuilderTrait;
+import fr.weefle.constructor.schematic.Schematic;
 import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -32,15 +34,17 @@ public class OriginSubCommand extends AbstractCommand {
                 BuilderTrait builder = getSelectedBuilder(sender);
                 if (builder == null) {return;}
                 NPC npc = builder.getNPC();
-                if (builder.getSchematic() == null) {
+                Schematic schematic = builder.getSchematic();
+                if (schematic == null) {
                     sender.sendMessage(ChatColor.RED + npc.getName() + " has no schematic loaded");
                     return;
                 }
-                if (builder.getSchematic().getSchematicOrigin(builder) == null) {
-                    sender.sendMessage(ChatColor.RED + builder.getSchematic().getName() + " has no origin data");
+                Vector absolutePosition = schematic.getAbsolutePosition();
+                if (absolutePosition == null) {
+                    sender.sendMessage(schematic.getDisplayName() + ChatColor.RED + " has no origin data");
                     return;
                 }
-                builder.setOrigin(builder.getSchematic().getSchematicOrigin(builder));
+                builder.setOrigin(absolutePosition.toLocation(builder.getNPC().getEntity().getWorld()));
                 sender.sendMessage(ChatColor.GREEN + npc.getName() + " build origin has been set to:" + ChatColor.WHITE + builder.getOrigin());
             }
         });

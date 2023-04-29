@@ -1,7 +1,7 @@
-package fr.weefle.constructor.NMS;
+package fr.weefle.constructor.nms;
 
-import fr.weefle.constructor.block.EmptyBuildBlock;
 import fr.weefle.constructor.nbt.*;
+import fr.weefle.constructor.schematic.blocks.EmptyBuildBlock;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 

@@ -69,21 +69,12 @@ public class BuildSubCommand extends AbstractCommand {
                     return;
                 }
                 builder.setBuildYLayers(layers);
-            } else if (arg.equalsIgnoreCase("yOffset")) {
-                int yOffset;
-                try {
-                    yOffset = Integer.parseInt(value);
-                    builder.setYOffset(yOffset);
-                } catch (NumberFormatException e) {
-                    sender.sendMessage(ChatColor.RED + arg + " is not a valid yOffset");
-                    return;
-                }
             } else if (arg.equalsIgnoreCase("groupAll")) {
                 builder.GroupByLayer = true;
             } else if (arg.equalsIgnoreCase("ignoreAir")) {
                 builder.setIgnoreAir(Boolean.parseBoolean(value));
             } else if (arg.equalsIgnoreCase("ignoreLiquid")) {
-                builder.setIgnoreLiquid(Boolean.parseBoolean(value));
+                builder.setIgnoreLiquids(Boolean.parseBoolean(value));
             } else if (arg.equalsIgnoreCase("excavate")) {
                 builder.setExcavate(Boolean.parseBoolean(value));
                 if (!builder.isSilent()) {
@@ -99,7 +90,7 @@ public class BuildSubCommand extends AbstractCommand {
         }
 
         if (builder.isRequireMaterials()) {
-            builder.GetMatsList(builder.isExcavate());
+            builder.GetMatsList();
         }
 
         builder.TryBuild(sender);

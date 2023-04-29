@@ -11,7 +11,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
-import java.util.Map;
 
 public class SurveySubCommand extends AbstractCommand {
     public SurveySubCommand(@Nullable SchematicBuilderCommand parent) {
@@ -26,21 +25,11 @@ public class SurveySubCommand extends AbstractCommand {
         BuilderTrait builder = getSelectedBuilder(sender);
         if (builder == null) {return;}
         NPC     npc = builder.getNPC();
-        boolean ex  = builder.isExcavate();
-
-        for (Map.Entry<String, String> entry : getHyphenArguments(args).entrySet()) {
-            String key = entry.getKey();
-            if (key.equalsIgnoreCase("excavate")) {
-                ex = Boolean.parseBoolean(entry.getValue());
-            }
-        }
         if (builder.getSchematic() == null) {
             sender.sendMessage(ChatColor.RED + "No Schematic Loaded!");
         } else {
-            sender.sendMessage(SchematicBuilder.format(SchematicBuilder.getInstance().config().getSurveyMessage() + (ex
-                    ? " (excavate)"
-                    : ""), npc, builder.getSchematic(), sender, null, "0"));
-            sender.sendMessage(builder.GetMatsList(ex));   // Talk to the player.
+            sender.sendMessage(SchematicBuilder.format(SchematicBuilder.getInstance().config().getSurveyMessage(), npc, builder.getSchematic(), sender, null, "0"));
+            sender.sendMessage(builder.GetMatsList());   // Talk to the player.
         }
     }
 }

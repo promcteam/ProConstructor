@@ -1,4 +1,4 @@
-package fr.weefle.constructor.NMS.providers;
+package fr.weefle.constructor.nms.providers;
 
 public class NMSProvider_1_19 extends NMSProvider {
 

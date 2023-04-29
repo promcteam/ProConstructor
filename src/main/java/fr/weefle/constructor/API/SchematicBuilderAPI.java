@@ -1,15 +1,12 @@
 package fr.weefle.constructor.api;
 
-import fr.weefle.constructor.NMS.NMS;
+import fr.weefle.constructor.SchematicBuilder;
 import fr.weefle.constructor.hooks.citizens.BuilderTrait;
-import fr.weefle.constructor.util.Structure;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
 import net.citizensnpcs.api.npc.NPCRegistry;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
-
-import java.io.File;
 
 public class SchematicBuilderAPI {
 
@@ -27,18 +24,7 @@ public class SchematicBuilderAPI {
         bt.setIgnoreAir(ignoreLiquid);
         bt.setExcavate(excavate);
         bt.setBuildPatternXZ(buildPattern);
-        File file = new File("plugins/ProSchematicBuilder/schematics/");
-        try {
-            bt.setSchematic(new Structure(file, schematic.trim().replace("\"", "")).load(file, schematic.trim().replace("\"", "")));
-        } catch (Exception exception) {
-            try {
-                bt.setSchematic(new Structure(file, schematic.trim().replace("\"", "")).load(file, schematic.trim().replace("\"", "")));
-                bt.setSchematic(NMS.getInstance().getChooser().setSchematic(file, schematic.trim().replace("\"", "")));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
+        bt.setSchematic(SchematicBuilder.getSchematic(schematic.trim()));
         return bt.TryBuild(player);
 
     }

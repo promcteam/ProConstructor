@@ -1,6 +1,6 @@
 package fr.weefle.constructor.api;
 
-import fr.weefle.constructor.block.EmptyBuildBlock;
+import fr.weefle.constructor.schematic.blocks.EmptyBuildBlock;
 import org.bukkit.block.Block;
 
 import java.lang.reflect.InvocationTargetException;

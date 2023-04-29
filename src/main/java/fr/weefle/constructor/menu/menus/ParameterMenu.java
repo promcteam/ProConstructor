@@ -55,7 +55,7 @@ public class ParameterMenu extends Menu {
                     player.closeInventory();
                 } else {
                     if (builderTrait.isRequireMaterials()) {
-                        builderTrait.GetMatsList(builderTrait.isExcavate());
+                        builderTrait.GetMatsList();
                     }
                     //Bukkit.getLogger().warning(plugin.getBuilder(npc).RequireMaterials.toString());
                     if (!builderTrait.TryBuild(player)) {
@@ -101,19 +101,19 @@ public class ParameterMenu extends Menu {
             }
         });
 
-        itemStack = new ItemStack(builderTrait.isIgnoreLiquid() ? Material.GREEN_CONCRETE : Material.RED_CONCRETE);
+        itemStack = new ItemStack(builderTrait.isIgnoreLiquids() ? Material.GREEN_CONCRETE : Material.RED_CONCRETE);
         meta = itemStack.getItemMeta();
         if (meta != null) {
             meta.setDisplayName(ChatColor.RESET+"Ignore Liquids");
             List<String> lore = new ArrayList<>();
-            lore.add(ChatColor.AQUA + "Current: " + ChatColor.GREEN + builderTrait.isIgnoreLiquid());
+            lore.add(ChatColor.AQUA + "Current: " + ChatColor.GREEN + builderTrait.isIgnoreLiquids());
             meta.setLore(lore);
             itemStack.setItemMeta(meta);
         }
         this.setSlot(3, new Slot(itemStack) {
             @Override
             public void onLeftClick() {
-                builderTrait.setIgnoreLiquid(!builderTrait.isIgnoreLiquid());
+                builderTrait.setIgnoreLiquids(!builderTrait.isIgnoreLiquids());
                 setContents();
                 open();
             }

@@ -2,7 +2,7 @@ package fr.weefle.constructor.commands;
 
 import fr.weefle.constructor.SchematicBuilder;
 import fr.weefle.constructor.hooks.citizens.BuilderTrait;
-import fr.weefle.constructor.schematic.BuilderSchematic;
+import fr.weefle.constructor.schematic.Schematic;
 import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -40,7 +40,7 @@ public class PreviewSubCommand extends AbstractCommand { // TODO take schematic 
         //Bukkit.getLogger().warning(tmpLoc.toString());
 
         if (builder.getState() == BuilderTrait.BuilderState.IDLE) {
-            BuilderSchematic schematic = builder.getSchematic();
+            Schematic schematic = builder.getSchematic();
             if (schematic != null) {
                 HashMap<Location, BlockData> blocks = new HashMap<>();
                 for (int x = 0; x < schematic.getWidth(); ++x) {

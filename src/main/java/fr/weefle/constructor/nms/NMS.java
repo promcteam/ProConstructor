@@ -1,7 +1,7 @@
-package fr.weefle.constructor.NMS;
+package fr.weefle.constructor.nms;
 
-import fr.weefle.constructor.NMS.providers.*;
 import fr.weefle.constructor.api.StructureUtil;
+import fr.weefle.constructor.nms.providers.*;
 import org.bukkit.Bukkit;
 
 public class NMS {
@@ -11,7 +11,6 @@ public class NMS {
     private        NMSProvider                                nmsProvider;
     private        fr.weefle.constructor.api.Util             util;
     private        fr.weefle.constructor.api.TileChecker      checker;
-    private        fr.weefle.constructor.api.SchematicChooser chooser;
     private        StructureUtil                              structure;
 
     public boolean setInstance() {
@@ -33,7 +32,6 @@ public class NMS {
         }
         setUtil(new NMSUtil());
         setChecker(new TileChecker());
-        setChooser(new SchematicChooser());
         NMS.instance = this;
         return true;
     }
@@ -66,14 +64,6 @@ public class NMS {
 
     public void setChecker(fr.weefle.constructor.api.TileChecker checker) {
         this.checker = checker;
-    }
-
-    public fr.weefle.constructor.api.SchematicChooser getChooser() {
-        return chooser;
-    }
-
-    public void setChooser(fr.weefle.constructor.api.SchematicChooser chooser) {
-        this.chooser = chooser;
     }
 
     public static Class<?> getNMSClass(String classname) {

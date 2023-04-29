@@ -1,8 +1,8 @@
-package fr.weefle.constructor.NMS;
+package fr.weefle.constructor.nms;
 
-import fr.weefle.constructor.block.EmptyBuildBlock;
-import fr.weefle.constructor.block.EntityMap;
-import fr.weefle.constructor.block.TileBuildBlock;
+import fr.weefle.constructor.schematic.blocks.EmptyBuildBlock;
+import fr.weefle.constructor.schematic.blocks.EntityMap;
+import fr.weefle.constructor.schematic.blocks.TileBuildBlock;
 import org.bukkit.block.Block;
 
 public class TileChecker implements fr.weefle.constructor.api.TileChecker {
@@ -12,7 +12,7 @@ public class TileChecker implements fr.weefle.constructor.api.TileChecker {
         if (next instanceof TileBuildBlock) {
             Object nbt = NMS.getInstance().getNMSProvider().newNBTTagCompound();
             //Bukkit.getLogger().warning(((TileBuildBlock) next).nbt + "");
-            NMS.getInstance().getNMSProvider().nbtTagCompound_merge(nbt, ((TileBuildBlock) next).nbt);
+            NMS.getInstance().getNMSProvider().nbtTagCompound_merge(nbt, ((TileBuildBlock) next).getNBT());
             NMS.getInstance().getNMSProvider().nbtTagCompound_putInt(nbt, "x", pending.getX());
             NMS.getInstance().getNMSProvider().nbtTagCompound_putInt(nbt, "y", pending.getY());
             NMS.getInstance().getNMSProvider().nbtTagCompound_putInt(nbt, "z", pending.getZ());
@@ -30,7 +30,7 @@ public class TileChecker implements fr.weefle.constructor.api.TileChecker {
             }
         } else if (next instanceof EntityMap) {
             //NBTTagCompound nmsnbt = new NBTTagCompound();
-            Object nmsnbt = NMSUtil.fromNative(((EntityMap) next).nbt);
+            Object nmsnbt = NMSUtil.fromNative(((EntityMap) next).getNBT());
             //nmsnbt.a((NBTTagCompound) NMS.getInstance().getUtil().fromNative(nbt));
             //Bukkit.getLogger().warning(nbt.asString());
             //nmsnbt.set("Items", items);

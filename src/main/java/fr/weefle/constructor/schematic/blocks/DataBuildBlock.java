@@ -1,4 +1,4 @@
-package fr.weefle.constructor.block;
+package fr.weefle.constructor.schematic.blocks;
 
 import org.bukkit.block.data.BlockData;
 
@@ -16,6 +16,4 @@ public class DataBuildBlock extends EmptyBuildBlock {
     public BlockData getMat() {
         return data;
     }
-
-
 }

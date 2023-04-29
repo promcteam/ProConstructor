@@ -2,13 +2,13 @@ package fr.weefle.constructor;
 
 import com.denizenscript.denizen.npc.traits.AssignmentTrait;
 import com.denizenscript.denizen.objects.NPCTag;
-import fr.weefle.constructor.NMS.NMS;
 import fr.weefle.constructor.hooks.DenizenSupport;
 import fr.weefle.constructor.hooks.citizens.BuilderTrait;
 import fr.weefle.constructor.listener.SelectionListener;
 import fr.weefle.constructor.listener.TraitListener;
-import fr.weefle.constructor.schematic.BuilderSchematic;
-import fr.weefle.constructor.util.Structure;
+import fr.weefle.constructor.nms.NMS;
+import fr.weefle.constructor.schematic.RawSchematic;
+import fr.weefle.constructor.schematic.Schematic;
 import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -98,28 +98,18 @@ public class SchematicBuilder extends JavaPlugin {
     }
 
     @Nullable
-    public static BuilderSchematic getSchematic(String name) throws Exception {
-        File dir  = new File(SchematicBuilder.getInstance().config().getSchematicsFolder());
-        File file = new File(dir, name);
-        if (!file.exists()) {return null;}
-        BuilderSchematic schematic;
-        if (name.endsWith(".schem")) {
-            schematic = NMS.getInstance().getChooser().setSchematic(dir, name);
-        } else {
-            schematic = new Structure(dir, name).load(dir, name);
+    public static Schematic getSchematic(File file) throws Exception {
+        if (!file.isFile()) {return null;}
+        String name = file.getName();
+        if (name.endsWith(".schem") || name.endsWith(".nbt")) {
+            return new RawSchematic(file);
         }
-        /*if(NMS.getInstance().getVersion().equals("v1_15_R1")){
-        MCEditSchematicFormat_1_15_R1 format = new MCEditSchematicFormat_1_15_R1();
-        inst.schematic = format.load(dir, arg);
-        }else if(NMS.getInstance().getVersion().equals("v1_14_R1")) {
-            MCEditSchematicFormat_1_14_R1 format = new MCEditSchematicFormat_1_14_R1();
-            inst.schematic = format.load(dir, arg);
-        }
-        else if(NMS.getInstance().getVersion().equals("v1_13_R2")) {
-            MCEditSchematicFormat_1_13_R2 format = new MCEditSchematicFormat_1_13_R2();
-            inst.schematic = format.load(dir, arg);
-        }*/
-        return schematic;
+        return null;
+    }
+
+    @Nullable
+    public static Schematic getSchematic(String name) throws Exception {
+        return getSchematic(new File(SchematicBuilder.getInstance().config().getSchematicsFolder(), name));
     }
 
     public static String runTask(String taskname, NPC npc) {
@@ -159,9 +149,9 @@ public class SchematicBuilder extends JavaPlugin {
 
     public static SchematicBuilder getInstance() {return SchematicBuilder.instance;}
 
-    public static String format(String input, NPC npc, BuilderSchematic schem, CommandSender player, String item, String amount) {
+    public static String format(String input, NPC npc, Schematic schem, CommandSender player, String item, String amount) {
         input = input.replace("<NPC>", npc.getName());
-        input = input.replace("<SCHEMATIC>", schem == null ? "" : schem.getName());
+        input = input.replace("<SCHEMATIC>", schem == null ? "" : schem.getPath());
         input = input.replace("<PLAYER>", player == null ? "" : player.getName());
         input = input.replace("<ITEM>", item == null ? "" : item);
         input = input.replace("<AMOUNT>", amount);

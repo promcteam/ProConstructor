@@ -1,4 +1,4 @@
-package fr.weefle.constructor.NMS.providers;
+package fr.weefle.constructor.nms.providers;
 
 import org.bukkit.World;
 

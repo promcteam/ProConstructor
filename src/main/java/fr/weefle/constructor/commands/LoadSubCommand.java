@@ -2,7 +2,7 @@ package fr.weefle.constructor.commands;
 
 import fr.weefle.constructor.SchematicBuilder;
 import fr.weefle.constructor.hooks.citizens.BuilderTrait;
-import fr.weefle.constructor.schematic.BuilderSchematic;
+import fr.weefle.constructor.schematic.Schematic;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -88,7 +88,7 @@ public class LoadSubCommand extends AbstractCommand {
             @Override
             public void run() {
                 try {
-                    BuilderSchematic schematic = SchematicBuilder.getSchematic(arg);
+                    Schematic schematic = SchematicBuilder.getSchematic(arg);
                     new BukkitRunnable() {
                         @Override
                         public void run() {
