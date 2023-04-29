@@ -1,6 +1,6 @@
-package fr.weefle.constructor.citizens.persistence;
+package fr.weefle.constructor.hooks.citizens.persistence;
 
-import fr.weefle.constructor.citizens.BuilderTrait;
+import fr.weefle.constructor.hooks.citizens.BuilderTrait;
 
 public class PatternXZPersistenceLoader extends EnumPersistenceLoader<BuilderTrait.BuildPatternXZ> {
     public PatternXZPersistenceLoader() {super(BuilderTrait.BuildPatternXZ.class);}

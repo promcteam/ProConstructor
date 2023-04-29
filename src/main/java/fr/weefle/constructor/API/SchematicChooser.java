@@ -1,6 +1,6 @@
-package fr.weefle.constructor.API;
+package fr.weefle.constructor.api;
 
-import fr.weefle.constructor.essentials.BuilderSchematic;
+import fr.weefle.constructor.schematic.BuilderSchematic;
 
 import java.io.File;
 

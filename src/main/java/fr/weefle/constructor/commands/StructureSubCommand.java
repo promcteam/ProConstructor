@@ -1,7 +1,7 @@
 package fr.weefle.constructor.commands;
 
-import fr.weefle.constructor.API.StructureUtil;
-import fr.weefle.constructor.extra.SelectionListener;
+import fr.weefle.constructor.api.StructureUtil;
+import fr.weefle.constructor.listener.SelectionListener;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;

@@ -1,7 +1,7 @@
 package fr.weefle.constructor.commands;
 
 import fr.weefle.constructor.SchematicBuilder;
-import fr.weefle.constructor.citizens.BuilderTrait;
+import fr.weefle.constructor.hooks.citizens.BuilderTrait;
 import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;

@@ -1,6 +1,5 @@
-package fr.weefle.constructor.NMS;
+package fr.weefle.constructor.block;
 
-import fr.weefle.constructor.block.DataBuildBlock;
 import org.bukkit.block.data.BlockData;
 
 public class TileBuildBlock extends DataBuildBlock {

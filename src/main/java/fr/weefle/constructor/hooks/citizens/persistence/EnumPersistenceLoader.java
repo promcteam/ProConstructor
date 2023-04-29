@@ -1,4 +1,4 @@
-package fr.weefle.constructor.citizens.persistence;
+package fr.weefle.constructor.hooks.citizens.persistence;
 
 import net.citizensnpcs.api.persistence.Persister;
 import net.citizensnpcs.api.util.DataKey;

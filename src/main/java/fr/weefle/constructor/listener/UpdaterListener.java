@@ -1,5 +1,6 @@
-package fr.weefle.constructor.updater;
+package fr.weefle.constructor.listener;
 
+import fr.weefle.constructor.Updater;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;

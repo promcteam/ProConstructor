@@ -2,9 +2,10 @@ package fr.weefle.constructor.NMS;
 
 import fr.weefle.constructor.block.EmptyBuildBlock;
 import fr.weefle.constructor.block.EntityMap;
+import fr.weefle.constructor.block.TileBuildBlock;
 import org.bukkit.block.Block;
 
-public class TileChecker implements fr.weefle.constructor.API.TileChecker {
+public class TileChecker implements fr.weefle.constructor.api.TileChecker {
 
 
     public void check(EmptyBuildBlock next, Block pending) {

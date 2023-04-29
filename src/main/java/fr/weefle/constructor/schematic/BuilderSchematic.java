@@ -1,111 +1,116 @@
-package fr.weefle.constructor.essentials;
+package fr.weefle.constructor.schematic;
 
 import com.google.common.base.Preconditions;
 import fr.weefle.constructor.NMS.NMS;
 import fr.weefle.constructor.block.DataBuildBlock;
 import fr.weefle.constructor.block.EmptyBuildBlock;
-import fr.weefle.constructor.citizens.BuilderTrait;
+import fr.weefle.constructor.hooks.citizens.BuilderTrait;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.World;
-import org.bukkit.block.data.BlockData;
 import org.bukkit.util.Vector;
+import org.jetbrains.annotations.Nullable;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Queue;
+import java.util.*;
 
-@SuppressWarnings("deprecation")
 public class BuilderSchematic {
-    public Vector                offset;
-    public EmptyBuildBlock[][][] Blocks            = new EmptyBuildBlock[1][1][1];
-    public Queue<BlockData>      excludedMaterials = new LinkedList<>(); // TODO I got a feeling that this is unnecessary
-    // Instead, send excavated materials directly to BuilderTrait.ExcavateMaterials
+    private final String                name;
+    private final EmptyBuildBlock[][][] blocks;
+    private final Vector offset;
+    private final Vector schematicOrigin;
 
-    public String Name            = "";
-    public Vector SchematicOrigin = null;
+    private int yOffset     = 0;
+    private int userYOffset = 0;
 
-    public Location getSchematicOrigin(BuilderTrait Builder) {
-        if (SchematicOrigin == null) return null;
-
-
-        World W = Builder.getNPC().getEntity().getWorld();
-
-        return SchematicOrigin.clone().toLocation(W).add(dwidth / 2, 0, dlength / 2);
+    public BuilderSchematic(String name, int w, int h, int l, Vector offset, Vector schematicOrigin) {
+        this.name = name;
+        this.blocks = new EmptyBuildBlock[w][h][l];
+        this.offset = offset;
+        this.schematicOrigin = schematicOrigin;
     }
 
-    //TODO change int mat by BlockData mat
-    public Queue<EmptyBuildBlock> CreateMarks(double i, double j, double k, Material mat) {
-        dwidth = i;
-        dlength = k;
-        Queue<EmptyBuildBlock> Q = new LinkedList<EmptyBuildBlock>();
+    public String getName() {return name;}
+
+    public int getWidth() {return blocks.length;}
+
+    public int getHeight() {return blocks[0].length;}
+
+    public int getLength() {return blocks[0][0].length;}
+
+    public EmptyBuildBlock getBlockAt(int x, int y, int z) {return blocks[x][y][z];}
+
+    public void setBlockAt(int x, int y, int z, EmptyBuildBlock block) { blocks[x][y][z] = block; }
+
+    public Vector getWEOffset() {return offset;}
+
+    public Location getSchematicOrigin(BuilderTrait Builder) {
+        if (schematicOrigin == null) {return null;}
+        return schematicOrigin.clone().toLocation(Builder.getNPC().getEntity().getWorld()).add(getWidth()/2.0, 0, getLength()/.02);
+    }
+
+    public Queue<EmptyBuildBlock> createMarks(Material mat) {
+        Queue<EmptyBuildBlock> Q = new LinkedList<>();
         Q.clear();
         Q.add(new DataBuildBlock(0, 0, 0, mat.createBlockData()));
-        Q.add(new DataBuildBlock((int) (i - 1), 0, 0, mat.createBlockData()));
-        Q.add(new DataBuildBlock(0, 0, (int) k - 1, mat.createBlockData()));
-        Q.add(new DataBuildBlock((int) i - 1, 0, (int) k - 1, mat.createBlockData()));
+        Q.add(new DataBuildBlock(getWidth() - 1, 0, 0, mat.createBlockData()));
+        Q.add(new DataBuildBlock(0, 0, (int) getLength() - 1, mat.createBlockData()));
+        Q.add(new DataBuildBlock(getWidth() - 1, 0, getLength() - 1, mat.createBlockData()));
         return Q;
     }
 
 
     public Location offset(EmptyBuildBlock block, Location origin) {
-
-
-        return new Location(origin.getWorld(), block.X - this.dwidth / 2 + origin.getBlockX() + 1, block.Y - yoffset + useryoffset + origin.getBlockY() + .5, block.Z - this.dlength / 2 + origin.getBlockZ() + 1);
+        return new Location(origin.getWorld(), block.X - getWidth()/2.0 + origin.getBlockX() + 1, block.Y - yOffset + userYOffset + origin.getBlockY() + .5, block.Z - getLength()/2.0 + origin.getBlockZ() + 1);
     }
 
-
-    int yoffset     = 0;
-    int useryoffset = 0;
-
-    public Queue<EmptyBuildBlock> BuildQueue(Location origin, boolean ignoreLiquids, boolean ignoreAir, boolean excavate, BuilderTrait.BuildPatternXZ pattern, boolean GroupByLayer, int ylayers, int useryoffset) {
+    public Queue<EmptyBuildBlock> buildQueue(Location origin,
+                                             boolean ignoreLiquids, boolean ignoreAir, boolean excavate,
+                                             BuilderTrait.BuildPatternXZ pattern,
+                                             boolean GroupByLayer, int ylayers, int useryoffset,
+                                             @Nullable Map<Material,Integer> excavated) {
         Preconditions.checkArgument(ylayers > 0, "ylayers must be positive, but got " + ylayers);
-        dwidth = width();
-        dlength = length();
-        yoffset = 0;
-        this.useryoffset = useryoffset;
-        Queue<EmptyBuildBlock> Q = new LinkedList<EmptyBuildBlock>();
+        yOffset = 0;
+        this.userYOffset = useryoffset;
+        Queue<EmptyBuildBlock> Q = new LinkedList<>();
 
         //clear out empty planes on the bottom.
         boolean ok = false;
-        for (int tmpy = 0; tmpy < this.height(); tmpy++) {
-            for (int tmpx = 0; tmpx < this.width(); tmpx++) {
-                for (int tmpz = 0; tmpz < this.length(); tmpz++) {
+        for (int tmpy = 0; tmpy < this.getHeight(); tmpy++) {
+            for (int tmpx = 0; tmpx < this.getWidth(); tmpx++) {
+                for (int tmpz = 0; tmpz < this.getLength(); tmpz++) {
 
-                    if (this.Blocks[tmpx][tmpy][tmpz].getMat().getMaterial() != Material.AIR) {
+                    if (this.blocks[tmpx][tmpy][tmpz].getMat().getMaterial() != Material.AIR) {
                         ok = true;
                     }
                 }
             }
             if (ok) break;
-            else yoffset++;
+            else yOffset++;
         }
-        Queue<EmptyBuildBlock> exair     = new LinkedList<EmptyBuildBlock>();
-        Queue<EmptyBuildBlock> air       = new LinkedList<EmptyBuildBlock>();
-        Queue<EmptyBuildBlock> base      = new LinkedList<EmptyBuildBlock>();
-        Queue<EmptyBuildBlock> furniture = new LinkedList<EmptyBuildBlock>();
-        Queue<EmptyBuildBlock> redstone  = new LinkedList<EmptyBuildBlock>();
-        Queue<EmptyBuildBlock> Liq       = new LinkedList<EmptyBuildBlock>();
-        Queue<EmptyBuildBlock> Decor     = new LinkedList<EmptyBuildBlock>();
-        Queue<EmptyBuildBlock> buildQ    = new LinkedList<EmptyBuildBlock>();
+        Queue<EmptyBuildBlock> exair     = new LinkedList<>();
+        Queue<EmptyBuildBlock> air       = new LinkedList<>();
+        Queue<EmptyBuildBlock> base      = new LinkedList<>();
+        Queue<EmptyBuildBlock> furniture = new LinkedList<>();
+        Queue<EmptyBuildBlock> redstone  = new LinkedList<>();
+        Queue<EmptyBuildBlock> Liq       = new LinkedList<>();
+        Queue<EmptyBuildBlock> Decor     = new LinkedList<>();
+        Queue<EmptyBuildBlock> buildQ    = new LinkedList<>();
 
-        for (int y = yoffset; y < height(); y += ylayers) {
+        for (int y = yOffset; y < getHeight(); y += ylayers) {
             List<EmptyBuildBlock> thisLayer;
             switch (pattern) {
                 case LINEAR:
-                    thisLayer = NMS.getInstance().getUtil().LinearPrintLayer(y, ylayers, Blocks, false);
+                    thisLayer = NMS.getInstance().getUtil().LinearPrintLayer(y, ylayers, blocks, false);
                     break;
                 case REVERSE_LINEAR:
-                    thisLayer = NMS.getInstance().getUtil().LinearPrintLayer(y, ylayers, Blocks, true);
+                    thisLayer = NMS.getInstance().getUtil().LinearPrintLayer(y, ylayers, blocks, true);
                     break;
                 case REVERSE_SPIRAL:
-                    thisLayer = NMS.getInstance().getUtil().spiralPrintLayer(y, ylayers, Blocks, true);
+                    thisLayer = NMS.getInstance().getUtil().spiralPrintLayer(y, ylayers, blocks, true);
                     break;
                 case SPIRAL:
                 default:
-                    thisLayer = NMS.getInstance().getUtil().spiralPrintLayer(y, ylayers, Blocks, false);
+                    thisLayer = NMS.getInstance().getUtil().spiralPrintLayer(y, ylayers, blocks, false);
                     break;
             }
 
@@ -116,7 +121,12 @@ public class BuilderSchematic {
 
                 if (excavate && !pending.isEmpty()) {
                     exair.add(new EmptyBuildBlock(b.X, b.Y, b.Z));
-                    excludedMaterials.add(pending.getBlockData());
+                    if (excavated != null) {
+                        Material material = pending.getType();
+                        if (material != org.bukkit.Material.AIR && material.isItem()) {
+                            excavated.put(material, excavated.getOrDefault(material, 0) + 1);
+                        }
+                    }
                 }
 
                 if (!excavate) {
@@ -128,16 +138,20 @@ public class BuilderSchematic {
                 org.bukkit.Material m = b.getMat().getMaterial();
 
                 switch (m) {
+                    //<editor-fold defaultstate="collapsed" desc="isAir">
                     case AIR:
                     case CAVE_AIR:
                     case VOID_AIR:
+                    //</editor-fold>
                         //first
                         if (!ignoreAir && !excavate) air.add(b);
                         break;
+                    //<editor-fold defaultstate="collapsed" desc="isLiquid">
                     case WATER:
                     case LEGACY_STATIONARY_WATER:
                     case LAVA:
                     case LEGACY_STATIONARY_LAVA:
+                    //</editor-fold>
                         //5th
                         if (!ignoreLiquids) Liq.add(b);
                         break;
@@ -145,6 +159,7 @@ public class BuilderSchematic {
                     case GRAVEL:
                         Liq.add(b);
                         break;
+                    //<editor-fold defaultstate="collapsed" desc="isDecor">
                     case TORCH:
                     case PAINTING:
                     case SNOW:
@@ -176,9 +191,11 @@ public class BuilderSchematic {
                     case POTATO:
                     case LEGACY_SKULL:
                     case LEGACY_CARPET:
+                    //</editor-fold>
                         //very last
                         Decor.add(b);
                         break;
+                    //<editor-fold defaultstate="collapsed" desc="isRedstone">
                     case LEGACY_REDSTONE_TORCH_ON:
                     case LEGACY_REDSTONE_TORCH_OFF:
                     case REDSTONE_WIRE:
@@ -211,9 +228,11 @@ public class BuilderSchematic {
                     case LEGACY_GOLD_PLATE:
                     case LEGACY_IRON_PLATE:
                     case LEGACY_WOOD_BUTTON:
+                    //</editor-fold>
                         //4th
                         redstone.add(b);
                         break;
+                    //<editor-fold defaultstate="collapsed" desc="isFurniture">
                     case FURNACE:
                     case LEGACY_BURNING_FURNACE:
                     case BREWING_STAND:
@@ -247,6 +266,7 @@ public class BuilderSchematic {
                     case TRAPPED_CHEST:
                     case ANVIL:
                     case FLOWER_POT:
+                    //</editor-fold>
                         //3rd
                         furniture.add(b);
                         break;
@@ -305,35 +325,9 @@ public class BuilderSchematic {
         return Q;
     }
 
-    public BuilderSchematic(int w, int h, int l) {
-        Blocks = new EmptyBuildBlock[w][h][l];
-        dwidth = w;
-        dlength = l;
-    }
-
-    public BuilderSchematic() {
-
-    }
-
-    public double dwidth, dlength;
-
-    public int width() {
-        return Blocks.length;
-    }
-
-    public int height() {
-        return Blocks[0].length;
-    }
-
-    public int length() {
-        return Blocks[0][0].length;
-    }
-
     public String getInfo() {
-        return ChatColor.GREEN + "Name: " + ChatColor.WHITE + Name + ChatColor.GREEN + " size: " + ChatColor.WHITE + width() + " wide, " + length() + " long, " + height() + " tall";
+        return ChatColor.GREEN + "Name: " + ChatColor.WHITE + name + ChatColor.GREEN + " size: " + ChatColor.WHITE + getWidth() + " wide, " + getLength() + " long, " + getHeight() + " tall";
     }
-
-
 }
 
 

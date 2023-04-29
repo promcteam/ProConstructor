@@ -2,7 +2,7 @@ package fr.weefle.constructor.menu.menus;
 
 import com.google.common.base.Preconditions;
 import fr.weefle.constructor.SchematicBuilder;
-import fr.weefle.constructor.citizens.BuilderTrait;
+import fr.weefle.constructor.hooks.citizens.BuilderTrait;
 import fr.weefle.constructor.menu.Menu;
 import fr.weefle.constructor.menu.Slot;
 import net.citizensnpcs.api.npc.NPC;

@@ -1,4 +1,4 @@
-package fr.weefle.constructor.extra;
+package fr.weefle.constructor;
 
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;

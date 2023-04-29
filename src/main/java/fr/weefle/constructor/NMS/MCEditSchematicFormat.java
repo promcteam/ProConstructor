@@ -2,7 +2,8 @@ package fr.weefle.constructor.NMS;
 
 import fr.weefle.constructor.block.DataBuildBlock;
 import fr.weefle.constructor.block.EmptyBuildBlock;
-import fr.weefle.constructor.essentials.BuilderSchematic;
+import fr.weefle.constructor.block.TileBuildBlock;
+import fr.weefle.constructor.schematic.BuilderSchematic;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.data.BlockData;
@@ -205,7 +206,7 @@ public class MCEditSchematicFormat {
         }
 
 
-        BuilderSchematic out = new BuilderSchematic(width, height, length);
+        BuilderSchematic out = new BuilderSchematic(filename, width, height, length, offsetWE, origin);
 
         int index = 0;
         int i     = 0;
@@ -258,17 +259,13 @@ public class MCEditSchematicFormat {
                 M = new DataBuildBlock(x, y, z, data);
             }
 
-            out.Blocks[x][y][z] = M;
+            out.setBlockAt(x, y, z, M);
             //Bukkit.getLogger().warning(x+","+y+","+z);
 
             index++;
         }
         //Bukkit.getLogger().warning(out.Blocks[10][11][6].getMat().getAsString());
 
-
-        out.Name = filename;
-        out.SchematicOrigin = origin;
-        out.offset = offsetWE;
         fis.close();
         return out;
 

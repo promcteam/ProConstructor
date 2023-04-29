@@ -1,8 +1,8 @@
 package fr.weefle.constructor.commands;
 
 import fr.weefle.constructor.SchematicBuilder;
-import fr.weefle.constructor.citizens.BuilderTrait;
-import fr.weefle.constructor.essentials.BuilderSchematic;
+import fr.weefle.constructor.hooks.citizens.BuilderTrait;
+import fr.weefle.constructor.schematic.BuilderSchematic;
 import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -19,7 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
-public class PreviewSubCommand extends AbstractCommand {
+public class PreviewSubCommand extends AbstractCommand { // TODO take schematic origin into account
     public PreviewSubCommand(@Nullable SchematicBuilderCommand parent) {
         super("preview", "Shows the preview of the current structure", parent);
         this.permission = "schematicbuilder.preview";
@@ -43,11 +43,11 @@ public class PreviewSubCommand extends AbstractCommand {
             BuilderSchematic schematic = builder.getSchematic();
             if (schematic != null) {
                 HashMap<Location, BlockData> blocks = new HashMap<>();
-                for (int x = 0; x < schematic.width(); ++x) {
-                    for (int y = 0; y < schematic.height(); ++y) {
-                        for (int z = 0; z < schematic.length(); ++z) {
+                for (int x = 0; x < schematic.getWidth(); ++x) {
+                    for (int y = 0; y < schematic.getHeight(); ++y) {
+                        for (int z = 0; z < schematic.getLength(); ++z) {
                             Location  loc   = tmpLoc.clone().add(x, y, z);
-                            BlockData bdata = schematic.Blocks[x][y][z].getMat();
+                            BlockData bdata = schematic.getBlockAt(x, y, z).getMat();
                             blocks.put(loc, bdata);
                             player.sendBlockChange(loc, bdata);
                         }

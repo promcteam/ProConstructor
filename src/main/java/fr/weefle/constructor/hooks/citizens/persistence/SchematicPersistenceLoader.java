@@ -1,7 +1,7 @@
-package fr.weefle.constructor.citizens.persistence;
+package fr.weefle.constructor.hooks.citizens.persistence;
 
 import fr.weefle.constructor.SchematicBuilder;
-import fr.weefle.constructor.essentials.BuilderSchematic;
+import fr.weefle.constructor.schematic.BuilderSchematic;
 import net.citizensnpcs.api.persistence.Persister;
 import net.citizensnpcs.api.util.DataKey;
 
@@ -24,6 +24,6 @@ public class SchematicPersistenceLoader implements Persister<BuilderSchematic> {
 
     @Override
     public void save(BuilderSchematic schematic, DataKey dataKey) {
-        dataKey.setString("", schematic == null ? null : schematic.Name);
+        dataKey.setString("", schematic == null ? null : schematic.getName());
     }
 }

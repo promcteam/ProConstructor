@@ -5,8 +5,8 @@ import com.google.common.collect.Maps;
 import fr.weefle.constructor.block.DataBuildBlock;
 import fr.weefle.constructor.block.EmptyBuildBlock;
 import fr.weefle.constructor.block.EntityMap;
-import fr.weefle.constructor.essentials.BuilderSchematic;
 import fr.weefle.constructor.nbt.*;
+import fr.weefle.constructor.schematic.BuilderSchematic;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.data.BlockData;
@@ -147,7 +147,7 @@ public class Structure {
         populateData(data);
 
 
-        BuilderSchematic out = new BuilderSchematic(dimensions[0], dimensions[1], dimensions[2]);
+        BuilderSchematic out = new BuilderSchematic(filename, dimensions[0], dimensions[1], dimensions[2], new Vector(0, 0, 0), origin);
         width = (short) dimensions[0];
         height = (short) dimensions[1];
         length = (short) dimensions[2];
@@ -182,7 +182,7 @@ public class Structure {
             }
 
 
-            out.Blocks[position.getBlockX()][position.getBlockY()][position.getBlockZ()] = M;
+            out.setBlockAt(position.getBlockX(), position.getBlockY(), position.getBlockZ(), M);
             //Bukkit.getLogger().warning(position.getBlockX()+","+position.getBlockY()+","+position.getBlockZ());
 
 
@@ -194,18 +194,12 @@ public class Structure {
         for (int x = 0; x < width; ++x) {
             for (int y = 0; y < height; ++y) {
                 for (int z = 0; z < length; ++z) {
-
-                    if (out.Blocks[x][y][z] == null) {
-                        out.Blocks[x][y][z] = new EmptyBuildBlock(x, y, z);
-                    }
-
+                    if (out.getBlockAt(x, y, z) == null) {out.setBlockAt(x, y, z, new EmptyBuildBlock(x, y, z));} //
+                    // TODO try to optimize
                 }
             }
         }
 
-
-        out.Name = filename;
-        out.SchematicOrigin = origin;
         inputStream.close();
         return out;
 

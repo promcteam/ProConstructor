@@ -3,11 +3,11 @@ package fr.weefle.constructor;
 import com.denizenscript.denizen.npc.traits.AssignmentTrait;
 import com.denizenscript.denizen.objects.NPCTag;
 import fr.weefle.constructor.NMS.NMS;
-import fr.weefle.constructor.citizens.BuilderTrait;
-import fr.weefle.constructor.essentials.BuilderSchematic;
-import fr.weefle.constructor.extra.DenizenSupport;
-import fr.weefle.constructor.extra.SelectionListener;
-import fr.weefle.constructor.extra.TraitListener;
+import fr.weefle.constructor.hooks.DenizenSupport;
+import fr.weefle.constructor.hooks.citizens.BuilderTrait;
+import fr.weefle.constructor.listener.SelectionListener;
+import fr.weefle.constructor.listener.TraitListener;
+import fr.weefle.constructor.schematic.BuilderSchematic;
 import fr.weefle.constructor.util.Structure;
 import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.Bukkit;
@@ -161,7 +161,7 @@ public class SchematicBuilder extends JavaPlugin {
 
     public static String format(String input, NPC npc, BuilderSchematic schem, CommandSender player, String item, String amount) {
         input = input.replace("<NPC>", npc.getName());
-        input = input.replace("<SCHEMATIC>", schem == null ? "" : schem.Name);
+        input = input.replace("<SCHEMATIC>", schem == null ? "" : schem.getName());
         input = input.replace("<PLAYER>", player == null ? "" : player.getName());
         input = input.replace("<ITEM>", item == null ? "" : item);
         input = input.replace("<AMOUNT>", amount);

@@ -1,6 +1,6 @@
 package fr.weefle.constructor.commands;
 
-import fr.weefle.constructor.citizens.BuilderTrait;
+import fr.weefle.constructor.hooks.citizens.BuilderTrait;
 import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -54,8 +54,8 @@ public class InfoSubCommand extends AbstractCommand {
             sender.sendMessage(ChatColor.BLUE + "On Complete: " + ChatColor.WHITE + builder.getOnComplete() + ChatColor.BLUE + "  " +
                     "On Cancel: " + ChatColor.WHITE + builder.getOnCancel());
             long c = builder.startingcount;
-            sender.sendMessage(ChatColor.BLUE + "Blocks: Total: " + ChatColor.WHITE + c + ChatColor.BLUE + "  Remaining: " + ChatColor.WHITE + builder.Q.size());
-            double percent = ((double) (c - builder.Q.size()) / (double) c) * 100;
+            sender.sendMessage(ChatColor.BLUE + "Blocks: Total: " + ChatColor.WHITE + c + ChatColor.BLUE + "  Remaining: " + ChatColor.WHITE + builder.getQueuedBlocks());
+            double percent = ((double) (c - builder.getQueuedBlocks()) / (double) c) * 100;
             sender.sendMessage(ChatColor.BLUE + "Complete: " + ChatColor.WHITE + String.format("%1$.1f", percent) + "%");
         }
     }

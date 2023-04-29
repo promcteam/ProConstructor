@@ -1,4 +1,4 @@
-package fr.weefle.constructor.API;
+package fr.weefle.constructor.api;
 
 import fr.weefle.constructor.block.EmptyBuildBlock;
 import org.bukkit.block.Block;

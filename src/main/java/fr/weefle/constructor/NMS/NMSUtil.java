@@ -9,7 +9,7 @@ import java.util.*;
 import java.util.Map.Entry;
 
 
-public class NMSUtil implements fr.weefle.constructor.API.Util {
+public class NMSUtil implements fr.weefle.constructor.api.Util {
 
     public String printList(Map<Material, Integer> map) {
         StringBuilder sb = new StringBuilder();

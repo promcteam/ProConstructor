@@ -1,4 +1,4 @@
-package fr.weefle.constructor.extra;
+package fr.weefle.constructor.hooks;
 
 import com.denizenscript.denizen.npc.traits.AssignmentTrait;
 import com.denizenscript.denizen.objects.NPCTag;

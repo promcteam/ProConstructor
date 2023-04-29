@@ -1,7 +1,7 @@
-package fr.weefle.constructor.API;
+package fr.weefle.constructor.api;
 
 import fr.weefle.constructor.NMS.NMS;
-import fr.weefle.constructor.citizens.BuilderTrait;
+import fr.weefle.constructor.hooks.citizens.BuilderTrait;
 import fr.weefle.constructor.util.Structure;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;

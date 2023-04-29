@@ -1,6 +1,5 @@
-package fr.weefle.constructor.updater;
+package fr.weefle.constructor;
 
-import fr.weefle.constructor.SchematicBuilder;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.json.simple.JSONObject;

@@ -1,4 +1,4 @@
-package fr.weefle.constructor.API;
+package fr.weefle.constructor.api;
 
 import com.github.shynixn.structureblocklib.api.bukkit.StructureBlockLibApi;
 import fr.weefle.constructor.SchematicBuilder;

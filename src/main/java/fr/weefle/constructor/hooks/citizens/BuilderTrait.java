@@ -1,17 +1,16 @@
-package fr.weefle.constructor.citizens;
+package fr.weefle.constructor.hooks.citizens;
 
 import fr.weefle.constructor.Config;
 import fr.weefle.constructor.NMS.NMS;
 import fr.weefle.constructor.SchematicBuilder;
 import fr.weefle.constructor.block.DataBuildBlock;
 import fr.weefle.constructor.block.EmptyBuildBlock;
-import fr.weefle.constructor.citizens.persistence.BuilderStatePersistenceLoader;
-import fr.weefle.constructor.citizens.persistence.MaterialIntegerPersistenceLoader;
-import fr.weefle.constructor.citizens.persistence.PatternXZPersistenceLoader;
-import fr.weefle.constructor.citizens.persistence.SchematicPersistenceLoader;
-import fr.weefle.constructor.essentials.BuilderSchematic;
-import fr.weefle.constructor.essentials.BuilderTeleportStuckAction;
+import fr.weefle.constructor.hooks.citizens.persistence.BuilderStatePersistenceLoader;
+import fr.weefle.constructor.hooks.citizens.persistence.MaterialIntegerPersistenceLoader;
+import fr.weefle.constructor.hooks.citizens.persistence.PatternXZPersistenceLoader;
+import fr.weefle.constructor.hooks.citizens.persistence.SchematicPersistenceLoader;
 import fr.weefle.constructor.menu.menus.ParameterMenu;
+import fr.weefle.constructor.schematic.BuilderSchematic;
 import net.citizensnpcs.api.event.NPCRightClickEvent;
 import net.citizensnpcs.api.persistence.DelegatePersistence;
 import net.citizensnpcs.api.persistence.Persist;
@@ -92,17 +91,11 @@ public class BuilderTrait extends Trait implements Toggleable {
     public long     startingcount = 1;
     public Location start         = null;
 
-    public Queue<EmptyBuildBlock> Q = new LinkedList<>();
-
-    public enum BuilderState {IDLE, BUILDING, MARKING, COLLECTING}
-
-    public enum BuildPatternXZ {SPIRAL, REVERSE_SPIRAL, LINEAR, REVERSE_LINEAR}
+    private Queue<EmptyBuildBlock> queue = new LinkedList<>();
 
     private boolean clearingMarks = false;
 
     private final Map<Player, Long> sessions = new HashMap<>();
-
-    private BuilderSchematic _schematic = null;
 
     private Location mypos = null;
 
@@ -189,6 +182,8 @@ public class BuilderTrait extends Trait implements Toggleable {
     public String getOnStart() {return onStart;}
 
     public void setOnStart(@Nullable String onStart) {this.onStart = onStart;}
+
+    public int getQueuedBlocks() { return queue.size(); }
 
     @Override
     public void onSpawn() {
@@ -298,13 +293,13 @@ public class BuilderTrait extends Trait implements Toggleable {
         else if (continueLoc != null) start = continueLoc.clone();
         else start = npc.getEntity().getLocation().clone();
 
-        if (schematic.offset != null && offset) {
+        if (schematic.getWEOffset() != null && offset) {
             offset = false;
-            start = start.add(schematic.offset);
+            start = start.add(schematic.getWEOffset());
         }
 
         try {
-            NeededMaterials = NMS.getInstance().getUtil().MaterialsList(schematic.BuildQueue(start, true, true, excavate, BuildPatternXZ.LINEAR, false, 1, 0));
+            NeededMaterials = NMS.getInstance().getUtil().MaterialsList(schematic.buildQueue(start, true, true, excavate, BuildPatternXZ.LINEAR, false, 1, 0, null));
         } catch (Exception e) {
             Bukkit.getServer().getConsoleSender().sendMessage(e.getMessage());
         }
@@ -329,7 +324,7 @@ public class BuilderTrait extends Trait implements Toggleable {
                             SchematicBuilder.format(SchematicBuilder.getInstance().config().getCollectingMessage(),
                                     npc,
                                     schematic, sender,
-                                    schematic.Name, c +
+                                    schematic.getName(), c +
                                             ""));
                 this.state = BuilderState.COLLECTING;
                 return true;
@@ -351,21 +346,15 @@ public class BuilderTrait extends Trait implements Toggleable {
         else if (continueLoc != null) start = continueLoc.clone();
         else start = npc.getEntity().getLocation().clone();
 
-        if (schematic.offset != null && offset) {
+        if (schematic.getWEOffset() != null && offset) {
             offset = false;
-            start = start.add(schematic.offset);
+            start = start.add(schematic.getWEOffset());
             //Bukkit.getLogger().warning(schematic.offset.toString());
         }
 
-        Q = schematic.BuildQueue(start, ignoreLiquid, ignoreAir, excavate, this.buildPatternXZ, this.GroupByLayer, this.buildYLayers, this.yOffset);
-        if (!schematic.excludedMaterials.isEmpty()) {
-            for (BlockData bdata : schematic.excludedMaterials) {
-                if (bdata.getMaterial() == org.bukkit.Material.AIR || !bdata.getMaterial().isItem()) {continue;}
-                ExcavateMaterials.put(bdata.getMaterial(), ExcavateMaterials.getOrDefault(bdata.getMaterial(), 0) + 1);
-            }
-        }
+        queue = schematic.buildQueue(start, ignoreLiquid, ignoreAir, excavate, this.buildPatternXZ, this.GroupByLayer, this.buildYLayers, this.yOffset, this.ExcavateMaterials);
 
-        startingcount = Q.size();
+        startingcount = queue.size();
         continueLoc = start.clone();
 
         mypos = npc.getEntity().getLocation().clone();
@@ -390,7 +379,7 @@ public class BuilderTrait extends Trait implements Toggleable {
         }
 
         SchematicBuilder.denizenAction(npc, "Build Start");
-        SchematicBuilder.denizenAction(npc, "Build " + schematic.Name + " Start");
+        SchematicBuilder.denizenAction(npc, "Build " + schematic.getName() + " Start");
 
         SetupNextBlock();
 
@@ -405,19 +394,15 @@ public class BuilderTrait extends Trait implements Toggleable {
         onComplete = null;
         onCancel = null;
         onStart = null;
-        _schematic = schematic;
 
         mypos = npc.getEntity().getLocation().clone();
-
-        schematic = new BuilderSchematic();
-        schematic.Name = _schematic.Name;
 
         if (origin == null) {
             continueLoc = this.npc.getEntity().getLocation().clone();
         } else {
             continueLoc = origin.clone();
         }
-        Q = schematic.CreateMarks(_schematic.width(), _schematic.height(), _schematic.length(), mat);
+        queue = schematic.createMarks(mat);
         this.state = BuilderState.MARKING;
 
         SetupNextBlock();
@@ -426,9 +411,6 @@ public class BuilderTrait extends Trait implements Toggleable {
     }
 
     public void SetupNextBlock() {
-
-        BlockData bdata = null;
-
         if (marks.isEmpty()) {
             if (schematic == null) {
                 CancelBuild();
@@ -436,14 +418,12 @@ public class BuilderTrait extends Trait implements Toggleable {
             }
 
 
-            next = Q.poll();
+            next = queue.poll();
 
             if (next == null) {
                 CompleteBuild();
                 return;
             }
-
-            bdata = next.getMat();
 
             pending = Objects.requireNonNull(continueLoc.getWorld()).getBlockAt(schematic.offset(next, continueLoc));
 
@@ -455,8 +435,7 @@ public class BuilderTrait extends Trait implements Toggleable {
 
         }
 
-        assert bdata != null;
-        if (bdata.equals(pending.getLocation().getBlock().getBlockData())) {
+        if (next.getMat().equals(pending.getLocation().getBlock().getBlockData())) {
             SetupNextBlock();
         } else {
             if (npc.isSpawned()) {
@@ -512,7 +491,7 @@ public class BuilderTrait extends Trait implements Toggleable {
     public void CancelBuild() {
         if (onCancel != null) SchematicBuilder.runTask(onCancel, npc);
         SchematicBuilder.denizenAction(npc, "Build Cancel");
-        if (schematic != null) SchematicBuilder.denizenAction(npc, "Build " + schematic.Name + " Cancel");
+        if (schematic != null) SchematicBuilder.denizenAction(npc, "Build " + schematic.getName() + " Cancel");
         stop();
     }
 
@@ -535,7 +514,7 @@ public class BuilderTrait extends Trait implements Toggleable {
             }
 
             SchematicBuilder.denizenAction(npc, "Build Complete");
-            SchematicBuilder.denizenAction(npc, "Build " + schematic.Name + " Complete");
+            SchematicBuilder.denizenAction(npc, "Build " + schematic.getName() + " Complete");
         }
         stop();
     }
@@ -550,8 +529,6 @@ public class BuilderTrait extends Trait implements Toggleable {
             else npc.getEntity().teleport(mypos);
             marks.addAll(_marks);
             _marks.clear();
-            if (_schematic != null) schematic = _schematic;
-            _schematic = null;
         } else {
             this.state = BuilderState.IDLE;
             if (stop && npc.isSpawned()) {
@@ -577,7 +554,7 @@ public class BuilderTrait extends Trait implements Toggleable {
         Plugin dynmap;
         if (stop && (dynmap = Bukkit.getServer().getPluginManager().getPlugin("dynmap")) != null && dynmap.isEnabled()) {
             org.dynmap.DynmapCommonAPI dyn = (DynmapCommonAPI) dynmap;
-            Objects.requireNonNull(dyn).triggerRenderOfVolume(npc.getEntity().getWorld().getName(), this.continueLoc.getBlockX() - schematic.width() / 2, this.continueLoc.getBlockY(), this.continueLoc.getBlockZ() - schematic.length() / 2, this.continueLoc.getBlockX() + schematic.width() / 2, this.continueLoc.getBlockY() + schematic.height() / 2, this.continueLoc.getBlockZ() + schematic.length() / 2);
+            Objects.requireNonNull(dyn).triggerRenderOfVolume(npc.getEntity().getWorld().getName(), this.continueLoc.getBlockX() - schematic.getWidth() / 2, this.continueLoc.getBlockY(), this.continueLoc.getBlockZ() - schematic.getLength() / 2, this.continueLoc.getBlockX() + schematic.getWidth() / 2, this.continueLoc.getBlockY() + schematic.getHeight() / 2, this.continueLoc.getBlockZ() + schematic.getLength() / 2);
         }
 
         sender = null;
@@ -641,6 +618,10 @@ public class BuilderTrait extends Trait implements Toggleable {
         }
         return base.getLocation();
     }
+
+    public enum BuilderState {IDLE, BUILDING, MARKING, COLLECTING}
+
+    public enum BuildPatternXZ {SPIRAL, REVERSE_SPIRAL, LINEAR, REVERSE_LINEAR}
 }
 
 

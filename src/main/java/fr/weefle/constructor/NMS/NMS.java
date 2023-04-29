@@ -1,7 +1,7 @@
 package fr.weefle.constructor.NMS;
 
-import fr.weefle.constructor.API.StructureUtil;
 import fr.weefle.constructor.NMS.providers.*;
+import fr.weefle.constructor.api.StructureUtil;
 import org.bukkit.Bukkit;
 
 public class NMS {
@@ -9,9 +9,9 @@ public class NMS {
     private static NMS                                        instance;
     public         String                                     version;
     private        NMSProvider                                nmsProvider;
-    private        fr.weefle.constructor.API.Util             util;
-    private        fr.weefle.constructor.API.TileChecker      checker;
-    private        fr.weefle.constructor.API.SchematicChooser chooser;
+    private        fr.weefle.constructor.api.Util             util;
+    private        fr.weefle.constructor.api.TileChecker      checker;
+    private        fr.weefle.constructor.api.SchematicChooser chooser;
     private        StructureUtil                              structure;
 
     public boolean setInstance() {
@@ -44,11 +44,11 @@ public class NMS {
 
     public NMSProvider getNMSProvider() {return nmsProvider;}
 
-    public fr.weefle.constructor.API.Util getUtil() {
+    public fr.weefle.constructor.api.Util getUtil() {
         return util;
     }
 
-    public void setUtil(fr.weefle.constructor.API.Util util) {
+    public void setUtil(fr.weefle.constructor.api.Util util) {
         this.util = util;
     }
 
@@ -60,19 +60,19 @@ public class NMS {
         this.version = version;
     }
 
-    public fr.weefle.constructor.API.TileChecker getChecker() {
+    public fr.weefle.constructor.api.TileChecker getChecker() {
         return checker;
     }
 
-    public void setChecker(fr.weefle.constructor.API.TileChecker checker) {
+    public void setChecker(fr.weefle.constructor.api.TileChecker checker) {
         this.checker = checker;
     }
 
-    public fr.weefle.constructor.API.SchematicChooser getChooser() {
+    public fr.weefle.constructor.api.SchematicChooser getChooser() {
         return chooser;
     }
 
-    public void setChooser(fr.weefle.constructor.API.SchematicChooser chooser) {
+    public void setChooser(fr.weefle.constructor.api.SchematicChooser chooser) {
         this.chooser = chooser;
     }
 

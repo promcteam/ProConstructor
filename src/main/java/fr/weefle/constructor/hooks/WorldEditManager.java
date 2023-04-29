@@ -1,4 +1,4 @@
-package fr.weefle.constructor.util;
+package fr.weefle.constructor.hooks;
 
 /*import com.sk89q.worldedit.IncompleteRegionException;
 import com.sk89q.worldedit.LocalSession;

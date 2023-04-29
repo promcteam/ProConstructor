@@ -1,5 +1,6 @@
-package fr.weefle.constructor.extra;
+package fr.weefle.constructor.listener;
 
+import fr.weefle.constructor.util.Cuboid;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;

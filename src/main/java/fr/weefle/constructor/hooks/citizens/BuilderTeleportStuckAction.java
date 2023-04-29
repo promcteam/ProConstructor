@@ -1,4 +1,4 @@
-package fr.weefle.constructor.essentials;
+package fr.weefle.constructor.hooks.citizens;
 
 import net.citizensnpcs.api.ai.Navigator;
 import net.citizensnpcs.api.ai.StuckAction;

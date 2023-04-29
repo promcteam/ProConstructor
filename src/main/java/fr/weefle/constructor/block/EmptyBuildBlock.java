@@ -2,7 +2,6 @@ package fr.weefle.constructor.block;
 
 import org.bukkit.Material;
 import org.bukkit.block.data.BlockData;
-import org.bukkit.material.MaterialData;
 
 public class EmptyBuildBlock {
     public int X, Y, Z;
@@ -17,6 +16,6 @@ public class EmptyBuildBlock {
     }
 
     public BlockData getMat() {
-        return new MaterialData(Material.AIR).getItemType().createBlockData();
+        return Material.AIR.createBlockData();
     }
 }

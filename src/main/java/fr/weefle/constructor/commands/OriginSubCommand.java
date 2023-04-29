@@ -1,6 +1,6 @@
 package fr.weefle.constructor.commands;
 
-import fr.weefle.constructor.citizens.BuilderTrait;
+import fr.weefle.constructor.hooks.citizens.BuilderTrait;
 import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -36,8 +36,8 @@ public class OriginSubCommand extends AbstractCommand {
                     sender.sendMessage(ChatColor.RED + npc.getName() + " has no schematic loaded");
                     return;
                 }
-                if (builder.getSchematic().SchematicOrigin == null) {
-                    sender.sendMessage(ChatColor.RED + builder.getSchematic().Name + " has no origin data");
+                if (builder.getSchematic().getSchematicOrigin(builder) == null) {
+                    sender.sendMessage(ChatColor.RED + builder.getSchematic().getName() + " has no origin data");
                     return;
                 }
                 builder.setOrigin(builder.getSchematic().getSchematicOrigin(builder));
