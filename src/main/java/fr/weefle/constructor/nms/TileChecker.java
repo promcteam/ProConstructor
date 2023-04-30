@@ -30,8 +30,8 @@ public class TileChecker implements fr.weefle.constructor.api.TileChecker {
             }
         } else if (next instanceof EntityMap) {
             //NBTTagCompound nmsnbt = new NBTTagCompound();
-            Object nmsnbt = NMSUtil.fromNative(((EntityMap) next).getNBT());
-            //nmsnbt.a((NBTTagCompound) NMS.getInstance().getUtil().fromNative(nbt));
+            Object nmsnbt = NMS.fromNative(((EntityMap) next).getNBT());
+            //nmsnbt.a((NBTTagCompound) NMSUtil.fromNative(nbt));
             //Bukkit.getLogger().warning(nbt.asString());
             //nmsnbt.set("Items", items);
             NMS.getInstance().getNMSProvider().nbtTagCompound_putInt(nmsnbt, "x", pending.getX());

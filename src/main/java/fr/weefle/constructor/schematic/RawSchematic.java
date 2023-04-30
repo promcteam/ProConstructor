@@ -9,6 +9,7 @@ import fr.weefle.constructor.schematic.blocks.DataBuildBlock;
 import fr.weefle.constructor.schematic.blocks.EmptyBuildBlock;
 import fr.weefle.constructor.schematic.blocks.EntityMap;
 import fr.weefle.constructor.schematic.blocks.TileBuildBlock;
+import fr.weefle.constructor.util.Util;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -25,13 +26,14 @@ import java.util.*;
 
 public class RawSchematic extends Schematic {
     private int width, height, length;
-    private Vector                offset;
-    private Vector                absolutePosition;
-    private EmptyBuildBlock[][][] blocks;
+    private Vector                 offset;
+    private Vector                 absolutePosition;
+    private EmptyBuildBlock[][][]  blocks;
+    private Map<Material, Integer> materials;
 
     public RawSchematic(File file) {
         super(new File(SchematicBuilder.getInstance().config().getSchematicsFolder()).toPath().relativize(file.toPath()).toString(), null);
-        load(true); // TODO make lazy
+        load(false);
     }
 
     @Override
@@ -55,7 +57,7 @@ public class RawSchematic extends Schematic {
         return block == null ? new EmptyBuildBlock(x, y, z) : block;
     }
 
-    private void load(boolean full) {
+    private void load(boolean full) { // TODO load entities
         File file = new File(SchematicBuilder.getInstance().config().getSchematicsFolder()).toPath().resolve(getPath()).toFile();
         if (getPath().endsWith(".schem")) {
             Object data;
@@ -63,7 +65,7 @@ public class RawSchematic extends Schematic {
                 data = NMS.getInstance().getNMSProvider().loadNBTFromInputStream(in);
             } catch (IOException e) {throw new RuntimeException(e);}
 
-            this.width  = NMS.getInstance().getNMSProvider().nbtTagCompound_getShort(data, "Width");
+            this.width = NMS.getInstance().getNMSProvider().nbtTagCompound_getShort(data, "Width");
             this.height = NMS.getInstance().getNMSProvider().nbtTagCompound_getShort(data, "Height");
             this.length = NMS.getInstance().getNMSProvider().nbtTagCompound_getShort(data, "Length");
 
@@ -179,14 +181,27 @@ public class RawSchematic extends Schematic {
             }
 
             for (Map.Entry<Vector,BlockData> entry : blocks.entrySet()) {
-                Vector vector = entry.getKey();
-                int x = vector.getBlockX();
-                int y = vector.getBlockY();
-                int z = vector.getBlockZ();
-                Tag tileEntity = tileEntities.remove(vector);
+                Vector vector     = entry.getKey();
+                int    x          = vector.getBlockX();
+                int    y          = vector.getBlockY();
+                int    z          = vector.getBlockZ();
+                Tag    tileEntity = tileEntities.remove(vector);
                 this.blocks[x][y][z] = tileEntity == null ?
                         new DataBuildBlock(x, y, z, entry.getValue()) :
                         new EntityMap(x, y, z, entry.getValue(), tileEntity);
+            }
+        }
+        if (this.blocks != null) {
+            this.materials = new TreeMap<>();
+            for (EmptyBuildBlock[][] plane : this.blocks) {
+                for (EmptyBuildBlock[] row : plane) {
+                    for (EmptyBuildBlock emptyBuildBlock : row) {
+                        Material material = emptyBuildBlock.getMat().getMaterial();
+                        if (material != Material.AIR && material.isItem()) {
+                            this.materials.put(material, this.materials.getOrDefault(material, 0) + 1);
+                        }
+                    }
+                }
             }
         }
     }
@@ -238,14 +253,26 @@ public class RawSchematic extends Schematic {
     public Location offset(Location origin, int x, int y, int z, int emptyLayers) {
         return new Location(
                 origin.getWorld(),
-                origin.getBlockX()+x-this.offset.getBlockX(),
-                origin.getBlockY()+y-this.offset.getBlockY()-emptyLayers,
-                origin.getBlockZ()+z-this.offset.getBlockZ()+1);
+                origin.getBlockX() + x - this.offset.getBlockX(),
+                origin.getBlockY() + y - this.offset.getBlockY() - emptyLayers,
+                origin.getBlockZ() + z - this.offset.getBlockZ() + 1);
+    }
+
+    @Override
+    @NotNull
+    public Map<Material, Integer> getMaterials() {
+        if (this.materials == null) {
+            load(true);
+            unload();
+        }
+        return this.materials;
     }
 
     @SuppressWarnings("deprecation")
     @Override
+    @NotNull
     public Queue<EmptyBuildBlock> buildQueue(BuilderTrait builder) {
+        load(true);
         int yLayers = builder.getBuildYLayers();
         Preconditions.checkArgument(yLayers > 0, "yLayers must be positive, but got " + yLayers);
 
@@ -279,17 +306,17 @@ public class RawSchematic extends Schematic {
             List<EmptyBuildBlock> thisLayer;
             switch (builder.getBuildPatternXZ()) {
                 case LINEAR:
-                    thisLayer = NMS.getInstance().getUtil().LinearPrintLayer(y, yLayers, blocks, false);
+                    thisLayer = Util.LinearPrintLayer(y, yLayers, blocks, false);
                     break;
                 case REVERSE_LINEAR:
-                    thisLayer = NMS.getInstance().getUtil().LinearPrintLayer(y, yLayers, blocks, true);
+                    thisLayer = Util.LinearPrintLayer(y, yLayers, blocks, true);
                     break;
                 case REVERSE_SPIRAL:
-                    thisLayer = NMS.getInstance().getUtil().spiralPrintLayer(y, yLayers, blocks, true);
+                    thisLayer = Util.spiralPrintLayer(y, yLayers, blocks, true);
                     break;
                 case SPIRAL:
                 default:
-                    thisLayer = NMS.getInstance().getUtil().spiralPrintLayer(y, yLayers, blocks, false);
+                    thisLayer = Util.spiralPrintLayer(y, yLayers, blocks, false);
                     break;
             }
 
@@ -498,6 +525,7 @@ public class RawSchematic extends Schematic {
 
         exair.clear();
         buildQ.clear();
+        unload();
         return queue;
     }
 }

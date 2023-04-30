@@ -89,10 +89,6 @@ public class BuildSubCommand extends AbstractCommand {
             }
         }
 
-        if (builder.isRequireMaterials()) {
-            builder.GetMatsList();
-        }
-
         builder.TryBuild(sender);
     }
 }

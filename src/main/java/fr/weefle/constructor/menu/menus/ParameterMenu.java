@@ -54,9 +54,6 @@ public class ParameterMenu extends Menu {
                     player.sendMessage(ChatColor.RED + npc.getName() + " isn't building anymore.");
                     player.closeInventory();
                 } else {
-                    if (builderTrait.isRequireMaterials()) {
-                        builderTrait.GetMatsList();
-                    }
                     //Bukkit.getLogger().warning(plugin.getBuilder(npc).RequireMaterials.toString());
                     if (!builderTrait.TryBuild(player)) {
                         player.sendMessage(ChatColor.RED + npc.getName() + " needs a structure to build first!");

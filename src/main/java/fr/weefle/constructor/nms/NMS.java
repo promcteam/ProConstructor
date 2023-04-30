@@ -1,15 +1,18 @@
 package fr.weefle.constructor.nms;
 
 import fr.weefle.constructor.api.StructureUtil;
+import fr.weefle.constructor.nbt.*;
 import fr.weefle.constructor.nms.providers.*;
 import org.bukkit.Bukkit;
+
+import java.util.AbstractList;
+import java.util.Map;
 
 public class NMS {
 
     private static NMS                                        instance;
     public         String                                     version;
     private        NMSProvider                                nmsProvider;
-    private        fr.weefle.constructor.api.Util             util;
     private        fr.weefle.constructor.api.TileChecker      checker;
     private        StructureUtil                              structure;
 
@@ -30,7 +33,6 @@ public class NMS {
         } else {
             return false;
         }
-        setUtil(new NMSUtil());
         setChecker(new TileChecker());
         NMS.instance = this;
         return true;
@@ -41,14 +43,6 @@ public class NMS {
     }
 
     public NMSProvider getNMSProvider() {return nmsProvider;}
-
-    public fr.weefle.constructor.api.Util getUtil() {
-        return util;
-    }
-
-    public void setUtil(fr.weefle.constructor.api.Util util) {
-        this.util = util;
-    }
 
     public String getVersion() {
         return version;
@@ -78,4 +72,47 @@ public class NMS {
         return nmsClass;
     }
 
+    public static Object fromNative(Tag foreign) {
+        if (foreign == null) {
+            return null;
+        }
+        if (foreign instanceof CompoundTag) {
+            Object tag = getInstance().getNMSProvider().newNBTTagCompound();
+            for (Map.Entry<String, Tag> entry : ((CompoundTag) foreign).getValue().entrySet()) {
+                getInstance().getNMSProvider().nbtTagCompound_put(tag, entry.getKey(), fromNative(entry.getValue()));
+            }
+            return tag;
+        } else if (foreign instanceof ByteTag) {
+            return getInstance().getNMSProvider().nbtTagByte_valueOf(((ByteTag) foreign).getValue());
+        } else if (foreign instanceof ByteArrayTag) {
+            return getInstance().getNMSProvider().newNBTTagByteArray(((ByteArrayTag) foreign).getValue());
+        } else if (foreign instanceof DoubleTag) {
+            return getInstance().getNMSProvider().nbtTagDouble_valueOf(((DoubleTag) foreign).getValue());
+        } else if (foreign instanceof FloatTag) {
+            return getInstance().getNMSProvider().nbtTagFloat_valueOf(((FloatTag) foreign).getValue());
+        } else if (foreign instanceof IntTag) {
+            return getInstance().getNMSProvider().nbtTagInt_valueOf(((IntTag) foreign).getValue());
+        } else if (foreign instanceof IntArrayTag) {
+            return getInstance().getNMSProvider().newNBTTagIntArray(((IntArrayTag) foreign).getValue());
+        } else if (foreign instanceof ListTag) {
+            AbstractList<Object> tag         = getInstance().getNMSProvider().newNBTTagList();
+            ListTag              foreignList = (ListTag) foreign;
+            for (Tag t : foreignList.getValue()) {
+                tag.add(fromNative(t));
+            }
+            return tag;
+        } else if (foreign instanceof LongTag) {
+            return getInstance().getNMSProvider().nbtTagLong_valueOf(((LongTag) foreign).getValue());
+        } else if (foreign instanceof ShortTag) {
+            return getInstance().getNMSProvider().nbtTagShort_valueOf(((ShortTag) foreign).getValue());
+        } else if (foreign instanceof StringTag) {
+            return getInstance().getNMSProvider().nbtTagString_valueOf(((StringTag) foreign).getValue());
+        } else if (foreign instanceof EndTag) {
+            throw new IllegalArgumentException("Cant make EndTag: "
+                    + foreign.getValue().toString());
+        } else {
+            throw new IllegalArgumentException("Don't know how to make NMS "
+                    + foreign.getClass().getCanonicalName());
+        }
+    }
 }

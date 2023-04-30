@@ -2,15 +2,15 @@ package fr.weefle.constructor.hooks.citizens;
 
 import fr.weefle.constructor.Config;
 import fr.weefle.constructor.SchematicBuilder;
-import fr.weefle.constructor.hooks.citizens.persistence.BuilderStatePersistenceLoader;
-import fr.weefle.constructor.hooks.citizens.persistence.MaterialIntegerPersistenceLoader;
-import fr.weefle.constructor.hooks.citizens.persistence.PatternXZPersistenceLoader;
+import fr.weefle.constructor.hooks.citizens.persistence.MaterialIntegerMapPersistenceLoader;
+import fr.weefle.constructor.hooks.citizens.persistence.MaterialMapWrapper;
 import fr.weefle.constructor.hooks.citizens.persistence.SchematicPersistenceLoader;
 import fr.weefle.constructor.menu.menus.ParameterMenu;
 import fr.weefle.constructor.nms.NMS;
 import fr.weefle.constructor.schematic.Schematic;
 import fr.weefle.constructor.schematic.blocks.DataBuildBlock;
 import fr.weefle.constructor.schematic.blocks.EmptyBuildBlock;
+import fr.weefle.constructor.util.Util;
 import net.citizensnpcs.api.event.NPCRightClickEvent;
 import net.citizensnpcs.api.persistence.DelegatePersistence;
 import net.citizensnpcs.api.persistence.Persist;
@@ -33,7 +33,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
-import java.util.Map.Entry;
 
 // TODO fix hanging blocks (like ladders or torches) dropping during excavation
 @TraitName("builder")
@@ -49,10 +48,8 @@ public class BuilderTrait extends Trait implements Toggleable {
     @Persist("Silent")
     boolean          silent             = false;
     @Persist("State")
-    @DelegatePersistence(BuilderStatePersistenceLoader.class)
     BuilderState     state              = BuilderState.IDLE;
     @Persist("PatternXY")
-    @DelegatePersistence(PatternXZPersistenceLoader.class)
     BuildPatternXZ   buildPatternXZ     = BuildPatternXZ.SPIRAL;
     @Persist("HoldItems")
     boolean          holdItems          = SchematicBuilder.getInstance().config().isHoldItems();
@@ -61,17 +58,17 @@ public class BuilderTrait extends Trait implements Toggleable {
     @Persist("MoveTimeoutSeconds")
     double           moveTimeoutSeconds = 1.0;
     @Persist("YLayers")
-    int          buildYLayers = 1;
+    int              buildYLayers       = 1;
     @Persist("Schematic")
     @DelegatePersistence(SchematicPersistenceLoader.class)
-    Schematic schematic    = null;
+    Schematic        schematic          = null;
     @Persist("Origin")
-    Location     origin       = null;
+    Location         origin             = null;
     @Persist("ContinueLoc")
-    Location         continueLoc        = null;
-    @Persist
-    @DelegatePersistence(MaterialIntegerPersistenceLoader.class)
-    public Map<Material, Integer> NeededMaterials = new HashMap<>();
+    Location         continueLoc        = null; // Fixme after server restart, builder should continue the building where it left off
+    @Persist("Materials")
+    @DelegatePersistence(MaterialIntegerMapPersistenceLoader.class)
+    MaterialMapWrapper materials        = new MaterialMapWrapper(new TreeMap<>());
 
     @Persist("oncancel")
     String onCancel   = null;
@@ -160,7 +157,19 @@ public class BuilderTrait extends Trait implements Toggleable {
     @Nullable
     public Location getContinueLoc() {return continueLoc == null ? null : continueLoc.clone();}
 
-    public void setContinueLoc(@Nullable Location continueLoc) {this.continueLoc = continueLoc;}
+    public Map<Material, Integer> getStoredMaterials() {return Collections.unmodifiableMap(this.materials.getHandle());}
+
+    @NotNull
+    public Map<Material, Integer> getMissingMaterials() {
+        Map<Material, Integer> missingMaterials = new TreeMap<>();
+        for (Map.Entry<Material, Integer> entry : this.schematic.getMaterials().entrySet()) {
+            Material material = entry.getKey();
+            int      missing  = entry.getValue() - this.materials.getHandle().getOrDefault(material, 0);
+            if (missing <= 0) {continue;}
+            missingMaterials.put(material, missing);
+        }
+        return missingMaterials;
+    }
 
     @Nullable
     public String getOnCancel() {return onCancel;}
@@ -205,9 +214,10 @@ public class BuilderTrait extends Trait implements Toggleable {
                     player.sendMessage(ChatColor.RED + "You do not have permission to donate");
                     return;
                 }
-
-                int    needed = this.NeededMaterials.getOrDefault(heldItem.getType(), 0);
-                Config config = SchematicBuilder.getInstance().config();
+                Material               material          = heldItem.getType();
+                Map<Material, Integer> requiredMaterials = this.schematic.getMaterials();
+                int                    needed            = requiredMaterials.getOrDefault(material, 0) - this.materials.getHandle().getOrDefault(material, 0);
+                Config                 config            = SchematicBuilder.getInstance().config();
                 if (needed > 0) {
 
                     //yup, i need it
@@ -219,15 +229,15 @@ public class BuilderTrait extends Trait implements Toggleable {
 
                         //update player hand item
                         ItemStack newItem;
-
-                        if (heldItem.getAmount() - taking > 0) newItem = heldItem.clone();
-                        else newItem = new ItemStack(Material.AIR);
-                        newItem.setAmount(heldItem.getAmount() - taking);
+                        if (heldItem.getAmount() - taking > 0) {
+                            newItem = heldItem.clone();
+                            newItem.setAmount(heldItem.getAmount() - taking);
+                        } else {newItem = new ItemStack(Material.AIR);}
                         event.getClicker().getInventory().setItemInMainHand(newItem);
 
                         //update needed
 
-                        this.NeededMaterials.put(heldItem.getType(), (needed - taking));
+                        this.materials.getHandle().put(material, this.materials.getHandle().getOrDefault(material, 0) + taking);
                         player.sendMessage(SchematicBuilder.format(config.getSupplyTakenMessage(), this.npc,
                                 this.schematic,
                                 player,
@@ -270,39 +280,20 @@ public class BuilderTrait extends Trait implements Toggleable {
 
     public boolean isToggled() {return toggled;}
 
-    public String GetMatsList() {
-        if (!npc.isSpawned()) return "";
-        if (schematic == null) return "";
-        if (this.state != BuilderState.IDLE) return ChatColor.RED + "Cannot survey while building";
-
-        try {
-            NeededMaterials = NMS.getInstance().getUtil().MaterialsList(schematic.buildQueue(this));
-        } catch (Exception e) {
-            Bukkit.getServer().getConsoleSender().sendMessage(e.getMessage());
-        }
-
-        return NMS.getInstance().getUtil().printList(NeededMaterials);
-    }
-
     public boolean TryBuild(CommandSender sender) {
         if (sender == null) sender = this.sender;
         this.sender = sender;
 
-        if (this.requireMaterials) { // TODO remove materials as they reach 0
-            java.util.Iterator<Entry<Material, Integer>> it = NeededMaterials.entrySet().iterator();
-            long                                         c  = 0;
-            while (it.hasNext()) {
-                c += it.next().getValue();
-            }
-
-            if (c > 0) {
+        if (this.requireMaterials) {
+            int missing = 0;
+            for (int value : this.getMissingMaterials().values()) {missing += value;}
+            if (missing > 0) {
                 if (!silent)
                     sender.sendMessage(
                             SchematicBuilder.format(SchematicBuilder.getInstance().config().getCollectingMessage(),
                                     npc,
                                     schematic, sender,
-                                    schematic.getDisplayName(), c +
-                                            ""));
+                                    schematic.getDisplayName(), String.valueOf(missing)));
                 this.state = BuilderState.COLLECTING;
                 return true;
             }
@@ -330,8 +321,6 @@ public class BuilderTrait extends Trait implements Toggleable {
         mypos = npc.getEntity().getLocation().clone();
 
         this.state = BuilderState.BUILDING;
-
-        NeededMaterials.clear();
 
         if (!silent) sender.sendMessage(SchematicBuilder.format(
                 SchematicBuilder.getInstance().config().getStartedMessage(),
@@ -469,6 +458,7 @@ public class BuilderTrait extends Trait implements Toggleable {
         if (sender == null) sender = Bukkit.getServer().getConsoleSender();
 
         if (this.state == BuilderState.BUILDING) {
+            this.materials.getHandle().clear();
             if (!silent) sender.sendMessage(
                     SchematicBuilder.format(SchematicBuilder.getInstance().config().getCompleteMessage(),
                             npc,
@@ -569,21 +559,21 @@ public class BuilderTrait extends Trait implements Toggleable {
         if (base == null) return null;
 
         for (int a = 3; a >= -5; a--) {
-            if (NMS.getInstance().getUtil().canStand(base.getRelative(0, a, -1)))
+            if (Util.canStand(base.getRelative(0, a, -1)))
                 return base.getRelative(0, a - 1, -1).getLocation();
-            if (NMS.getInstance().getUtil().canStand(base.getRelative(0, a, 1)))
+            if (Util.canStand(base.getRelative(0, a, 1)))
                 return base.getRelative(0, a - 1, 1).getLocation();
-            if (NMS.getInstance().getUtil().canStand(base.getRelative(1, a, 0)))
+            if (Util.canStand(base.getRelative(1, a, 0)))
                 return base.getRelative(1, a - 1, 0).getLocation();
-            if (NMS.getInstance().getUtil().canStand(base.getRelative(-1, a, 0)))
+            if (Util.canStand(base.getRelative(-1, a, 0)))
                 return base.getRelative(-1, a - 1, 0).getLocation();
-            if (NMS.getInstance().getUtil().canStand(base.getRelative(-1, a, -1)))
+            if (Util.canStand(base.getRelative(-1, a, -1)))
                 return base.getRelative(-1, a - 1, -1).getLocation();
-            if (NMS.getInstance().getUtil().canStand(base.getRelative(-1, a, 1)))
+            if (Util.canStand(base.getRelative(-1, a, 1)))
                 return base.getRelative(-1, a - 1, 1).getLocation();
-            if (NMS.getInstance().getUtil().canStand(base.getRelative(1, a, 1)))
+            if (Util.canStand(base.getRelative(1, a, 1)))
                 return base.getRelative(1, a - 1, 1).getLocation();
-            if (NMS.getInstance().getUtil().canStand(base.getRelative(1, a, -1)))
+            if (Util.canStand(base.getRelative(1, a, -1)))
                 return base.getRelative(1, a - 1, -1).getLocation();
         }
         return base.getLocation();

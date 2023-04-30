@@ -1,6 +1,5 @@
-package fr.weefle.constructor.nms;
+package fr.weefle.constructor.util;
 
-import fr.weefle.constructor.nbt.*;
 import fr.weefle.constructor.schematic.blocks.EmptyBuildBlock;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -9,9 +8,9 @@ import java.util.*;
 import java.util.Map.Entry;
 
 
-public class NMSUtil implements fr.weefle.constructor.api.Util {
+public class Util {
 
-    public String printList(Map<Material, Integer> map) {
+    public static String printMaterials(Map<Material, Integer> map) {
         StringBuilder sb = new StringBuilder();
 
         Iterator<Entry<Material, Integer>> it = map.entrySet().iterator();
@@ -26,7 +25,7 @@ public class NMSUtil implements fr.weefle.constructor.api.Util {
         return sb.toString();
     }
 
-    public List<EmptyBuildBlock> spiralPrintLayer(int starty, int ylayers, EmptyBuildBlock[][][] a, boolean reverse) {
+    public static List<EmptyBuildBlock> spiralPrintLayer(int starty, int ylayers, EmptyBuildBlock[][][] a, boolean reverse) {
         int i, k = 0, l = 0;
 
         int m = a.length;
@@ -121,7 +120,7 @@ public class NMSUtil implements fr.weefle.constructor.api.Util {
     }
 
 
-    public List<EmptyBuildBlock> LinearPrintLayer(int starty, int ylayers, EmptyBuildBlock[][][] a, boolean reverse) {
+    public static List<EmptyBuildBlock> LinearPrintLayer(int starty, int ylayers, EmptyBuildBlock[][][] a, boolean reverse) {
         int i  = 0, k = 0;
         int di = 1;
         int dk = 1;
@@ -169,34 +168,7 @@ public class NMSUtil implements fr.weefle.constructor.api.Util {
         return out;
     }
 
-    public Map<Material, Integer> MaterialsList(Queue<EmptyBuildBlock> Q) {
-
-        Map<Material, Integer> out = new HashMap<Material, Integer>();
-
-        do {
-
-            EmptyBuildBlock b = Q.poll();
-
-            if (b == null) break;
-            Material material = b.getMat().getMaterial();
-
-            if (material == org.bukkit.Material.AIR || !material.isItem())
-                continue;
-
-            if (out.containsKey(material)) {
-                int amt = out.get(material);
-                out.put(material, amt + 1);
-            } else {
-                out.put(material, 1);
-            }
-
-        } while (true);
-
-        return out;
-    }
-
-
-    public boolean canStand(org.bukkit.block.Block base) {
+    public static boolean canStand(org.bukkit.block.Block base) {
         org.bukkit.block.Block below = base.getRelative(0, -1, 0);
         if (!below.isEmpty() && below.getBlockData().getMaterial().isSolid()) {
             return base.isEmpty() || !base.getBlockData().getMaterial().isSolid();
@@ -204,47 +176,4 @@ public class NMSUtil implements fr.weefle.constructor.api.Util {
         return false;
     }
 
-    public static Object fromNative(Tag foreign) {
-        if (foreign == null) {
-            return null;
-        }
-        if (foreign instanceof CompoundTag) {
-            Object tag = NMS.getInstance().getNMSProvider().newNBTTagCompound();
-            for (Entry<String, Tag> entry : ((CompoundTag) foreign).getValue().entrySet()) {
-                NMS.getInstance().getNMSProvider().nbtTagCompound_put(tag, entry.getKey(), fromNative(entry.getValue()));
-            }
-            return tag;
-        } else if (foreign instanceof ByteTag) {
-            return NMS.getInstance().getNMSProvider().nbtTagByte_valueOf(((ByteTag) foreign).getValue());
-        } else if (foreign instanceof ByteArrayTag) {
-            return NMS.getInstance().getNMSProvider().newNBTTagByteArray(((ByteArrayTag) foreign).getValue());
-        } else if (foreign instanceof DoubleTag) {
-            return NMS.getInstance().getNMSProvider().nbtTagDouble_valueOf(((DoubleTag) foreign).getValue());
-        } else if (foreign instanceof FloatTag) {
-            return NMS.getInstance().getNMSProvider().nbtTagFloat_valueOf(((FloatTag) foreign).getValue());
-        } else if (foreign instanceof IntTag) {
-            return NMS.getInstance().getNMSProvider().nbtTagInt_valueOf(((IntTag) foreign).getValue());
-        } else if (foreign instanceof IntArrayTag) {
-            return NMS.getInstance().getNMSProvider().newNBTTagIntArray(((IntArrayTag) foreign).getValue());
-        } else if (foreign instanceof ListTag) {
-            AbstractList<Object> tag         = NMS.getInstance().getNMSProvider().newNBTTagList();
-            ListTag              foreignList = (ListTag) foreign;
-            for (Tag t : foreignList.getValue()) {
-                tag.add(fromNative(t));
-            }
-            return tag;
-        } else if (foreign instanceof LongTag) {
-            return NMS.getInstance().getNMSProvider().nbtTagLong_valueOf(((LongTag) foreign).getValue());
-        } else if (foreign instanceof ShortTag) {
-            return NMS.getInstance().getNMSProvider().nbtTagShort_valueOf(((ShortTag) foreign).getValue());
-        } else if (foreign instanceof StringTag) {
-            return NMS.getInstance().getNMSProvider().nbtTagString_valueOf(((StringTag) foreign).getValue());
-        } else if (foreign instanceof EndTag) {
-            throw new IllegalArgumentException("Cant make EndTag: "
-                    + foreign.getValue().toString());
-        } else {
-            throw new IllegalArgumentException("Don't know how to make NMS "
-                    + foreign.getClass().getCanonicalName());
-        }
-    }
 }

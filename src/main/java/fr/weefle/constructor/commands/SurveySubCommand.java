@@ -2,6 +2,7 @@ package fr.weefle.constructor.commands;
 
 import fr.weefle.constructor.SchematicBuilder;
 import fr.weefle.constructor.hooks.citizens.BuilderTrait;
+import fr.weefle.constructor.util.Util;
 import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -25,11 +26,11 @@ public class SurveySubCommand extends AbstractCommand {
         BuilderTrait builder = getSelectedBuilder(sender);
         if (builder == null) {return;}
         NPC     npc = builder.getNPC();
-        if (builder.getSchematic() == null) {
-            sender.sendMessage(ChatColor.RED + "No Schematic Loaded!");
-        } else {
-            sender.sendMessage(SchematicBuilder.format(SchematicBuilder.getInstance().config().getSurveyMessage(), npc, builder.getSchematic(), sender, null, "0"));
-            sender.sendMessage(builder.GetMatsList());   // Talk to the player.
+        if (builder.getState() != BuilderTrait.BuilderState.COLLECTING) {
+            sender.sendMessage(npc.getName()+ChatColor.GREEN+" is not collecting any materials");
+            return;
         }
+        sender.sendMessage(SchematicBuilder.format(SchematicBuilder.getInstance().config().getSurveyMessage(), npc, builder.getSchematic(), sender, null, "0"));
+        sender.sendMessage(Util.printMaterials(builder.getMissingMaterials()));
     }
 }

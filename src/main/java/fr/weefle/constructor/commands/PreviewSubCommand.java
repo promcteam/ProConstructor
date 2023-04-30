@@ -15,6 +15,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
@@ -27,10 +28,27 @@ public class PreviewSubCommand extends AbstractCommand { // TODO take schematic 
     }
 
     @Override
+    public List<String> getUsages(CommandSender sender) {
+        List<String> list = new ArrayList<>();
+        list.add('/'+getFullCommand()+" [ticks]");
+        return list;
+    }
+
+    @Override
     public void execute(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull List<String> args) {
         BuilderTrait builder = getSelectedBuilder(sender);
         if (builder == null) {return;}
-        if (args.size() != 0) {
+        int ticks;
+        if (args.size() == 1) {
+            try {
+                ticks = Integer.parseInt(args.get(0));
+            } catch (NumberFormatException e) {
+                sender.sendMessage(args.get(0)+ChatColor.RED + " is not a valid number");
+                return;
+            }
+        } else if (args.size() == 0) {
+            ticks = 1000;
+        } else {
             sendUsage(sender);
             return;
         }
@@ -39,55 +57,20 @@ public class PreviewSubCommand extends AbstractCommand { // TODO take schematic 
         Location tmpLoc = npc.getEntity().getLocation();
         //Bukkit.getLogger().warning(tmpLoc.toString());
 
-        if (builder.getState() == BuilderTrait.BuilderState.IDLE) {
-            Schematic schematic = builder.getSchematic();
-            if (schematic != null) {
-                HashMap<Location, BlockData> blocks = new HashMap<>();
-                for (int x = 0; x < schematic.getWidth(); ++x) {
-                    for (int y = 0; y < schematic.getHeight(); ++y) {
-                        for (int z = 0; z < schematic.getLength(); ++z) {
-                            Location  loc   = tmpLoc.clone().add(x, y, z);
-                            BlockData bdata = schematic.getBlockAt(x, y, z).getMat();
-                            blocks.put(loc, bdata);
-                            player.sendBlockChange(loc, bdata);
-                        }
-                    }
+        switch (builder.getState()) {
+            case IDLE: case COLLECTING: {
+                Schematic schematic = builder.getSchematic();
+                if (schematic == null) {
+                    sender.sendMessage(ChatColor.RED + "No Schematic Loaded");
+                    return;
                 }
-
-                new BukkitRunnable() {
-                    @Override
-                    public void run() {
-                        for (Location loc : blocks.keySet()) {
-                            Objects.requireNonNull(Bukkit.getServer().getWorld(player.getWorld().getName())).getBlockAt(loc).getState().update();
-                        }
-                    }
-                }.runTaskLater(SchematicBuilder.getInstance(), 100);
-
-                        /*double time = 0.1;
-                            scheduler = Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(Constructor.getInstance(), new Runnable() {
-                                Iterator<Location> it = blocks.keySet().iterator();
-                                @Override
-                                public void run() {
-                                    if(it.hasNext()) {
-                                        Location loc = it.next();
-                                        p.sendBlockChange(loc, blocks.get(loc));
-                                    }else{
-                                        Bukkit.getScheduler().cancelTask(scheduler);
-                                        Bukkit.getScheduler().scheduleSyncDelayedTask(Constructor.getInstance(), new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                for (Location loc : blocks.keySet()) {
-
-                                                    Objects.requireNonNull(Bukkit.getServer().getWorld(p.getWorld().getName())).getBlockAt(loc).getState().update();
-                                                }
-                                            }
-
-                                        }, 100);
-                                    }
-                                }
-                            }, 0, (long) 0.01);*/
-
-                player.sendMessage(ChatColor.GREEN + npc.getName() + " loaded a preview of the current structure");
+                schematic.preview(builder, (Player) sender, ticks);
+                player.sendMessage(npc.getName() + ChatColor.GREEN + " loaded a preview of the current structure");
+                break;
+            }
+            default: {
+                player.sendMessage(npc.getName() + ChatColor.RED + " can't load a preview right now");
+                break;
             }
         }
     }
