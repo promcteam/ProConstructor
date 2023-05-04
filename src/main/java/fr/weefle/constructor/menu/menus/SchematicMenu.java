@@ -11,10 +11,9 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 public class SchematicMenu extends FileExplorerMenu {
     public SchematicMenu(Player player) {
-        super(player, SchematicBuilder.getInstance().config().getSchematicsFolder(), 6, "SchematicBuilder - Schematics",
-                file -> {
+        super(player, SchematicBuilder.getInstance().config().getSchematicsFolder(), 6, "SchematicBuilder - Schematics", file -> {
             String name = file.getName();
-            if (!name.endsWith(".schem") && !name.endsWith(".nbt")) {return null;}
+            if (!name.endsWith(".schem") && !name.endsWith(".nbt") && !name.endsWith(".yml")) {return null;}
             return new SchematicSlot(name);
         });
     }
@@ -23,7 +22,7 @@ public class SchematicMenu extends FileExplorerMenu {
         private final String fileName;
 
         public SchematicSlot(String fileName) {
-            super(new ItemStack(Material.MAP));
+            super(new ItemStack(fileName.endsWith(".yml") ? Material.BOOK : Material.MAP));
             this.fileName = fileName;
             ItemMeta meta = this.itemStack.getItemMeta();
             if (meta != null) {

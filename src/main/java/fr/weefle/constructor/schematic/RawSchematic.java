@@ -1,7 +1,6 @@
 package fr.weefle.constructor.schematic;
 
 import com.google.common.base.Preconditions;
-import fr.weefle.constructor.SchematicBuilder;
 import fr.weefle.constructor.hooks.citizens.BuilderTrait;
 import fr.weefle.constructor.nbt.*;
 import fr.weefle.constructor.nms.NMS;
@@ -22,6 +21,7 @@ import org.jetbrains.annotations.Nullable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.*;
 
 public class RawSchematic extends Schematic {
@@ -31,8 +31,8 @@ public class RawSchematic extends Schematic {
     private EmptyBuildBlock[][][]  blocks;
     private Map<Material, Integer> materials;
 
-    public RawSchematic(File file) {
-        super(new File(SchematicBuilder.getInstance().config().getSchematicsFolder()).toPath().relativize(file.toPath()).toString(), null);
+    public RawSchematic(Path path) {
+        super(path);
         load(false);
     }
 
@@ -58,7 +58,7 @@ public class RawSchematic extends Schematic {
     }
 
     private void load(boolean full) { // TODO load entities
-        File file = new File(SchematicBuilder.getInstance().config().getSchematicsFolder()).toPath().resolve(getPath()).toFile();
+        File file = new File(getPath());
         if (getPath().endsWith(".schem")) {
             Object data;
             try (FileInputStream in = new FileInputStream(file)) {
@@ -192,17 +192,18 @@ public class RawSchematic extends Schematic {
             }
         }
         if (this.blocks != null) {
-            this.materials = new TreeMap<>();
+            Map<Material, Integer> materials = new TreeMap<>();
             for (EmptyBuildBlock[][] plane : this.blocks) {
                 for (EmptyBuildBlock[] row : plane) {
                     for (EmptyBuildBlock emptyBuildBlock : row) {
                         Material material = emptyBuildBlock.getMat().getMaterial();
                         if (material != Material.AIR && material.isItem()) {
-                            this.materials.put(material, this.materials.getOrDefault(material, 0) + 1);
+                            materials.put(material, materials.getOrDefault(material, 0) + 1);
                         }
                     }
                 }
             }
+            this.materials = Collections.unmodifiableMap(materials);
         }
     }
 

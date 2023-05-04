@@ -14,24 +14,23 @@ import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.File;
+import java.nio.file.Path;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Queue;
 
 public abstract class Schematic {
-    private final String path;
-    private final String displayName;
+    protected final String path;
+    protected String displayName;
 
-    public Schematic(@NotNull String path, @Nullable String displayName) {
-        this.path = path;
-        this.displayName = displayName;
-    }
+    public Schematic(Path path) {this.path = path.toString();}
 
     @NotNull
     public String getPath() {return path;}
 
     @NotNull
-    public String getDisplayName() {return displayName == null ? path : displayName;}
+    public String getDisplayName() {return displayName == null ? new File(path).getName() : displayName;}
 
     @Nullable
     public abstract Vector getAbsolutePosition();

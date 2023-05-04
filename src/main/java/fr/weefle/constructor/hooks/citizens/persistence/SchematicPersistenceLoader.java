@@ -5,6 +5,7 @@ import fr.weefle.constructor.schematic.Schematic;
 import net.citizensnpcs.api.persistence.Persister;
 import net.citizensnpcs.api.util.DataKey;
 
+import java.io.File;
 import java.util.logging.Level;
 
 public class SchematicPersistenceLoader implements Persister<Schematic> {
@@ -24,6 +25,8 @@ public class SchematicPersistenceLoader implements Persister<Schematic> {
 
     @Override
     public void save(Schematic schematic, DataKey dataKey) {
-        dataKey.setString("", schematic == null ? null : schematic.getPath());
+        dataKey.setString("", schematic == null ?
+                null :
+                new File(SchematicBuilder.getInstance().config().getSchematicsFolder()).toPath().relativize(new File(schematic.getPath()).toPath()).toString());
     }
 }

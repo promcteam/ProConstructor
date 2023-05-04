@@ -2,6 +2,7 @@ package fr.weefle.constructor;
 
 import com.denizenscript.denizen.npc.traits.AssignmentTrait;
 import com.denizenscript.denizen.objects.NPCTag;
+import com.google.common.collect.MapMaker;
 import fr.weefle.constructor.hooks.DenizenSupport;
 import fr.weefle.constructor.hooks.citizens.BuilderTrait;
 import fr.weefle.constructor.listener.SelectionListener;
@@ -9,6 +10,7 @@ import fr.weefle.constructor.listener.TraitListener;
 import fr.weefle.constructor.nms.NMS;
 import fr.weefle.constructor.schematic.RawSchematic;
 import fr.weefle.constructor.schematic.Schematic;
+import fr.weefle.constructor.schematic.YAMLSchematic;
 import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -20,10 +22,13 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
+import java.nio.file.Path;
+import java.util.Map;
 import java.util.logging.Level;
 
 public class SchematicBuilder extends JavaPlugin {
-    private static SchematicBuilder instance;
+    private static       SchematicBuilder      instance;
+    private static final Map<String,Schematic> schematics = new MapMaker().weakValues().makeMap();
 
     private Config config;
     private Plugin denizen = null;
@@ -74,6 +79,7 @@ public class SchematicBuilder extends JavaPlugin {
         this.config = new Config();
         if (!new File(config.getSchematicsFolder()).exists()) {
             saveResource("schematics/house.schem", false);
+            saveResource("schematics/house.yml", false);
             saveResource("schematics/structure_house.nbt", false);
         }
     }
@@ -98,18 +104,24 @@ public class SchematicBuilder extends JavaPlugin {
     }
 
     @Nullable
-    public static Schematic getSchematic(File file) throws Exception {
-        if (!file.isFile()) {return null;}
-        String name = file.getName();
-        if (name.endsWith(".schem") || name.endsWith(".nbt")) {
-            return new RawSchematic(file);
+    public static Schematic getSchematic(Path path) {
+        if (!path.toFile().isFile()) {return null;}
+        String string = path.toString();
+        Schematic schematic = SchematicBuilder.schematics.get(string);
+        if (schematic != null) {return schematic;}
+        if (string.endsWith(".schem") || string.endsWith(".nbt")) {
+            schematic = new RawSchematic(path);
+        } else if (string.endsWith(".yml")) {
+            schematic = new YAMLSchematic(path);
         }
-        return null;
+        if (schematic == null) {return null;}
+        SchematicBuilder.schematics.put(schematic.getPath(), schematic);
+        return schematic;
     }
 
     @Nullable
-    public static Schematic getSchematic(String name) throws Exception {
-        return getSchematic(new File(SchematicBuilder.getInstance().config().getSchematicsFolder(), name));
+    public static Schematic getSchematic(String name) {
+        return getSchematic(new File(SchematicBuilder.getInstance().config().getSchematicsFolder(),name).toPath());
     }
 
     public static String runTask(String taskname, NPC npc) {
@@ -151,7 +163,7 @@ public class SchematicBuilder extends JavaPlugin {
 
     public static String format(String input, NPC npc, Schematic schem, CommandSender player, String item, String amount) {
         input = input.replace("<NPC>", npc.getName());
-        input = input.replace("<SCHEMATIC>", schem == null ? "" : schem.getPath());
+        input = input.replace("<SCHEMATIC>", schem == null ? "" : schem.getDisplayName());
         input = input.replace("<PLAYER>", player == null ? "" : player.getName());
         input = input.replace("<ITEM>", item == null ? "" : item);
         input = input.replace("<AMOUNT>", amount);

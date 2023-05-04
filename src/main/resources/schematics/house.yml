@@ -1,0 +1,20 @@
+0:
+  display-name: "&6Villager House"
+  path: "villager_house.schem"
+  offset:
+    x: 0
+    y: 0
+    z: 0
+  materials:
+    spruce_planks: 100
+1:
+  display-name: "&6Big House"
+  path: "house.schem"
+  offset:
+    x: 0
+    y: 0
+    z: 0
+  materials:
+    spruce_planks: 200
+    bricks: 150
+    white_wool: 64
