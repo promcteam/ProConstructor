@@ -22,7 +22,7 @@ public class SchematicMenu extends FileExplorerMenu {
         private final String fileName;
 
         public SchematicSlot(String fileName) {
-            super(new ItemStack(fileName.endsWith(".yml") ? Material.BOOK : Material.MAP));
+            super(new ItemStack(fileName.endsWith(".yml") ? Material.PAPER : Material.MAP));
             this.fileName = fileName;
             ItemMeta meta = this.itemStack.getItemMeta();
             if (meta != null) {

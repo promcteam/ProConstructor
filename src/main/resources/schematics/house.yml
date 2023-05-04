@@ -6,7 +6,7 @@
     y: 0
     z: 0
   materials:
-    spruce_planks: 100
+    oak_planks: 100
 1:
   display-name: "&6Big House"
   path: "house.schem"

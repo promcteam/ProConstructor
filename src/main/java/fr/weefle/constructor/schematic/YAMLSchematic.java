@@ -20,7 +20,7 @@ public class YAMLSchematic extends Schematic {
     public static final String DISPLAY_NAME = "display-name";
     public static final String PATH         = "path";
     public static final String OFFSET       = "offset";
-    public static final String MATERIAL     = "material";
+    public static final String MATERIALS    = "materials";
 
     private final List<SchematicTier> tiers;
     private       int                 nextTier = 0;
@@ -92,7 +92,7 @@ public class YAMLSchematic extends Schematic {
             this.handle = (RawSchematic) schematic;
             this.displayName = config.getString(DISPLAY_NAME);
             if (this.displayName != null) {this.displayName = StringUT.color(this.displayName);}
-            ConfigurationSection section = config.getConfigurationSection(MATERIAL);
+            ConfigurationSection section = config.getConfigurationSection(MATERIALS);
             if (section == null) {
                 this.materials = null;
             } else {
