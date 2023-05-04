@@ -1,8 +1,8 @@
 [![Build](https://github.com/promcteam/ProSchematicBuilder/actions/workflows/maven.yml/badge.svg?branch=main)](https://s01.oss.sonatype.org/content/repositories/snapshots/com/promcteam/proschematicbuilder/)
 [![Build](https://github.com/promcteam/ProSchematicBuilder/actions/workflows/release.yml/badge.svg?branch=main)](https://s01.oss.sonatype.org/content/repositories/snapshots/com/promcteam/proschematicbuilder/)
-[![Build](https://github.com/promcteam/ProSchematicBuilder/actions/workflows/devbuild.yml/badge.svg?branch=dev)](https://s01.oss.sonatype.org/content/repositories/snapshots/com/promcteam/proschematicbuilder/1.0-R0.1-SNAPSHOT/)
+[![Build](https://github.com/promcteam/ProSchematicBuilder/actions/workflows/devbuild.yml/badge.svg?branch=dev)](https://s01.oss.sonatype.org/content/repositories/snapshots/com/promcteam/proschematicbuilder/${project.version}/)
 
-# ProSchematicBuilder
+# ${project.name}
 Let [Citizens](https://www.spigotmc.org/resources/citizens.13811/) NPCs build your schematics and structures block by 
 block.
 
