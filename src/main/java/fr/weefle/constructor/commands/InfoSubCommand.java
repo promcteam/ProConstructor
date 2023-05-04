@@ -43,8 +43,8 @@ public class InfoSubCommand extends AbstractCommand {
             sender.sendMessage(ChatColor.GREEN + "Origin: " + ChatColor.WHITE + builder.getOrigin());
         }
 
-        sender.sendMessage(ChatColor.GREEN + "Status: " + ChatColor.WHITE + builder.getState() + " Timeout: " + builder.getMoveTimeoutSeconds());
-        sender.sendMessage(ChatColor.GREEN + "Require Mats: " + ChatColor.WHITE + builder.isRequireMaterials() + " Hold Items: " + builder.isHoldItems());
+        sender.sendMessage(ChatColor.GREEN + "Status: " + ChatColor.WHITE + builder.getState() + ChatColor.GREEN + " Timeout: " + ChatColor.WHITE + builder.getMoveTimeoutSeconds());
+        sender.sendMessage(ChatColor.GREEN + "Require Mats: " + ChatColor.WHITE + builder.isRequireMaterials() + ChatColor.GREEN + " Hold Items: " + ChatColor.WHITE + builder.isHoldItems());
 
         if (builder.getState() == BuilderTrait.BuilderState.BUILDING) {
             sender.sendMessage(ChatColor.BLUE + "Location: " + ChatColor.WHITE + " x:" + builder.getOrigin().getBlockX() + " y:" + builder.getOrigin().getBlockY() + " z:" + builder.getOrigin().getBlockZ());

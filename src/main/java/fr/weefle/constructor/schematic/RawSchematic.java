@@ -26,7 +26,6 @@ import java.util.*;
 
 public class RawSchematic extends Schematic {
     private int width, height, length;
-    private Vector                 offset;
     private Vector                 absolutePosition;
     private EmptyBuildBlock[][][]  blocks;
     private Map<Material, Integer> materials;
@@ -68,16 +67,6 @@ public class RawSchematic extends Schematic {
             this.width = NMS.getInstance().getNMSProvider().nbtTagCompound_getShort(data, "Width");
             this.height = NMS.getInstance().getNMSProvider().nbtTagCompound_getShort(data, "Height");
             this.length = NMS.getInstance().getNMSProvider().nbtTagCompound_getShort(data, "Length");
-
-            Object meta = NMS.getInstance().getNMSProvider().nbtTagCompound_getCompound(data, "Metadata");
-            if (meta == null) {
-                this.offset = new Vector();
-            } else {
-                this.offset = new Vector(
-                        NMS.getInstance().getNMSProvider().nbtTagCompound_getInt(meta, "WEOffsetX"),
-                        NMS.getInstance().getNMSProvider().nbtTagCompound_getInt(meta, "WEOffsetY"),
-                        NMS.getInstance().getNMSProvider().nbtTagCompound_getInt(meta, "WEOffsetZ"));
-            }
 
             int[] offset = NMS.getInstance().getNMSProvider().nbtTagCompound_getIntArray(data, "Offset");
             if (offset.length == 3) {absolutePosition = new Vector(offset[0], offset[1], offset[2]);}
@@ -161,7 +150,6 @@ public class RawSchematic extends Schematic {
             this.width = sizeTag.getInt(0);
             this.height = sizeTag.getInt(1);
             this.length = sizeTag.getInt(2);
-            this.offset = null;
 
             if (!full) {return;}
             this.blocks = new EmptyBuildBlock[width][height][length];
@@ -254,9 +242,9 @@ public class RawSchematic extends Schematic {
     public Location offset(Location origin, int x, int y, int z, int emptyLayers) {
         return new Location(
                 origin.getWorld(),
-                origin.getBlockX() + x - this.offset.getBlockX(),
-                origin.getBlockY() + y - this.offset.getBlockY() - emptyLayers,
-                origin.getBlockZ() + z - this.offset.getBlockZ() + 1);
+                origin.getBlockX() + x,
+                origin.getBlockY() + y - emptyLayers,
+                origin.getBlockZ() + z);
     }
 
     @Override

@@ -34,12 +34,19 @@ public class YAMLSchematic extends Schematic {
         for (String key : keys) {
             ConfigurationSection section = config.getConfigurationSection(key);
             if (section == null) {return;}
-            tiers.add(new SchematicTier(new File(SchematicBuilder.getInstance().config().getSchematicsFolder(),
+            this.tiers.add(new SchematicTier(new File(SchematicBuilder.getInstance().config().getSchematicsFolder(),
                     Objects.requireNonNull(section.getString(PATH), "Missing 'path' field")).toPath(), section));
         }
     }
 
+    private YAMLSchematic(Path path, List<SchematicTier> tiers) {
+        super(path);
+        this.tiers = tiers;
+    }
+
     public int getTotalTiers() {return this.tiers.size();}
+
+    public int getNextTier() {return this.nextTier;}
 
     public void setNextTier(int tier) {
         if (tier >= this.getTotalTiers()) {
@@ -48,33 +55,44 @@ public class YAMLSchematic extends Schematic {
         this.nextTier = tier;
     }
 
+    public YAMLSchematic copy() {return new YAMLSchematic(new File(this.path).toPath(), this.tiers);}
+
     @Override
     @NotNull
-    public String getDisplayName() {return this.tiers.get(this.nextTier).getDisplayName();}
+    public String getDisplayName() {
+        return this.tiers.get(Math.min(this.nextTier, this.getTotalTiers()-1)).getDisplayName();
+    }
 
     @Override
-    public @Nullable Vector getAbsolutePosition() {return this.tiers.get(this.nextTier).getAbsolutePosition();}
+    public @Nullable Vector getAbsolutePosition() {return this.tiers.get(Math.min(this.nextTier, this.getTotalTiers()-1)).getAbsolutePosition();}
 
     @Override
-    public int getWidth() {return this.tiers.get(this.nextTier).getWidth();}
+    public int getWidth() {return this.tiers.get(Math.min(this.nextTier, this.getTotalTiers()-1)).getWidth();}
 
     @Override
-    public int getHeight() {return this.tiers.get(this.nextTier).getHeight();}
+    public int getHeight() {return this.tiers.get(Math.min(this.nextTier, this.getTotalTiers()-1)).getHeight();}
 
     @Override
-    public int getLength() {return this.tiers.get(this.nextTier).getLength();}
+    public int getLength() {return this.tiers.get(Math.min(this.nextTier, this.getTotalTiers()-1)).getLength();}
 
     @Override
-    public @NotNull EmptyBuildBlock getBlockAt(int x, int y, int z) {return this.tiers.get(this.nextTier).getBlockAt(x, y, z);}
+    @NotNull
+    public EmptyBuildBlock getBlockAt(int x, int y, int z) {return this.tiers.get(Math.min(this.nextTier, this.getTotalTiers()-1)).getBlockAt(x, y, z);}
 
     @Override
-    public Location offset(Location origin, int x, int y, int z, int emptyLayers) {return this.tiers.get(this.nextTier).offset(origin, x, y, z, emptyLayers);}
+    public Location offset(Location origin, int x, int y, int z, int emptyLayers) {return this.tiers.get(Math.min(this.nextTier, this.getTotalTiers()-1)).offset(origin, x, y, z, emptyLayers);}
 
     @Override
-    public @NotNull Map<Material, Integer> getMaterials() {return this.tiers.get(this.nextTier).getMaterials();}
+    public @NotNull Map<Material, Integer> getMaterials() {
+        if (this.nextTier >= getTotalTiers()) { return new HashMap<>(); }
+        return this.tiers.get(this.nextTier).getMaterials();
+    }
 
     @Override
-    public @NotNull Queue<EmptyBuildBlock> buildQueue(BuilderTrait builder) {return this.tiers.get(this.nextTier).buildQueue(builder);}
+    @NotNull
+    public Queue<EmptyBuildBlock> buildQueue(BuilderTrait builder) {
+        if (this.nextTier >= getTotalTiers()) { return new LinkedList<>(); }
+        return this.tiers.get(this.nextTier).buildQueue(builder);}
 
     private static class SchematicTier extends Schematic {
         private static final Vector ZERO = new Vector(0, 0 ,0);

@@ -25,7 +25,7 @@ public class Config {
             supplyTakenMessage,
             collectingMessage;
 
-    public Config() {reload();}
+    Config() {reload();}
 
     public void reload() {
         SchematicBuilder plugin = SchematicBuilder.getInstance();

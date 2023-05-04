@@ -1,13 +1,16 @@
 package fr.weefle.constructor.hooks.citizens;
 
 import fr.weefle.constructor.Config;
+import fr.weefle.constructor.PersistentBuilding;
 import fr.weefle.constructor.SchematicBuilder;
 import fr.weefle.constructor.hooks.citizens.persistence.MaterialIntegerMapPersistenceLoader;
 import fr.weefle.constructor.hooks.citizens.persistence.MaterialMapWrapper;
+import fr.weefle.constructor.hooks.citizens.persistence.PersistentBuildingPersistenceLoader;
 import fr.weefle.constructor.hooks.citizens.persistence.SchematicPersistenceLoader;
 import fr.weefle.constructor.menu.menus.ParameterMenu;
 import fr.weefle.constructor.nms.NMS;
 import fr.weefle.constructor.schematic.Schematic;
+import fr.weefle.constructor.schematic.YAMLSchematic;
 import fr.weefle.constructor.schematic.blocks.DataBuildBlock;
 import fr.weefle.constructor.schematic.blocks.EmptyBuildBlock;
 import fr.weefle.constructor.util.Util;
@@ -62,6 +65,9 @@ public class BuilderTrait extends Trait implements Toggleable {
     @Persist("Schematic")
     @DelegatePersistence(SchematicPersistenceLoader.class)
     Schematic        schematic          = null;
+    @Persist("PersistentBuilding")
+    @DelegatePersistence(PersistentBuildingPersistenceLoader.class)
+    PersistentBuilding persistentBuilding = null;
     @Persist("Origin")
     Location         origin             = null;
     @Persist("ContinueLoc")
@@ -147,7 +153,18 @@ public class BuilderTrait extends Trait implements Toggleable {
     @Nullable
     public Schematic getSchematic() {return schematic;}
 
-    public void setSchematic(Schematic schematic) {this.schematic = schematic;}
+    public void setSchematic(@Nullable Schematic schematic) {
+        this.schematic = schematic;
+        this.persistentBuilding = null;
+    }
+
+    @Nullable
+    public PersistentBuilding getPersistentBuilding() {return persistentBuilding;}
+
+    public void setPersistentBuilding(@Nullable PersistentBuilding building) {
+        this.persistentBuilding = building;
+        this.schematic = this.persistentBuilding == null ? null : this.persistentBuilding.getSchematic();
+    }
 
     @NotNull
     public Location getOrigin() {return origin == null ? this.npc.getEntity().getLocation() : this.origin;}
@@ -191,6 +208,8 @@ public class BuilderTrait extends Trait implements Toggleable {
     @Override
     public void onSpawn() {
         npc.getNavigator().getDefaultParameters().avoidWater(false);
+
+        if (this.persistentBuilding != null) {this.schematic = this.persistentBuilding.getSchematic();}
 
         if (state == BuilderState.BUILDING || state == BuilderState.COLLECTING) {
             new BukkitRunnable() {
@@ -475,6 +494,14 @@ public class BuilderTrait extends Trait implements Toggleable {
 
             SchematicBuilder.denizenAction(npc, "Build Complete");
             SchematicBuilder.denizenAction(npc, "Build " + schematic.getDisplayName() + " Complete");
+            if (this.schematic instanceof YAMLSchematic) {
+                YAMLSchematic yamlSchematic = (YAMLSchematic) this.schematic;
+                int tier = yamlSchematic.getNextTier();
+                yamlSchematic.setNextTier(tier+1);
+                if (this.persistentBuilding == null || !this.persistentBuilding.getPath().equals(this.schematic.getPath())) {
+                    this.persistentBuilding = new PersistentBuilding(UUID.randomUUID(), yamlSchematic, tier, this.origin);
+                }
+            }
         }
         stop();
     }
