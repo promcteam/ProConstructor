@@ -13,7 +13,6 @@ public class SchematicBuilderCommand extends AbstractCommand {
         super("schematicbuilder", "Main plugin command");
         registerSubCommand(new ReloadSubCommand(this));
         registerSubCommand(new NPCSubCommand(this));
-        registerSubCommand(new ListSubCommand(this));
         registerSubCommand(new StructureSubCommand(this));
         registerSubCommand(new BuildSubCommand(this));
         registerSubCommand(new CancelSubCommand(this));
@@ -23,9 +22,6 @@ public class SchematicBuilderCommand extends AbstractCommand {
         registerSubCommand(new OriginSubCommand(this));
         registerSubCommand(new MarkSubCommand(this));
         registerSubCommand(new LoadSubCommand(this));
-        registerSubCommand(new TimeoutSubCommand(this));
-        registerSubCommand(new SupplySubCommand(this));
-        registerSubCommand(new HoldSubCommand(this));
         registerSubCommand(new InfoSubCommand(this));
     }
 

@@ -63,9 +63,17 @@ items:
     material: "hopper"
     amount: 1
     custom-model-data: 0
-  settings:
+  settings-player:
     display-name: "&aChange building settings"
     lore: []
+    material: "command_block"
+    amount: 1
+    custom-model-data: 0
+  settings-admin:
+    display-name: "&aChange building settings"
+    lore:
+      - "&2Shift-Click: &7Enter &5Admin View"
+      - "&7(only visible with the '&6schematicbuilder.npc.edit&7' permission)"
     material: "command_block"
     amount: 1
     custom-model-data: 0

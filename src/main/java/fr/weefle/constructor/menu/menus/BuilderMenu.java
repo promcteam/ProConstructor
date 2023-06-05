@@ -12,19 +12,28 @@ import fr.weefle.constructor.schematic.Schematic;
 import fr.weefle.constructor.schematic.YAMLSchematic;
 import mc.promcteam.engine.utils.ItemUT;
 import net.citizensnpcs.api.npc.NPC;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.HandlerList;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class BuilderMenu extends Menu {
-    public static final YAMLMenu CONFIG = new YAMLMenu("builder");
+    public static final YAMLBuilderMenu CONFIG = new YAMLBuilderMenu("builder");
 
-    public static class YAMLMenu extends fr.weefle.constructor.menu.YAMLMenu<BuilderTrait> {
-        public YAMLMenu(String name) {super(name);}
+    public static class YAMLBuilderMenu extends YAMLMenu<BuilderTrait> {
+        public YAMLBuilderMenu(String name) {super(name);}
 
         @Override
         public String getTitle(String yamlTitle, BuilderTrait parameter) {
@@ -32,7 +41,7 @@ public class BuilderMenu extends Menu {
         }
 
         @Override
-        public Slot getSlot(String function, BuilderTrait builder) {
+        public Slot getSlot(String function, BuilderTrait builder, Player player) {
             switch (function) {
                 case "schematic": {
                     Schematic schematic = builder.getSchematic();
@@ -70,11 +79,11 @@ public class BuilderMenu extends Menu {
                             @Override
                             public void onLeftClick() {
                                 builder.CancelBuild();
-                                this.menu.getPlayer().sendMessage(SchematicBuilder.format(
+                                player.sendMessage(SchematicBuilder.format(
                                         SchematicBuilder.getInstance().config().getCancelMessage(),
                                         builder.getNPC(),
                                         builder.getSchematic(),
-                                        this.menu.getPlayer(),
+                                        player,
                                         null, "0"));
                                 this.menu.open();
                             }
@@ -83,7 +92,6 @@ public class BuilderMenu extends Menu {
                     return new Slot(this.getItem(function+"-start")) {
                         @Override
                         public void onLeftClick() {
-                            Player player = this.menu.getPlayer();
                             if (!builder.TryBuild(player)) {
                                 player.sendMessage(ChatColor.RED + builder.getNPC().getName() + " needs a structure to build first!");
                             }
@@ -100,7 +108,7 @@ public class BuilderMenu extends Menu {
                     return new Slot(itemStack) {
                         @Override
                         public void onLeftClick() {
-                            if (checkNotBusy(builder, this.menu.getPlayer())) {
+                            if (checkNotBusy(builder, player)) {
                                 // TODO
                             }
                         }
@@ -117,27 +125,41 @@ public class BuilderMenu extends Menu {
                     return new Slot(itemStack) {
                         public void onLeftClick() {
                             if (finalTotal > 0) {
-                                this.menu.openSubMenu(new MaterialsMenu(this.menu.getPlayer(), builder));
+                                this.menu.openSubMenu(new MaterialsMenu(player, builder));
                             }
                         }
                     };
                 }
                 case "settings": {
-                    return new Slot(this.getItem(function)) {
-                        @Override
-                        public void onLeftClick() {
-                            if (checkNotBusy(builder, this.menu.getPlayer())) {
-                                // TODO
+                    if (player.hasPermission("schematicbuilder.npc.edit")) {
+                        return new Slot(this.getItem(function+"-admin")) {
+                            @Override
+                            public void onLeftClick() {
+                                this.menu.openSubMenu(new SettingsMenu(player, builder.getNPC(), SettingsMenu.PLAYER));
                             }
-                        }
-                    };
+
+                            @Override
+                            public void onShiftLeftClick() {
+                                this.menu.openSubMenu(new SettingsMenu(player, builder.getNPC(), SettingsMenu.ADMIN));
+                            }
+                        };
+                    } else if (SettingsMenu.PLAYER.isEmpty()) {
+                        return null;
+                    } else {
+                        return new Slot(this.getItem(function+"-player")) {
+                            @Override
+                            public void onLeftClick() {
+                                this.menu.openSubMenu(new SettingsMenu(player, builder.getNPC(), SettingsMenu.PLAYER));
+                            }
+                        };
+                    }
                 }
                 case "new-schematic": {
                     return new Slot(this.getItem(function)) {
                         @Override
                         public void onLeftClick() {
-                            if (checkNotBusy(builder, this.menu.getPlayer())) {
-                                this.menu.openSubMenu(new SchematicListMenu(this.menu.getPlayer()));
+                            if (checkNotBusy(builder, player)) {
+                                this.menu.openSubMenu(new SchematicListMenu(player));
                             }
                         }
                     };
@@ -146,7 +168,7 @@ public class BuilderMenu extends Menu {
                     return new Slot(this.getItem(function)) {
                         @Override
                         public void onLeftClick() {
-                            if (checkNotBusy(builder, this.menu.getPlayer())) {
+                            if (checkNotBusy(builder, player)) {
                                 // TODO
                             }
                         }
@@ -156,8 +178,8 @@ public class BuilderMenu extends Menu {
                     return new Slot(this.getItem(function)) {
                         @Override
                         public void onLeftClick() {
-                            if (checkNotBusy(builder, this.menu.getPlayer())) {
-                                PreviewSubCommand.execute(builder, this.menu.getPlayer());
+                            if (checkNotBusy(builder, player)) {
+                                PreviewSubCommand.execute(builder, player);
                             }
                         }
                     };
@@ -170,7 +192,192 @@ public class BuilderMenu extends Menu {
                     return new Slot(itemStack) {
                         @Override
                         public void onLeftClick() {
-                            ExcavatedSubCommand.execute(builder, this.menu.getPlayer());
+                            ExcavatedSubCommand.execute(builder, player);
+                            this.menu.open();
+                        }
+                    };
+                }
+                case "excavate": {
+                    ItemStack itemStack = this.getItem(function);
+                    ItemUT.replaceLore(itemStack, "%current%", String.valueOf(builder.isExcavate()));
+                    return new Slot(itemStack) {
+                        @Override
+                        public void onLeftClick() {
+                            builder.setExcavate(!builder.isExcavate());
+                            this.menu.open();
+                        }
+                    };
+                }
+                case "ignore-air": {
+                    ItemStack itemStack = this.getItem(function);
+                    ItemUT.replaceLore(itemStack, "%current%", String.valueOf(builder.isIgnoreAir()));
+                    return new Slot(itemStack) {
+                        @Override
+                        public void onLeftClick() {
+                            builder.setIgnoreAir(!builder.isIgnoreAir());
+                            this.menu.open();
+                        }
+                    };
+                }
+                case "layers": { // TODO left and right clicks
+                    ItemStack itemStack = this.getItem(function);
+                    ItemUT.replaceLore(itemStack, "%current%", String.valueOf(builder.getBuildYLayers()));
+                    return new Slot(itemStack) {
+                        @Override
+                        public void onLeftClick() {
+                            Menu   menu   = this.menu;
+                            BaseComponent component  = new TextComponent("▸ Enter the desired layers, or ");
+                            BaseComponent component1 = new TextComponent(ChatColor.GOLD.toString()+ChatColor.UNDERLINE+"cancel");
+                            component1.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "cancel"));
+                            component.addExtra(component1);
+                            component.addExtra(new TextComponent(" to go back. "));
+                            component1 = new TextComponent(ChatColor.GOLD.toString()+ChatColor.UNDERLINE+"Current value");
+                            component1.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "cancel"));
+                            component.addExtra(component1);
+                            player.spigot().sendMessage(component);
+
+                            this.menu.fakeClose();
+                            menu.registerListener(new Listener() {
+                                @EventHandler
+                                public void onChat(AsyncPlayerChatEvent event) {
+                                    if (!event.getPlayer().equals(player)) {return;}
+                                    HandlerList.unregisterAll(this);
+                                    event.setCancelled(true);
+                                    String message = event.getMessage().strip();
+                                    if (!message.equalsIgnoreCase("cancel")) {
+                                        try {
+                                            builder.setBuildYLayers(Integer.parseInt(message));
+                                        } catch (NumberFormatException e) {
+                                            player.sendMessage("Invalid number '"+message+'\'');
+                                        }
+                                    }
+                                    menu.open();
+                                }
+                            });
+                        }
+                    };
+                }
+                case "silent": {
+                    boolean isSilent = builder.isSilent();
+                    ItemStack itemStack = this.getItem(function+'-'+isSilent);
+                    ItemUT.replaceLore(itemStack, "%current%", String.valueOf(isSilent));
+                    return new Slot(itemStack) {
+                        @Override
+                        public void onLeftClick() {
+                            builder.setSilent(!builder.isSilent());
+                            this.menu.open();
+                        }
+                    };
+                }
+                case "citizens": {
+                    ItemStack    itemStack = this.getItem(function);
+                    List<String> actions   = new ArrayList<>();
+                    actions.add(ChatColor.BLUE+"On Start: "+ChatColor.WHITE+builder.getOnStart());
+                    actions.add(ChatColor.BLUE+"On Complete: "+ChatColor.WHITE+builder.getOnComplete());
+                    actions.add(ChatColor.BLUE+"On Cancel: "+ChatColor.WHITE+builder.getOnCancel());
+                    ItemUT.replaceLore(itemStack, "%current%", actions);
+                    return new Slot(itemStack) {
+                        @Override
+                        public void onLeftClick() {
+                            // TODO
+                        }
+                    };
+                }
+                case "needs-materials": {
+                    boolean needsMaterials = builder.requiresMaterials();
+                    ItemStack itemStack = this.getItem(function+'-'+needsMaterials);
+                    ItemUT.replaceLore(itemStack, "%current%", String.valueOf(needsMaterials));
+                    return new Slot(itemStack) {
+                        @Override
+                        public void onLeftClick() {
+                            builder.setRequireMaterials(!needsMaterials);
+                            this.menu.open();
+                        }
+                    };
+                }
+                case "hold-item": {
+                    boolean holdsItems = builder.holdsItems();
+                    ItemStack itemStack = this.getItem(function);
+                    ItemUT.replaceLore(itemStack, "%current%", String.valueOf(holdsItems));
+                    return new Slot(itemStack) {
+                        @Override
+                        public void onLeftClick() {
+                            builder.setHoldsItems(!holdsItems);
+                            this.menu.open();
+                        }
+                    };
+                }
+                case "ignore-liquid": {
+                    boolean ignoresLiquids = builder.ignoresLiquids();
+                    ItemStack itemStack = this.getItem(function);
+                    ItemUT.replaceLore(itemStack, "%current%", String.valueOf(ignoresLiquids));
+                    return new Slot(itemStack) {
+                        @Override
+                        public void onLeftClick() {
+                            builder.setIgnoresLiquids(!ignoresLiquids);
+                            this.menu.open();
+                        }
+                    };
+                }
+                case "build-pattern": {
+                    ItemStack itemStack = this.getItem(function);
+                    ItemUT.replaceLore(itemStack, "%current%", builder.getBuildPatternXZ().name().toLowerCase());
+                    return new Slot(itemStack) {
+                        @Override
+                        public void onLeftClick() {
+                            // TODO
+                        }
+                    };
+                }
+                case "timeout": {
+                    ItemStack itemStack = this.getItem(function);
+                    ItemUT.replaceLore(itemStack, "%current%", String.valueOf(builder.getMoveTimeoutSeconds()));
+                    return new Slot(itemStack) {
+                        @Override
+                        public void onLeftClick() {
+                            Menu menu = this.menu;
+
+                            BaseComponent component = new TextComponent("▸ Enter the building timeout, or ");
+                            BaseComponent component1 = new TextComponent(ChatColor.GOLD.toString()+ChatColor.UNDERLINE+"cancel");
+                            component1.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "cancel"));
+                            component.addExtra(component1);
+                            component.addExtra(new TextComponent(" to go back. "));
+                            component1 = new TextComponent(ChatColor.GOLD.toString()+ChatColor.UNDERLINE+"Current value");
+                            component1.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "cancel"));
+                            component.addExtra(component1);
+                            player.spigot().sendMessage(component);
+
+                            this.menu.fakeClose();
+                            menu.registerListener(new Listener() {
+                                @EventHandler
+                                public void onChat(AsyncPlayerChatEvent event) {
+                                    System.out.println(0);
+                                    if (!event.getPlayer().equals(player)) {return;}
+                                    System.out.println(1);
+                                    HandlerList.unregisterAll(this);
+                                    event.setCancelled(true);
+                                    String message = event.getMessage().strip();
+                                    if (!message.equalsIgnoreCase("cancel")) {
+                                        try {
+                                            builder.setMoveTimeoutSeconds(Double.parseDouble(message));
+                                        } catch (NumberFormatException e) {
+                                            player.sendMessage("Invalid number '"+message+'\'');
+                                        }
+                                    }
+                                    menu.open();
+                                    System.out.println(2);
+                                }
+                            });
+                        }
+                    };
+                }
+                case "queue-by-category": {
+                    ItemStack itemStack = this.getItem(function);
+                    ItemUT.replaceLore(itemStack, "%current%", String.valueOf(builder.GroupByLayer));
+                    return new Slot(itemStack) {
+                        @Override
+                        public void onLeftClick() {
+                            builder.GroupByLayer = !builder.GroupByLayer;
                             this.menu.open();
                         }
                     };

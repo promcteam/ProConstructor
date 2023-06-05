@@ -6,6 +6,7 @@ import mc.promcteam.engine.utils.StringUT;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
@@ -91,16 +92,19 @@ public abstract class YAMLMenu<T> {
 
     public int getRows() {return rows;}
 
+    public boolean isEmpty() {return this.slots.isEmpty();}
+
     @NotNull
     public ItemStack getItem(String name) {return this.items.getOrDefault(name, new ItemStack(Material.AIR)).clone();}
 
     @Nullable
-    public abstract Slot getSlot(String function, T parameter);
+    public abstract Slot getSlot(String function, T parameter, Player player);
 
     public void setSlots(Menu menu, T parameter) {
         menu.slots.clear();
+        Player player = menu.getPlayer();
         for (Map.Entry<Integer,String> entry : this.slots.entrySet()) {
-            menu.setSlot(entry.getKey(), this.getSlot(entry.getValue(), parameter));
+            menu.setSlot(entry.getKey(), this.getSlot(entry.getValue(), parameter, player));
         }
         ItemStack emptySlot = this.getItem("empty");
         for (int i = 0, size = menu.slots.lastKey()/(this.getRows()*9)+1; i < size; i++) {

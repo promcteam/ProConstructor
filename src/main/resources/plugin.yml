@@ -4,7 +4,7 @@ version: ${project.version}
 main: fr.weefle.constructor.SchematicBuilder
 depends: [ProMCCore, Citizens]
 softdepends: [Denizen, dynmap]
-api-version: 1.14
+api-version: 1.19
 commands:
   schematicbuilder:
     description: Lists SchematicBuilder commands.
@@ -23,14 +23,8 @@ permissions:
       schematicbuilder.build: true
       schematicbuilder.mark: true
       schematicbuilder.origin: true
-      schematicbuilder.check: true
-      schematicbuilder.compare: true
-      schematicbuilder.info: true
       schematicbuilder.survey: true
-      schematicbuilder.timeout: true
-      schematicbuilder.list: true
-      schematicbuilder.hold: true
-      schematicbuilder.supply: true
       schematicbuilder.donate: true
       schematicbuilder.select: true
       schematicbuilder.npc.click: true
+      schematicbuilder.npc.edit: true
