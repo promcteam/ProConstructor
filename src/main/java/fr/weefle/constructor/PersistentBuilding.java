@@ -51,7 +51,7 @@ public class PersistentBuilding implements ConfigurationSerializable {
 
     public YAMLSchematic getSchematic() {
         YAMLSchematic schematic = (YAMLSchematic) Objects.requireNonNull(SchematicBuilder.getSchematic(this.path));
-        schematic.setNextTier(this.tier+1);
+        this.tier = schematic.setTier(this.tier);
         return schematic;
     }
 
@@ -61,9 +61,7 @@ public class PersistentBuilding implements ConfigurationSerializable {
 
     public int getTier() {return tier;}
 
-    public void setTier(int tier) {
-        this.tier = tier;
-    }
+    public void setTier(int tier) {this.tier = tier;}
 
     @Override
     @NotNull

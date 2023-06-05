@@ -11,9 +11,9 @@
   display-name: "&6Big House"
   path: "house.schem"
   offset:
-    x: 0
+    x: -10
     y: 0
-    z: 0
+    z: -13
   materials:
     spruce_planks: 200
     bricks: 150

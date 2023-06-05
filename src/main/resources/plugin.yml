@@ -28,7 +28,6 @@ permissions:
       schematicbuilder.info: true
       schematicbuilder.survey: true
       schematicbuilder.timeout: true
-      schematicbuilder.ignoreprotection: true
       schematicbuilder.list: true
       schematicbuilder.hold: true
       schematicbuilder.supply: true

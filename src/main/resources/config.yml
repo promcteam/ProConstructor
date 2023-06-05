@@ -22,6 +22,7 @@ DefaultTexts:
  Supply_Need_Item: "&f<NPC> says: &aI still need &f<AMOUNT> <ITEM> &afor &f<SCHEMATIC>&9. Right-click again to donate."
  Supply_Dont_Need_Item: "&f<NPC> says: &6I don't need any &f<ITEM>&6. Thanks anyway."
  Supply_Item_Taken: "&f<NPC> says: &aThanks for the &f<AMOUNT> <ITEM>, <PLAYER>!"
+ CantWhileBuilding: "&c<NPC> can't perform this action while building!"
 
 DefaultOptions:
   MoveTimeoutSeconds: 1.0

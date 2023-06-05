@@ -41,7 +41,7 @@ public class SupplySubCommand extends AbstractCommand {
         NPC npc = builder.getNPC();
 
         if (args.size() == 0) {
-            sender.sendMessage(ChatColor.GOLD + npc.getName() + " currently does" + (builder.isRequireMaterials() ?
+            sender.sendMessage(ChatColor.GOLD + npc.getName() + " currently does" + (builder.requiresMaterials() ?
                     "" :
                     " NOT") + " need to be supplied with materials.");
             return;

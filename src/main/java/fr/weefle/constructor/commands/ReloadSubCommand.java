@@ -21,7 +21,7 @@ public class ReloadSubCommand extends AbstractCommand {
             sendUsage(sender);
             return;
         }
-        SchematicBuilder.getInstance().config().reload();
-        sender.sendMessage(ChatColor.GREEN + "Reloaded ProSchematicBuilder/config.yml");
+        SchematicBuilder.getInstance().reload();
+        sender.sendMessage(ChatColor.GREEN + "Reloaded ProSchematicBuilder");
     }
 }

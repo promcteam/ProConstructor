@@ -1,10 +1,13 @@
 package fr.weefle.constructor.menu;
 
+import fr.weefle.constructor.SchematicBuilder;
 import mc.promcteam.engine.utils.ItemUT;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.HandlerList;
+import org.bukkit.event.Listener;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
@@ -12,18 +15,18 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.NoSuchElementException;
-import java.util.TreeMap;
+import java.util.*;
 
 public abstract class Menu implements InventoryHolder {
     protected final Player player;
     protected final String title;
     protected final Inventory inventory;
     protected final TreeMap<Integer, Slot> slots = new TreeMap<>();
+    private   final Set<Listener> listeners = new HashSet<>();
     private int page  = 0;
     private Runnable onClose;
     private boolean opening = false;
+    private boolean fakeClosing = false;
 
     public Menu(Player player, int rows, String title) {
         this.player = player;
@@ -63,7 +66,7 @@ public abstract class Menu implements InventoryHolder {
         return slots.get(i);
     }
 
-    public void open() {open(0);}
+    public void open() {open(this.page);}
 
     public void open(int page) {
         setContents();
@@ -93,7 +96,17 @@ public abstract class Menu implements InventoryHolder {
     public boolean isOpening() {return opening;}
 
     public void onClose() {
-        if (onClose != null) { onClose.run(); }
+        if (this.fakeClosing) {
+            this.fakeClosing = false;
+            return;
+        }
+        for (Listener listener : this.listeners) {HandlerList.unregisterAll(listener);}
+        if (this.onClose != null) { this.onClose.run(); }
+    }
+
+    public void fakeClose() {
+        this.fakeClosing = true;
+        this.player.closeInventory();
     }
 
     protected Slot getPrevButton() {
@@ -130,5 +143,10 @@ public abstract class Menu implements InventoryHolder {
                 this.menu.open(this.menu.getPage()+1);
             }
         };
+    }
+
+    public void registerListener(Listener listener) {
+        Bukkit.getPluginManager().registerEvents(listener, SchematicBuilder.getInstance());
+        this.listeners.add(listener);
     }
 }

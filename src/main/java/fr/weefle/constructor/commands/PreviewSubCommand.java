@@ -1,24 +1,16 @@
 package fr.weefle.constructor.commands;
 
-import fr.weefle.constructor.SchematicBuilder;
 import fr.weefle.constructor.hooks.citizens.BuilderTrait;
 import fr.weefle.constructor.schematic.Schematic;
-import net.citizensnpcs.api.npc.NPC;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.block.data.BlockData;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
 
 public class PreviewSubCommand extends AbstractCommand { // TODO take schematic origin into account
     public PreviewSubCommand(@Nullable SchematicBuilderCommand parent) {
@@ -52,26 +44,29 @@ public class PreviewSubCommand extends AbstractCommand { // TODO take schematic 
             sendUsage(sender);
             return;
         }
-        NPC      npc    = builder.getNPC();
-        Player   player = (Player) sender;
-        Location tmpLoc = npc.getEntity().getLocation();
-        //Bukkit.getLogger().warning(tmpLoc.toString());
+        execute(builder, sender, ticks);
+    }
 
+    public static boolean execute(BuilderTrait builder, CommandSender sender, int ticks) {
         switch (builder.getState()) {
             case IDLE: case COLLECTING: {
                 Schematic schematic = builder.getSchematic();
                 if (schematic == null) {
                     sender.sendMessage(ChatColor.RED + "No Schematic Loaded");
-                    return;
+                    return false;
                 }
                 schematic.preview(builder, (Player) sender, ticks);
-                player.sendMessage(npc.getName() + ChatColor.GREEN + " loaded a preview of the current structure");
-                break;
+                sender.sendMessage(builder.getNPC().getName() + ChatColor.GREEN + " loaded a preview of the current structure");
+                return true;
             }
             default: {
-                player.sendMessage(npc.getName() + ChatColor.RED + " can't load a preview right now");
-                break;
+                sender.sendMessage(builder.getNPC().getName() + ChatColor.RED + " can't load a preview right now");
+                return false;
             }
         }
+    }
+
+    public static boolean execute(BuilderTrait builder, CommandSender sender) {
+        return execute(builder, sender, 1000);
     }
 }

@@ -93,7 +93,7 @@ public abstract class AbstractCommand implements CommandExecutor, TabCompleter {
             } catch (NumberFormatException ignored) { }
         }
 
-        if (args.length > 0) {
+        if (arguments.size() > 0) {
             AbstractCommand subCommand = subCommands.get(arguments.get(0));
             if (subCommand != null) {
                 arguments.remove(0);
@@ -196,7 +196,7 @@ public abstract class AbstractCommand implements CommandExecutor, TabCompleter {
     }
 
     @Nullable
-    protected BuilderTrait getSelectedBuilder(CommandSender sender) {
+    protected static BuilderTrait getSelectedBuilder(CommandSender sender) {
         NPC npc = CitizensAPI.getDefaultNPCSelector().getSelected(sender);
         if (npc == null) {
             sender.sendMessage(ChatColor.RED + "You must have a NPC selected to use this command");

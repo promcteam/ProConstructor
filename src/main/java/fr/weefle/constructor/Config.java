@@ -8,12 +8,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Config {
-    private       String         schematicsFolder;
+    private final String         schematicsFolder;
     private final List<Material> markMats         = new ArrayList<>();
-    private       double         moveTimeoutTicks;
-    private       boolean        ignoreProtection, holdItems, requireMaterials;
+    private final double         moveTimeoutTicks;
+    private final boolean        ignoreProtection, holdItems, requireMaterials;
 
-    private String
+    private final String
             startedMessage,
             completeMessage,
             cancelMessage,
@@ -23,11 +23,10 @@ public class Config {
             supplyNeedMessage,
             supplyDontNeedMessage,
             supplyTakenMessage,
-            collectingMessage;
+            collectingMessage,
+            cantWhileBuilding;
 
-    Config() {reload();}
-
-    public void reload() {
+    Config() {
         SchematicBuilder plugin = SchematicBuilder.getInstance();
         plugin.saveDefaultConfig();
         plugin.reloadConfig();
@@ -48,11 +47,11 @@ public class Config {
         supplyNeedMessage = config.getString("DefaultTexts.Supply_Need_Item", "");
         supplyDontNeedMessage = config.getString("DefaultTexts.Supply_Dont_Need_Item", "");
         supplyTakenMessage = config.getString("DefaultTexts.Supply_Item_Taken", "");
+        cantWhileBuilding = config.getString("DefaultTexts.CantWhileBuilding", "");
         for (String material : config.getStringList("MarkMaterials")) {
             markMats.add(Material.valueOf(material));
         }
         if (markMats.isEmpty()) markMats.add(Material.GLASS);
-
     }
 
     public String getSchematicsFolder() {return schematicsFolder;}
@@ -86,4 +85,6 @@ public class Config {
     public String getSupplyTakenMessage() {return supplyTakenMessage;}
 
     public String getCollectingMessage() {return collectingMessage;}
+
+    public String getCantWhileBuildingMessage() {return cantWhileBuilding;}
 }

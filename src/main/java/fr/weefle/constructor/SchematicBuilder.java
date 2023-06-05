@@ -7,6 +7,7 @@ import fr.weefle.constructor.hooks.DenizenSupport;
 import fr.weefle.constructor.hooks.citizens.BuilderTrait;
 import fr.weefle.constructor.listener.SelectionListener;
 import fr.weefle.constructor.listener.TraitListener;
+import fr.weefle.constructor.menu.YAMLMenu;
 import fr.weefle.constructor.nms.NMS;
 import fr.weefle.constructor.schematic.RawSchematic;
 import fr.weefle.constructor.schematic.Schematic;
@@ -23,6 +24,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 
@@ -32,6 +35,7 @@ public class SchematicBuilder extends JavaPlugin {
 
     private Config config;
     private BuildingRegistry buildingRegistry;
+    private List<YAMLMenu<?>> yamlMenus;
     private Plugin denizen;
 
     @Override
@@ -64,6 +68,7 @@ public class SchematicBuilder extends JavaPlugin {
             saveResource("schematics/house.yml", false);
             saveResource("schematics/structure_house.nbt", false);
         }
+        this.yamlMenus = new ArrayList<>();
 
         if (getServer().getPluginManager().getPlugin("Citizens") != null || getServer().getPluginManager().getPlugin("Citizens").isEnabled()) {
             getLogger().log(Level.INFO, "Citizens is now enabled");
@@ -85,9 +90,22 @@ public class SchematicBuilder extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new SelectionListener(), this);
     }
 
+    public void reload() {
+        this.config = new Config();
+        (this.buildingRegistry = new BuildingRegistry()).load();
+        if (!new File(config.getSchematicsFolder()).exists()) {
+            saveResource("schematics/house.schem", false);
+            saveResource("schematics/house.yml", false);
+            saveResource("schematics/structure_house.nbt", false);
+        }
+        for (YAMLMenu<?> yamlMenu : this.yamlMenus) {yamlMenu.reload();}
+    }
+
     public Config config() {return config;}
 
     public BuildingRegistry getBuildingRegistry() {return buildingRegistry;}
+
+    public void registerYAMLMenu(YAMLMenu<?> yamlMenu) {this.yamlMenus.add(yamlMenu);}
 
     public static BuilderTrait getBuilder(Entity ent) {
         if (ent == null) return null;
@@ -161,7 +179,7 @@ public class SchematicBuilder extends JavaPlugin {
         this.buildingRegistry.save();
         this.denizen = null;
         this.buildingRegistry = null;
-        this.config = null;
+        this.yamlMenus = null;
 
         getLogger().log(Level.INFO, " v" + getDescription().getVersion() + " disabled.");
         Bukkit.getServer().getScheduler().cancelTasks(this);

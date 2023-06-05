@@ -166,7 +166,7 @@ public class BuilderListener implements Listener {
                         player,
                         null,
                         "0"));
-                new MaterialsMenu(player, npc).open();
+                new MaterialsMenu(player, inst).open();
             } else if (inst.getState() == BuilderState.BUILDING && inst.isExcavate() && !inst.ExcavateMaterials.isEmpty()) {
                 new ExcavatedMenu(player, npc).open();
             }

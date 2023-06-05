@@ -23,7 +23,7 @@ public class HoldSubCommand extends AbstractCommand {
         NPC npc = builder.getNPC();
 
         if (args.size() == 0) {
-            sender.sendMessage(ChatColor.GOLD + npc.getName() + " currently does" + (builder.isHoldItems() ?
+            sender.sendMessage(ChatColor.GOLD + npc.getName() + " currently does" + (builder.holdsItems() ?
                     "" :
                     " NOT") + " hold blocks.");
             return;
@@ -39,7 +39,7 @@ public class HoldSubCommand extends AbstractCommand {
             sender.sendMessage(ChatColor.RED + args.get(0) + " is not a valid boolean");
             return;
         }
-        builder.setHoldItems(holdItems);
+        builder.setHoldsItems(holdItems);
         sender.sendMessage(ChatColor.GOLD + npc.getName() + " now does" + (holdItems ?
                 "" :
                 " NOT") + " hold blocks.");

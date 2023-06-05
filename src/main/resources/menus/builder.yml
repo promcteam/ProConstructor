@@ -1,0 +1,109 @@
+# Menu displaying information about a builder and it's current schematic
+title: "&8%npc%"
+rows: 2
+items:
+  empty:
+    display-name: ""
+    lore: []
+    material: "air"
+    amount: 1
+    custom-model-data: 0
+  schematic-notnull:
+    display-name: "&a%name% &7Tier &a%tier%"
+    lore:
+      - "&2Left-Click: &7View details"
+      - "&2Drop: &7Clear"
+    material: "bricks"
+    amount: 1
+    custom-model-data: 0
+  schematic-null:
+    display-name: "&7No schematic selected"
+    lore: []
+    material: "stone_bricks"
+    amount: 1
+    custom-model-data: 0
+  trigger-empty:
+    display-name: "&aCan't start building"
+    lore:
+      - "&7No schematic selected"
+    material: "light_gray_wool"
+    amount: 1
+    custom-model-data: 0
+  trigger-missing-materials:
+    display-name: "&aCan't start building"
+    lore:
+      - "&7Materials missing for the construction"
+    material: "light_gray_wool"
+    amount: 1
+    custom-model-data: 0
+  trigger-start:
+    display-name: "&aStart building"
+    lore: []
+    material: "green_wool"
+    amount: 1
+    custom-model-data: 0
+  trigger-stop:
+    display-name: "&aStop building"
+    lore: []
+    material: "red_wool"
+    amount: 1
+    custom-model-data: 0
+  origin:
+    display-name: "&aModify build origin"
+    lore:
+      - "&9Current: &b%world%, %x%, %y%, %z%"
+      - "&2Drop: &7Clear"
+    material: "beacon"
+    amount: 1
+    custom-model-data: 0
+  required-materials:
+    display-name: "&aView list of missing materials"
+    lore:
+      - "&9Missing: &b%current%"
+    material: "hopper"
+    amount: 1
+    custom-model-data: 0
+  settings:
+    display-name: "&aChange building settings"
+    lore: []
+    material: "command_block"
+    amount: 1
+    custom-model-data: 0
+  new-schematic:
+    display-name: "&aLoad new schematic"
+    lore: []
+    material: "book"
+    amount: 1
+    custom-model-data: 0
+  existing-structure:
+    display-name: "&aSelect existing structure"
+    lore: []
+    material: "book"
+    amount: 1
+    custom-model-data: 0
+  preview:
+    display-name: "&aPreview building"
+    lore:
+      - "&7Load a preview of the current schematic"
+    material: "ender_eye"
+    amount: 1
+    custom-model-data: 0
+  collected-materials:
+    display-name: "&aCollected materials"
+    lore:
+      - "&7Claim materials collected by"
+      - "&7the builder during excavation"
+      - "&9Current: &b%current%"
+    material: "chest"
+    amount: 1
+    custom-model-data: 0
+slots:
+  0: "schematic"
+  1: "trigger"
+  2: "origin"
+  3: "required-materials"
+  8: "settings"
+  9: "new-schematic"
+  10: "existing-structure"
+  11: "preview"
+  12: "collected-materials"

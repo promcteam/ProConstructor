@@ -347,7 +347,7 @@ public class RawSchematic extends Schematic {
                     case LEGACY_STATIONARY_LAVA:
                     //</editor-fold>
                         //5th
-                        if (!builder.isIgnoreLiquids()) liquids.add(b);
+                        if (!builder.ignoresLiquids()) liquids.add(b);
                         break;
                     case SAND:
                     case GRAVEL:

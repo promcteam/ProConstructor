@@ -7,7 +7,7 @@ import fr.weefle.constructor.hooks.citizens.persistence.MaterialIntegerMapPersis
 import fr.weefle.constructor.hooks.citizens.persistence.MaterialMapWrapper;
 import fr.weefle.constructor.hooks.citizens.persistence.PersistentBuildingPersistenceLoader;
 import fr.weefle.constructor.hooks.citizens.persistence.SchematicPersistenceLoader;
-import fr.weefle.constructor.menu.menus.ParameterMenu;
+import fr.weefle.constructor.menu.menus.BuilderMenu;
 import fr.weefle.constructor.nms.NMS;
 import fr.weefle.constructor.schematic.Schematic;
 import fr.weefle.constructor.schematic.YAMLSchematic;
@@ -114,9 +114,9 @@ public class BuilderTrait extends Trait implements Toggleable {
 
     public void setIgnoreAir(boolean ignoreAir) {this.ignoreAir = ignoreAir;}
 
-    public boolean isIgnoreLiquids() {return ignoreLiquids;}
+    public boolean ignoresLiquids() {return ignoreLiquids;}
 
-    public void setIgnoreLiquids(boolean ignoreLiquids) {this.ignoreLiquids = ignoreLiquids;}
+    public void setIgnoresLiquids(boolean ignoreLiquids) {this.ignoreLiquids = ignoreLiquids;}
 
     public boolean isExcavate() {return excavate;}
 
@@ -134,11 +134,11 @@ public class BuilderTrait extends Trait implements Toggleable {
 
     public void setBuildPatternXZ(@NotNull BuildPatternXZ buildPatternXZ) {this.buildPatternXZ = buildPatternXZ;}
 
-    public boolean isHoldItems() {return holdItems;}
+    public boolean holdsItems() {return holdItems;}
 
-    public void setHoldItems(boolean holdItems) {this.holdItems = holdItems;}
+    public void setHoldsItems(boolean holdItems) {this.holdItems = holdItems;}
 
-    public boolean isRequireMaterials() {return requireMaterials;}
+    public boolean requiresMaterials() {return requireMaterials;}
 
     public void setRequireMaterials(boolean requireMaterials) {this.requireMaterials = requireMaterials;}
 
@@ -156,6 +156,7 @@ public class BuilderTrait extends Trait implements Toggleable {
     public void setSchematic(@Nullable Schematic schematic) {
         this.schematic = schematic;
         this.persistentBuilding = null;
+        if (schematic != null && this.requireMaterials && !this.getMissingMaterials().isEmpty()) {this.state = BuilderState.COLLECTING;}
     }
 
     @Nullable
@@ -179,6 +180,7 @@ public class BuilderTrait extends Trait implements Toggleable {
     @NotNull
     public Map<Material, Integer> getMissingMaterials() {
         Map<Material, Integer> missingMaterials = new TreeMap<>();
+        if (this.schematic == null || !this.requiresMaterials()) {return missingMaterials;}
         for (Map.Entry<Material, Integer> entry : this.schematic.getMaterials().entrySet()) {
             Material material = entry.getKey();
             int      missing  = entry.getValue() - this.materials.getHandle().getOrDefault(material, 0);
@@ -225,7 +227,7 @@ public class BuilderTrait extends Trait implements Toggleable {
         Player player = event.getClicker();
         if (this.state == BuilderState.IDLE || this.state == BuilderState.BUILDING) {
             player.performCommand("npc select " + npc.getId());
-            new ParameterMenu(event.getClicker(), npc).open();
+            new BuilderMenu(event.getClicker(), npc).open();
         } else if (this.state == BuilderState.COLLECTING) {
             ItemStack heldItem = player.getInventory().getItemInMainHand();
             if (heldItem.getType().isBlock() && !(heldItem.getType() == Material.AIR)) {
@@ -284,6 +286,9 @@ public class BuilderTrait extends Trait implements Toggleable {
                             "0"));
                     //don't need it or already have it.
                 }
+            } else {
+                player.performCommand("npc select " + npc.getId());
+                new BuilderMenu(event.getClicker(), npc).open();
             }
         }
     }
@@ -496,17 +501,19 @@ public class BuilderTrait extends Trait implements Toggleable {
             SchematicBuilder.denizenAction(npc, "Build " + schematic.getDisplayName() + " Complete");
             if (this.schematic instanceof YAMLSchematic) {
                 YAMLSchematic yamlSchematic = (YAMLSchematic) this.schematic;
-                int tier = yamlSchematic.getNextTier();
-                yamlSchematic.setNextTier(tier+1);
+                int tier = yamlSchematic.getTier()+1;
+                yamlSchematic.setTier(tier);
                 if (this.persistentBuilding == null || !this.persistentBuilding.getPath().equals(this.schematic.getPath())) {
                     this.persistentBuilding = new PersistentBuilding(UUID.randomUUID(), yamlSchematic, tier, this.origin);
-                }
+                } else {this.persistentBuilding.setTier(tier);}
             }
         }
         stop();
     }
 
     private void stop() {
+        // TODO send stored materials to collected
+        System.out.println(0);
         boolean stop = state == BuilderState.BUILDING;
         if (canceltaskid != null && !canceltaskid.isCancelled()) canceltaskid.cancel();
 
@@ -517,6 +524,7 @@ public class BuilderTrait extends Trait implements Toggleable {
             marks.addAll(_marks);
             _marks.clear();
         } else {
+            System.out.println(1);
             this.state = BuilderState.IDLE;
             if (stop && npc.isSpawned()) {
                 if (npc.getNavigator().isNavigating()) npc.getNavigator().cancelNavigation();

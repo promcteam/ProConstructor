@@ -16,6 +16,7 @@
 
     <properties>
         <java.version>1.8</java.version>
+        <promccore.version>1.0.4-R0.8-SNAPSHOT</promccore.version>
     </properties>
 
     <name>ProSchematicBuilder</name>
@@ -109,8 +110,8 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
+                    <source>11</source>
+                    <target>11</target>
                 </configuration>
             </plugin>
             <plugin>

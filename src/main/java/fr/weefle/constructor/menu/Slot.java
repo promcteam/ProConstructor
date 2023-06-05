@@ -5,9 +5,9 @@ import org.bukkit.inventory.ItemStack;
 public class Slot {
     protected Integer i = null;
     protected Menu menu;
-    protected final ItemStack itemStack;
+    protected ItemStack itemStack;
 
-    public Slot(ItemStack itemStack) { this.itemStack = itemStack; }
+    public Slot(ItemStack itemStack) { this.itemStack = itemStack; } // Add permission
 
     void setMenu(int i, Menu menu) {
         this.i = i;

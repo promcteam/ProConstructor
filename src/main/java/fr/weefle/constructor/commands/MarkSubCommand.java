@@ -59,9 +59,13 @@ public class MarkSubCommand extends AbstractCommand {
         } else {
             material = SchematicBuilder.getInstance().config().getMarkMats().get(0);
         }
+        execute(builder, material, sender);
+    }
+
+    public static void execute(BuilderTrait builder, Material material, CommandSender sender) {
+        NPC npc = builder.getNPC();
         if (builder.StartMark(material)) {
-            sender.sendMessage(SchematicBuilder.format(SchematicBuilder.getInstance().config().getMarkMessage(), npc,
-                    builder.getSchematic(), sender, null, "0"));
+            sender.sendMessage(SchematicBuilder.format(SchematicBuilder.getInstance().config().getMarkMessage(), npc, builder.getSchematic(), sender, null, "0"));
         } else {
             sender.sendMessage(ChatColor.RED + npc.getName() + " could not mark. Already building or no schematic loaded?");
         }

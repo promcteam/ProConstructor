@@ -1,6 +1,6 @@
 package fr.weefle.constructor.commands;
 
-import fr.weefle.constructor.menu.menus.SchematicMenu;
+import fr.weefle.constructor.menu.menus.SchematicListMenu;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -22,6 +22,6 @@ public class ListSubCommand extends AbstractCommand {
             sendUsage(sender);
             return;
         }
-        new SchematicMenu((Player) sender).open();
+        new SchematicListMenu((Player) sender).open();
     }
 }
