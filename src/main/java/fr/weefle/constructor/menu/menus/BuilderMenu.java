@@ -1,6 +1,7 @@
 package fr.weefle.constructor.menu.menus;
 
 import com.google.common.base.Preconditions;
+import fr.weefle.constructor.PersistentBuilding;
 import fr.weefle.constructor.SchematicBuilder;
 import fr.weefle.constructor.commands.ExcavatedSubCommand;
 import fr.weefle.constructor.commands.PreviewSubCommand;
@@ -17,11 +18,13 @@ import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -169,7 +172,52 @@ public class BuilderMenu extends Menu {
                         @Override
                         public void onLeftClick() {
                             if (checkNotBusy(builder, player)) {
-                                // TODO
+                                Menu   menu   = this.menu;
+                                BaseComponent component  = new TextComponent("▸ Click on a block from the structure you want to select, or type ");
+                                BaseComponent component1 = new TextComponent(ChatColor.GOLD.toString()+ChatColor.UNDERLINE+"cancel");
+                                component1.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "cancel"));
+                                component.addExtra(component1);
+                                component.addExtra(new TextComponent(" to go back."));
+                                player.spigot().sendMessage(component);
+
+                                this.menu.fakeClose();
+                                menu.registerListener(new Listener() {
+                                    @EventHandler
+                                    public void onChat(AsyncPlayerChatEvent event) {
+                                        if (!event.getPlayer().equals(player)) {return;}
+                                        if (event.getMessage().strip().equalsIgnoreCase("cancel")) {
+                                            HandlerList.unregisterAll(this);
+                                            event.setCancelled(true);
+                                            menu.open();
+                                        }
+                                    }
+
+                                    @EventHandler
+                                    public void onBlockClick(PlayerInteractEvent event) {
+                                        switch (event.getAction()) {
+                                            case LEFT_CLICK_BLOCK: case RIGHT_CLICK_BLOCK: case LEFT_CLICK_AIR: case RIGHT_CLICK_AIR: {
+                                                event.setCancelled(true);
+                                                Block block = event.getClickedBlock();
+                                                if (block == null) {return;}
+                                                PersistentBuilding persistentBuilding = SchematicBuilder.getInstance().getBuildingRegistry().getPersistentBuilding(block.getLocation());
+                                                if (persistentBuilding == null) {
+                                                    BaseComponent component  = new TextComponent(ChatColor.RED+"This block doesn't belong to a existing building. Type ");
+                                                    BaseComponent component1 = new TextComponent(ChatColor.GOLD.toString()+ChatColor.UNDERLINE+"cancel");
+                                                    component1.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "cancel"));
+                                                    component.addExtra(component1);
+                                                    component.addExtra(new TextComponent(ChatColor.RED+" to go back."));
+                                                    player.spigot().sendMessage(component);
+                                                } else {
+                                                    HandlerList.unregisterAll(this);
+                                                    builder.setPersistentBuilding(persistentBuilding);
+                                                    player.sendMessage(ChatColor.GREEN+"Building selected");
+                                                    menu.open();
+                                                }
+                                                break;
+                                            }
+                                        }
+                                    }
+                                });
                             }
                         }
                     };

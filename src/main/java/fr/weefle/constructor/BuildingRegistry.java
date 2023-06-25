@@ -1,6 +1,8 @@
 package fr.weefle.constructor;
 
+import org.bukkit.Location;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.util.Vector;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
@@ -44,5 +46,15 @@ public class BuildingRegistry {
     void registerBuilding(PersistentBuilding building) {
         this.buildings.put(building.getUUID(), building);
         this.config.set(building.getUUID().toString(), building.serialize());
+    }
+
+    @Nullable
+    public PersistentBuilding getPersistentBuilding(Location location) {
+        Vector vector = location.toVector();
+        for (PersistentBuilding persistentBuilding : this.buildings.values()) {
+            if (!persistentBuilding.getWorld().equals(location.getWorld())) {continue;}
+            if (persistentBuilding.getBoundingBox().contains(vector)) {return persistentBuilding;}
+        }
+        return null;
     }
 }
