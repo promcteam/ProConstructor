@@ -61,14 +61,7 @@ public class SchematicBuilder extends JavaPlugin {
 			getLogger().severe("Verify the resource's link");
 			e.printStackTrace();
 		}*/
-        this.config = new Config();
-        (this.buildingRegistry = new BuildingRegistry()).load();
-        if (!new File(config.getSchematicsFolder()).exists()) {
-            saveResource("schematics/house.schem", false);
-            saveResource("schematics/house.yml", false);
-            saveResource("schematics/structure_house.nbt", false);
-        }
-        this.yamlMenus = new ArrayList<>();
+        reload();
 
         if (getServer().getPluginManager().getPlugin("Citizens") != null || getServer().getPluginManager().getPlugin("Citizens").isEnabled()) {
             getLogger().log(Level.INFO, "Citizens is now enabled");
@@ -97,8 +90,9 @@ public class SchematicBuilder extends JavaPlugin {
             saveResource("schematics/house.schem", false);
             saveResource("schematics/house.yml", false);
             saveResource("schematics/structure_house.nbt", false);
+            saveResource("schematics/villager_house.schem", false);
         }
-        for (YAMLMenu<?> yamlMenu : this.yamlMenus) {yamlMenu.reload();}
+        this.yamlMenus = new ArrayList<>();
     }
 
     public Config config() {return config;}

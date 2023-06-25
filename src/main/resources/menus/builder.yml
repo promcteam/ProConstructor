@@ -9,9 +9,9 @@ items:
     amount: 1
     custom-model-data: 0
   schematic-notnull:
-    display-name: "&a%name% &7Tier &a%tier%"
+    display-name: "&a%name% &7(Tier &a%tier%&7)"
     lore:
-      - "&2Left-Click: &7View details"
+      - "&2Left-Click: &7View tiers"
       - "&2Drop: &cClear"
     material: "bricks"
     amount: 1

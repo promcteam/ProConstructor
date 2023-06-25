@@ -58,7 +58,7 @@ public class BuilderMenu extends Menu {
                     itemStack.setItemMeta(meta);
                     return new Slot(itemStack) {
                         @Override
-                        public void onLeftClick() {} // TODO
+                        public void onLeftClick() {this.menu.openSubMenu(new TiersMenu(player, schematic));}
 
                         @Override
                         public void onDrop() {
