@@ -112,6 +112,10 @@ public class BuilderListener implements Listener {
                         slot.onShiftRightClick();
                         break;
                     }
+                    case MIDDLE: {
+                        slot.onMiddleClick();
+                        break;
+                    }
                     case NUMBER_KEY: {
                         slot.onNumberClick(event.getHotbarButton());
                         break;

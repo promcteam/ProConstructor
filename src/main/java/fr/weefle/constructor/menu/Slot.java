@@ -24,6 +24,8 @@ public class Slot {
 
     public void onShiftRightClick() { onRightClick(); }
 
+    public void onMiddleClick() { onLeftClick(); }
+
     public void onNumberClick(int numberKey) { onLeftClick(); }
 
     public void onDoubleClick() { onLeftClick(); }

@@ -18,11 +18,11 @@ import java.util.List;
 import java.util.Map;
 
 public abstract class YAMLMenu<T> {
-    private final String name;
-    private String title;
-    private int rows;
-    private Map<Integer,String> slots;
-    private Map<String,ItemStack> items;
+    protected final String name;
+    protected String title;
+    protected int rows;
+    protected Map<Integer,String> slots;
+    protected Map<String,ItemStack> items;
 
     public YAMLMenu(String name) {
         this.name = name;
@@ -64,9 +64,9 @@ public abstract class YAMLMenu<T> {
             String materialString = yamlItem.getString("material", "dirt");
             Material material;
             try {
-                material = Material.valueOf(materialString.toUpperCase());
+                material = Material.valueOf(materialString.toUpperCase().replace('-', '_'));
             } catch (IllegalArgumentException e1) {
-                plugin.getLogger().warning("Invalid material \""+materialString+"\" in "+this.name);
+                plugin.getLogger().warning("Invalid material \""+materialString+"\" in menu "+this.name+".yml");
                 material = Material.DIRT;
             }
             ItemStack itemStack = new ItemStack(material, yamlItem.getInt("amount", 1));
@@ -104,7 +104,8 @@ public abstract class YAMLMenu<T> {
         menu.slots.clear();
         Player player = menu.getPlayer();
         for (Map.Entry<Integer,String> entry : this.slots.entrySet()) {
-            menu.setSlot(entry.getKey(), this.getSlot(entry.getValue(), parameter, player));
+            Slot slot = this.getSlot(entry.getValue(), parameter, player);
+            if (slot != null) {menu.setSlot(entry.getKey(), slot);}
         }
         ItemStack emptySlot = this.getItem("empty");
         for (int i = 0, size = menu.slots.lastKey()/(this.getRows()*9)+1; i < size; i++) {

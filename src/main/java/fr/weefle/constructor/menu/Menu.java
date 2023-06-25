@@ -12,6 +12,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -20,7 +21,8 @@ import java.util.*;
 public abstract class Menu implements InventoryHolder {
     protected final Player player;
     protected final String title;
-    protected final Inventory inventory;
+    protected final int rows;
+    protected Inventory inventory;
     protected final TreeMap<Integer, Slot> slots = new TreeMap<>();
     private   final Set<Listener> listeners = new HashSet<>();
     private int page  = 0;
@@ -31,6 +33,7 @@ public abstract class Menu implements InventoryHolder {
     public Menu(Player player, int rows, String title) {
         this.player = player;
         this.title = title;
+        this.rows = rows;
         this.inventory = Bukkit.createInventory(this, rows*9, title);
     }
 
@@ -69,17 +72,24 @@ public abstract class Menu implements InventoryHolder {
     public void open() {open(this.page);}
 
     public void open(int page) {
-        setContents();
-        page = page%getPages();
-        inventory.clear();
-        for (int i = 0, last = this.inventory.getSize(); i<last; i++) {
-            Slot slot = slots.get(page*this.inventory.getSize()+i);
-            if (slot != null) {inventory.setItem(i, slot.getItemStack());}
-        }
-        this.opening = true;
-        player.openInventory(inventory);
-        this.opening = false;
-        this.page = page;
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                setContents();
+                int finalPage = page%getPages();
+                inventory = Bukkit.createInventory(Menu.this, rows*9, title
+                        .replace("%page%", String.valueOf(finalPage+1))
+                        .replace("%pages%", String.valueOf(getPages())));
+                for (int i = 0, last = Menu.this.inventory.getSize(); i<last; i++) {
+                    Slot slot = slots.get(finalPage*Menu.this.inventory.getSize()+i);
+                    if (slot != null) {inventory.setItem(i, slot.getItemStack());}
+                }
+                Menu.this.opening = true;
+                player.openInventory(inventory);
+                Menu.this.opening = false;
+                Menu.this.page = finalPage;
+            }
+        }.runTask(SchematicBuilder.getInstance());
     }
 
     private void setOnClose(Menu menu, int page) {
@@ -148,5 +158,21 @@ public abstract class Menu implements InventoryHolder {
     public void registerListener(Listener listener) {
         Bukkit.getPluginManager().registerEvents(listener, SchematicBuilder.getInstance());
         this.listeners.add(listener);
+    }
+
+    public static class PreviousPageButton extends Slot {
+
+        public PreviousPageButton(ItemStack itemStack) {super(itemStack);}
+
+        @Override
+        public void onLeftClick() {this.menu.open(this.menu.getPage()-1);}
+    }
+
+    public static class NextPageButton extends Slot {
+
+        public NextPageButton(ItemStack itemStack) {super(itemStack);}
+
+        @Override
+        public void onLeftClick() {this.menu.open(this.menu.getPage()+1);}
     }
 }

@@ -19,6 +19,10 @@ items:
   layers:
     display-name: "&aSet layers to build at the same time"
     lore:
+      - "&6Middle-Click: &eSet"
+      - "&6Left-Click: &eDecrease"
+      - "&6Right-Click: &eIncrease"
+      - "&6Drop: &cSet to default value"
       - "&9Current: &b%current%"
     material: "snow"
     amount: 1
@@ -66,6 +70,10 @@ items:
       - "&7that can pass between placed blocks."
       - "&7If the builder failed to move after this time,"
       - "&7they'll be force-teleported"
+      - "&6Middle-Click: &eSet"
+      - "&6Left-Click: &eDecrease"
+      - "&6Right-Click: &eIncrease"
+      - "&6Drop: &cSet to default value"
       - "&9Current: &b%current%"
     material: "clock"
     amount: 1

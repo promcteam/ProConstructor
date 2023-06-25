@@ -219,12 +219,12 @@ public class BuilderMenu extends Menu {
                         }
                     };
                 }
-                case "layers": { // TODO left and right clicks
+                case "layers": {
                     ItemStack itemStack = this.getItem(function);
                     ItemUT.replaceLore(itemStack, "%current%", String.valueOf(builder.getBuildYLayers()));
                     return new Slot(itemStack) {
                         @Override
-                        public void onLeftClick() {
+                        public void onMiddleClick() {
                             Menu   menu   = this.menu;
                             BaseComponent component  = new TextComponent("▸ Enter the desired layers, or ");
                             BaseComponent component1 = new TextComponent(ChatColor.GOLD.toString()+ChatColor.UNDERLINE+"cancel");
@@ -232,7 +232,7 @@ public class BuilderMenu extends Menu {
                             component.addExtra(component1);
                             component.addExtra(new TextComponent(" to go back. "));
                             component1 = new TextComponent(ChatColor.GOLD.toString()+ChatColor.UNDERLINE+"Current value");
-                            component1.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "cancel"));
+                            component1.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, String.valueOf(builder.getBuildYLayers())));
                             component.addExtra(component1);
                             player.spigot().sendMessage(component);
 
@@ -254,6 +254,23 @@ public class BuilderMenu extends Menu {
                                     menu.open();
                                 }
                             });
+                        }
+
+                        @Override
+                        public void onLeftClick() {
+                            builder.setBuildYLayers(builder.getBuildYLayers()-1);
+                            this.menu.open();
+                        }
+
+                        @Override
+                        public void onRightClick() {
+                            builder.setBuildYLayers(builder.getBuildYLayers()+1);
+                            this.menu.open();
+                        }
+
+                        @Override
+                        public void onDrop() {
+                            // TODO default value
                         }
                     };
                 }
@@ -334,16 +351,15 @@ public class BuilderMenu extends Menu {
                     ItemUT.replaceLore(itemStack, "%current%", String.valueOf(builder.getMoveTimeoutSeconds()));
                     return new Slot(itemStack) {
                         @Override
-                        public void onLeftClick() {
+                        public void onMiddleClick() {
                             Menu menu = this.menu;
-
                             BaseComponent component = new TextComponent("▸ Enter the building timeout, or ");
                             BaseComponent component1 = new TextComponent(ChatColor.GOLD.toString()+ChatColor.UNDERLINE+"cancel");
                             component1.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "cancel"));
                             component.addExtra(component1);
                             component.addExtra(new TextComponent(" to go back. "));
                             component1 = new TextComponent(ChatColor.GOLD.toString()+ChatColor.UNDERLINE+"Current value");
-                            component1.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "cancel"));
+                            component1.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, String.valueOf(builder.getMoveTimeoutSeconds())));
                             component.addExtra(component1);
                             player.spigot().sendMessage(component);
 
@@ -351,9 +367,7 @@ public class BuilderMenu extends Menu {
                             menu.registerListener(new Listener() {
                                 @EventHandler
                                 public void onChat(AsyncPlayerChatEvent event) {
-                                    System.out.println(0);
                                     if (!event.getPlayer().equals(player)) {return;}
-                                    System.out.println(1);
                                     HandlerList.unregisterAll(this);
                                     event.setCancelled(true);
                                     String message = event.getMessage().strip();
@@ -365,9 +379,24 @@ public class BuilderMenu extends Menu {
                                         }
                                     }
                                     menu.open();
-                                    System.out.println(2);
                                 }
                             });
+                        }
+                        @Override
+                        public void onLeftClick() {
+                            builder.setMoveTimeoutSeconds(builder.getMoveTimeoutSeconds()-1);
+                            this.menu.open();
+                        }
+
+                        @Override
+                        public void onRightClick() {
+                            builder.setMoveTimeoutSeconds(builder.getMoveTimeoutSeconds()+1);
+                            this.menu.open();
+                        }
+
+                        @Override
+                        public void onDrop() {
+                            // TODO default value
                         }
                     };
                 }

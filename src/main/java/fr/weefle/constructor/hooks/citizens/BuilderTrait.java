@@ -144,11 +144,11 @@ public class BuilderTrait extends Trait implements Toggleable {
 
     public double getMoveTimeoutSeconds() {return moveTimeoutSeconds;}
 
-    public void setMoveTimeoutSeconds(double moveTimeoutSeconds) {this.moveTimeoutSeconds = moveTimeoutSeconds;}
+    public void setMoveTimeoutSeconds(double moveTimeoutSeconds) {this.moveTimeoutSeconds = Math.max(1, moveTimeoutSeconds);}
 
     public int getBuildYLayers() {return buildYLayers;}
 
-    public void setBuildYLayers(int buildYLayers) {this.buildYLayers = buildYLayers;}
+    public void setBuildYLayers(int buildYLayers) {this.buildYLayers = Math.max(1, buildYLayers);}
 
     @Nullable
     public Schematic getSchematic() {return schematic;}
@@ -156,7 +156,9 @@ public class BuilderTrait extends Trait implements Toggleable {
     public void setSchematic(@Nullable Schematic schematic) {
         this.schematic = schematic;
         this.persistentBuilding = null;
-        if (schematic != null && this.requireMaterials && !this.getMissingMaterials().isEmpty()) {this.state = BuilderState.COLLECTING;}
+        if (schematic == null) {
+            this.state = BuilderState.IDLE;
+        } else if (this.requireMaterials && !this.getMissingMaterials().isEmpty()) {this.state = BuilderState.COLLECTING;}
     }
 
     @Nullable
@@ -513,7 +515,6 @@ public class BuilderTrait extends Trait implements Toggleable {
 
     private void stop() {
         // TODO send stored materials to collected
-        System.out.println(0);
         boolean stop = state == BuilderState.BUILDING;
         if (canceltaskid != null && !canceltaskid.isCancelled()) canceltaskid.cancel();
 
@@ -524,7 +525,6 @@ public class BuilderTrait extends Trait implements Toggleable {
             marks.addAll(_marks);
             _marks.clear();
         } else {
-            System.out.println(1);
             this.state = BuilderState.IDLE;
             if (stop && npc.isSpawned()) {
                 if (npc.getNavigator().isNavigating()) npc.getNavigator().cancelNavigation();

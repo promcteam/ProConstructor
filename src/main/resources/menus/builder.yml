@@ -12,7 +12,7 @@ items:
     display-name: "&a%name% &7Tier &a%tier%"
     lore:
       - "&2Left-Click: &7View details"
-      - "&2Drop: &7Clear"
+      - "&2Drop: &cClear"
     material: "bricks"
     amount: 1
     custom-model-data: 0

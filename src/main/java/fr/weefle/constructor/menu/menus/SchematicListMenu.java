@@ -4,7 +4,6 @@ import fr.weefle.constructor.SchematicBuilder;
 import fr.weefle.constructor.commands.LoadSubCommand;
 import fr.weefle.constructor.menu.FileExplorerMenu;
 import fr.weefle.constructor.menu.Slot;
-import fr.weefle.constructor.schematic.Schematic;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
