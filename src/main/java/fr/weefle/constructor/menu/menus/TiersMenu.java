@@ -65,6 +65,7 @@ public class TiersMenu extends Menu {
                 ItemUT.replaceLore(itemStack, "%width%", String.valueOf(schematic.getWidth()));
                 ItemUT.replaceLore(itemStack, "%length%", String.valueOf(schematic.getLength()));
                 ItemUT.replaceLore(itemStack, "%height%", String.valueOf(schematic.getHeight()));
+                ItemUT.replaceLore(itemStack, "%lore%", new ArrayList<>());
                 ItemMeta meta = itemStack.getItemMeta();
                 if (meta != null) {
                     meta.setDisplayName(meta.getDisplayName()

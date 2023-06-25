@@ -17,7 +17,5 @@ public class PersistentBuildingPersistenceLoader implements Persister<Persistent
     }
 
     @Override
-    public void save(PersistentBuilding building, DataKey dataKey) {
-        dataKey.setString("",  building == null ? null :building.getUUID().toString());
-    }
+    public void save(PersistentBuilding building, DataKey dataKey) {} // Manually done in BuilderTrait.save()
 }

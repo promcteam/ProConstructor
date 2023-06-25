@@ -19,6 +19,7 @@ import net.citizensnpcs.api.persistence.DelegatePersistence;
 import net.citizensnpcs.api.persistence.Persist;
 import net.citizensnpcs.api.trait.Trait;
 import net.citizensnpcs.api.trait.TraitName;
+import net.citizensnpcs.api.util.DataKey;
 import net.citizensnpcs.trait.Toggleable;
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -34,6 +35,7 @@ import org.dynmap.DynmapCommonAPI;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
@@ -223,6 +225,12 @@ public class BuilderTrait extends Trait implements Toggleable {
                 }
             }.runTaskLater(SchematicBuilder.getInstance(), 20);
         } else state = BuilderState.IDLE;
+    }
+
+    @Override
+    public void save(DataKey key) { // Can't do this in Persisters since they don't process null values
+        key.setString("Schematic", this.schematic == null ? null : new File(SchematicBuilder.getInstance().config().getSchematicsFolder()).toPath().relativize(new File(this.schematic.getPath()).toPath()).toString());
+        key.setString("PersistentBuilding", this.persistentBuilding == null ? null : this.persistentBuilding.getUUID().toString());
     }
 
     public void handleRightClick(NPCRightClickEvent event) {

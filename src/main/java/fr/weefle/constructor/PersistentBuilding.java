@@ -48,7 +48,6 @@ public class PersistentBuilding implements ConfigurationSerializable {
 
     public String getPath() {return path;}
 
-
     public YAMLSchematic getSchematic() {
         YAMLSchematic schematic = (YAMLSchematic) Objects.requireNonNull(SchematicBuilder.getSchematic(this.path));
         this.tier = schematic.setTier(this.tier);
