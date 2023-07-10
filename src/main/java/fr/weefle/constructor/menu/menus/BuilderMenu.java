@@ -318,7 +318,8 @@ public class BuilderMenu extends Menu {
 
                         @Override
                         public void onDrop() {
-                            // TODO default value
+                            builder.setBuildYLayers(1);
+                            this.menu.open();
                         }
                     };
                 }
@@ -444,7 +445,8 @@ public class BuilderMenu extends Menu {
 
                         @Override
                         public void onDrop() {
-                            // TODO default value
+                            builder.setMoveTimeoutSeconds(1);
+                            this.menu.open();
                         }
                     };
                 }
