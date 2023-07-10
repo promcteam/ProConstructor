@@ -30,7 +30,8 @@ public class CitizensActionsMenu extends Menu {
         }
 
         @Override
-        public @Nullable Slot getSlot(String function, BuilderTrait builder, Player player) {
+        @Nullable
+        public Slot getSlot(String function, BuilderTrait builder, Player player) {
             switch (function) {
                 case "on-start": {
                     ItemStack itemStack = this.getItem(function);

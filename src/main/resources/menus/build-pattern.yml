@@ -1,0 +1,48 @@
+title: "&8%npc%'s Build Pattern"
+rows: 1
+items:
+  empty:
+    display-name: ""
+    lore: []
+    material: "air"
+    amount: 1
+    custom-model-data: 0
+  spiral:
+    display-name: "&aSpiral"
+    lore:
+      - "&7Follow a clockwise building pattern"
+      - "&6Left-Click: &eSelect"
+    material: "string"
+    amount: 1
+    custom-model-data: 0
+  reverse-spiral:
+    display-name: "&aReverse Spiral"
+    lore:
+      - "&7Follow a counter-clockwise building pattern"
+      - "&6Left-Click: &eSelect"
+    material: "string"
+    amount: 1
+    custom-model-data: 0
+  linear:
+    display-name: "&aLinear"
+    lore:
+      - "&7Follow a linear building pattern,"
+      - "&7starting at the north-west"
+      - "&6Left-Click: &eSelect"
+    material: "stick"
+    amount: 1
+    custom-model-data: 0
+  reverse-linear:
+    display-name: "&aReverse Linear"
+    lore:
+      - "&7Follow a linear building pattern,"
+      - "&7starting at the south-east"
+      - "&6Left-Click: &eSelect"
+    material: "stick"
+    amount: 1
+    custom-model-data: 0
+slots:
+  0: "spiral"
+  1: "reverse-spiral"
+  2: "linear"
+  3: "reverse-linear"

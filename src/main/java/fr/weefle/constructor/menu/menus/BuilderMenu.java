@@ -27,6 +27,7 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,6 +45,7 @@ public class BuilderMenu extends Menu {
         }
 
         @Override
+        @Nullable
         public Slot getSlot(String function, BuilderTrait builder, Player player) {
             switch (function) {
                 case "schematic": {
@@ -393,7 +395,9 @@ public class BuilderMenu extends Menu {
                     return new Slot(itemStack) {
                         @Override
                         public void onLeftClick() {
-                            // TODO
+                            if (checkNotBusy(builder, player)) {
+                                this.menu.openSubMenu(new BuildPatternMenu(player, builder.getNPC()));
+                            }
                         }
                     };
                 }
