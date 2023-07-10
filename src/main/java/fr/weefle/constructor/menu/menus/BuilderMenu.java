@@ -188,7 +188,7 @@ public class BuilderMenu extends Menu {
                                         if (event.getMessage().strip().equalsIgnoreCase("cancel")) {
                                             HandlerList.unregisterAll(this);
                                             event.setCancelled(true);
-                                            menu.open();
+                                            menu.openSync();
                                         }
                                     }
 
@@ -299,7 +299,7 @@ public class BuilderMenu extends Menu {
                                             player.sendMessage("Invalid number '"+message+'\'');
                                         }
                                     }
-                                    menu.open();
+                                    menu.openSync();
                                 }
                             });
                         }
@@ -345,7 +345,9 @@ public class BuilderMenu extends Menu {
                     return new Slot(itemStack) {
                         @Override
                         public void onLeftClick() {
-                            // TODO
+                            if (checkNotBusy(builder, player)) {
+                                this.menu.openSubMenu(new CitizensActionsMenu(player, builder.getNPC()));
+                            }
                         }
                     };
                 }
@@ -427,7 +429,7 @@ public class BuilderMenu extends Menu {
                                             player.sendMessage("Invalid number '"+message+'\'');
                                         }
                                     }
-                                    menu.open();
+                                    menu.openSync();
                                 }
                             });
                         }

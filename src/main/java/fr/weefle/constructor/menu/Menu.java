@@ -62,34 +62,36 @@ public abstract class Menu implements InventoryHolder {
         }
     }
 
-    public void setContents() {}
+    public abstract void setContents();
 
     @Nullable
     public Slot getSlot(int i) {
         return slots.get(i);
     }
 
+    public void openSync() {
+        new BukkitRunnable() {
+            @Override
+            public void run() {open();}
+        }.runTask(SchematicBuilder.getInstance());
+    }
+
     public void open() {open(this.page);}
 
     public void open(int page) {
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                setContents();
-                int finalPage = page%getPages();
-                inventory = Bukkit.createInventory(Menu.this, rows*9, title
-                        .replace("%page%", String.valueOf(finalPage+1))
-                        .replace("%pages%", String.valueOf(getPages())));
-                for (int i = 0, last = Menu.this.inventory.getSize(); i<last; i++) {
-                    Slot slot = slots.get(finalPage*Menu.this.inventory.getSize()+i);
-                    if (slot != null) {inventory.setItem(i, slot.getItemStack());}
-                }
-                Menu.this.opening = true;
-                player.openInventory(inventory);
-                Menu.this.opening = false;
-                Menu.this.page = finalPage;
-            }
-        }.runTask(SchematicBuilder.getInstance());
+        setContents();
+        int finalPage = page%getPages();
+        inventory = Bukkit.createInventory(Menu.this, rows*9, title
+                .replace("%page%", String.valueOf(finalPage+1))
+                .replace("%pages%", String.valueOf(getPages())));
+        for (int i = 0, last = Menu.this.inventory.getSize(); i<last; i++) {
+            Slot slot = slots.get(finalPage*Menu.this.inventory.getSize()+i);
+            if (slot != null) {inventory.setItem(i, slot.getItemStack());}
+        }
+        Menu.this.opening = true;
+        player.openInventory(inventory);
+        Menu.this.opening = false;
+        Menu.this.page = finalPage;
     }
 
     private void setOnClose(Menu menu, int page) {
