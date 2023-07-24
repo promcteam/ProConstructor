@@ -180,7 +180,7 @@ public class BuilderTrait extends Trait implements Toggleable {
 
     public int getRotation() {return this.rotation;}
 
-    public void setRotation(int rotation) {this.rotation = Util.normalizeRotations(rotation);}
+    public void setRotation(int rotation) {this.rotation = Util.normalizeRotations(rotation);} // Fixme rotate actual block state
 
     @Nullable
     public Location getContinueLoc() {return continueLoc == null ? null : continueLoc.clone();}

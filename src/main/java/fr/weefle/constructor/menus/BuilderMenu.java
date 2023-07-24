@@ -127,6 +127,7 @@ public class BuilderMenu extends Menu {
                                         null, "0"));
                                 return;
                             }
+                            schematic.hidePreview();
                             if (schematic instanceof YAMLSchematic && ((YAMLSchematic) schematic).getTier() >= 0) {
                                 player.sendMessage(SchematicBuilder.format(
                                         SchematicBuilder.getInstance().config().getCantMoveSchematicMessage(),
