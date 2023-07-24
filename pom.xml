@@ -16,7 +16,7 @@
 
     <properties>
         <java.version>1.8</java.version>
-        <promccore.version>1.0.4-R0.14-SNAPSHOT</promccore.version>
+        <promccore.version>1.0.4-R0.15-SNAPSHOT</promccore.version>
     </properties>
 
     <name>ProSchematicBuilder</name>

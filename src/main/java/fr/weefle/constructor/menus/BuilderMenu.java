@@ -175,6 +175,7 @@ public class BuilderMenu extends Menu {
                                     cuboid.render(player);
                                 }
                             }.runTaskTimer(SchematicBuilder.getInstance(), 5, 5);
+                            menu.registerTask(task);
                             menu.registerListener(new Listener() {
                                 @EventHandler
                                 public void onChat(AsyncPlayerChatEvent event) {
@@ -189,6 +190,7 @@ public class BuilderMenu extends Menu {
                                     } else if (message.equalsIgnoreCase("Stop")) {
                                         HandlerList.unregisterAll(this);
                                         event.setCancelled(true);
+                                        menu.unregisterTask(task);
                                         task.cancel();
                                         menu.openSync();
                                     } else if (message.equalsIgnoreCase("Here")) {
