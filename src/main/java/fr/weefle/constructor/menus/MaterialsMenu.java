@@ -1,8 +1,8 @@
-package fr.weefle.constructor.menu.menus;
+package fr.weefle.constructor.menus;
 
 import fr.weefle.constructor.hooks.citizens.BuilderTrait;
-import fr.weefle.constructor.menu.Menu;
-import fr.weefle.constructor.menu.Slot;
+import mc.promcteam.engine.api.menu.Menu;
+import mc.promcteam.engine.api.menu.Slot;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;

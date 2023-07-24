@@ -1,17 +1,17 @@
-package fr.weefle.constructor.menu.menus;
+package fr.weefle.constructor.menus;
 
 import com.google.common.base.Preconditions;
 import fr.weefle.constructor.SchematicBuilder;
 import fr.weefle.constructor.hooks.citizens.BuilderTrait;
-import fr.weefle.constructor.menu.Menu;
+import mc.promcteam.engine.api.menu.Menu;
 import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.entity.Player;
 
 import java.util.Objects;
 
 public class SettingsMenu extends Menu {
-    public static final BuilderMenu.YAMLBuilderMenu PLAYER = new BuilderMenu.YAMLBuilderMenu("builder-settings");
-    public static final BuilderMenu.YAMLBuilderMenu ADMIN = new BuilderMenu.YAMLBuilderMenu("builder-settings-admin");
+    public static final BuilderMenu.YAMLBuilderMenu PLAYER = new BuilderMenu.YAMLBuilderMenu(SchematicBuilder.getInstance(), "menus/builder-settings.yml");
+    public static final BuilderMenu.YAMLBuilderMenu ADMIN = new BuilderMenu.YAMLBuilderMenu(SchematicBuilder.getInstance(), "menus/builder-settings-admin.yml");
 
     protected final NPC npc;
     private final BuilderMenu.YAMLBuilderMenu yamlMenu;

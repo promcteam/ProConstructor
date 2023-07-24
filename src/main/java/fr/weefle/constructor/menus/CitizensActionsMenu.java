@@ -1,11 +1,11 @@
-package fr.weefle.constructor.menu.menus;
+package fr.weefle.constructor.menus;
 
 import com.google.common.base.Preconditions;
 import fr.weefle.constructor.SchematicBuilder;
 import fr.weefle.constructor.hooks.citizens.BuilderTrait;
-import fr.weefle.constructor.menu.Menu;
-import fr.weefle.constructor.menu.Slot;
-import fr.weefle.constructor.menu.YAMLMenu;
+import mc.promcteam.engine.api.menu.Menu;
+import mc.promcteam.engine.api.menu.Slot;
+import mc.promcteam.engine.api.menu.YAMLMenu;
 import mc.promcteam.engine.utils.ItemUT;
 import net.citizensnpcs.api.npc.NPC;
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -23,7 +23,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Objects;
 
 public class CitizensActionsMenu extends Menu {
-    public static final YAMLMenu<BuilderTrait> CONFIG = new YAMLMenu<>("citizens-actions") {
+    public static final YAMLMenu<BuilderTrait> CONFIG = new YAMLMenu<BuilderTrait>(SchematicBuilder.getInstance(), "menus/citizens-actions.yml") {
         @Override
         protected String getTitle(String yamlTitle, BuilderTrait parameter) {
             return yamlTitle.replace("%npc%", parameter.getNPC().getName());

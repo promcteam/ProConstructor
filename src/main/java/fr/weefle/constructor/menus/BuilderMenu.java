@@ -1,4 +1,4 @@
-package fr.weefle.constructor.menu.menus;
+package fr.weefle.constructor.menus;
 
 import com.google.common.base.Preconditions;
 import fr.weefle.constructor.PersistentBuilding;
@@ -6,11 +6,11 @@ import fr.weefle.constructor.SchematicBuilder;
 import fr.weefle.constructor.commands.ExcavatedSubCommand;
 import fr.weefle.constructor.commands.PreviewSubCommand;
 import fr.weefle.constructor.hooks.citizens.BuilderTrait;
-import fr.weefle.constructor.menu.Menu;
-import fr.weefle.constructor.menu.Slot;
-import fr.weefle.constructor.menu.YAMLMenu;
 import fr.weefle.constructor.schematic.Schematic;
 import fr.weefle.constructor.schematic.YAMLSchematic;
+import mc.promcteam.engine.api.menu.Menu;
+import mc.promcteam.engine.api.menu.Slot;
+import mc.promcteam.engine.api.menu.YAMLMenu;
 import mc.promcteam.engine.utils.ItemUT;
 import net.citizensnpcs.api.npc.NPC;
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -26,6 +26,7 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
@@ -36,10 +37,10 @@ import java.util.List;
 import java.util.Objects;
 
 public class BuilderMenu extends Menu {
-    public static final YAMLBuilderMenu CONFIG = new YAMLBuilderMenu("builder");
+    public static final YAMLBuilderMenu CONFIG = new YAMLBuilderMenu(SchematicBuilder.getInstance(), "menus/builder.yml");
 
     public static class YAMLBuilderMenu extends YAMLMenu<BuilderTrait> {
-        public YAMLBuilderMenu(String name) {super(name);}
+        public YAMLBuilderMenu(Plugin plugin, String path) {super(plugin, path);}
 
         @Override
         public String getTitle(String yamlTitle, BuilderTrait parameter) {

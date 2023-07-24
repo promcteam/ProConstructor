@@ -1,6 +1,6 @@
 package fr.weefle.constructor.commands;
 
-import fr.weefle.constructor.menu.menus.BuilderListMenu;
+import fr.weefle.constructor.menus.BuilderListMenu;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;

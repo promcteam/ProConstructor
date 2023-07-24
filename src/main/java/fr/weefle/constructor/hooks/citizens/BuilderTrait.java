@@ -7,7 +7,7 @@ import fr.weefle.constructor.hooks.citizens.persistence.MaterialIntegerMapPersis
 import fr.weefle.constructor.hooks.citizens.persistence.MaterialMapWrapper;
 import fr.weefle.constructor.hooks.citizens.persistence.PersistentBuildingPersistenceLoader;
 import fr.weefle.constructor.hooks.citizens.persistence.SchematicPersistenceLoader;
-import fr.weefle.constructor.menu.menus.BuilderMenu;
+import fr.weefle.constructor.menus.BuilderMenu;
 import fr.weefle.constructor.nms.NMS;
 import fr.weefle.constructor.schematic.Schematic;
 import fr.weefle.constructor.schematic.YAMLSchematic;

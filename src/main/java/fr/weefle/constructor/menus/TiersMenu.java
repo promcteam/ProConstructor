@@ -1,11 +1,12 @@
-package fr.weefle.constructor.menu.menus;
+package fr.weefle.constructor.menus;
 
-import fr.weefle.constructor.menu.Menu;
-import fr.weefle.constructor.menu.Slot;
-import fr.weefle.constructor.menu.YAMLListMenu;
+import fr.weefle.constructor.SchematicBuilder;
 import fr.weefle.constructor.schematic.Schematic;
 import fr.weefle.constructor.schematic.SchematicTier;
 import fr.weefle.constructor.schematic.YAMLSchematic;
+import mc.promcteam.engine.api.menu.Menu;
+import mc.promcteam.engine.api.menu.Slot;
+import mc.promcteam.engine.api.menu.YAMLListMenu;
 import mc.promcteam.engine.utils.ItemUT;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -16,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TiersMenu extends Menu {
-    public static final YAMLListMenu<Schematic> CONFIG = new YAMLListMenu<>("tiers") {
+    public static final YAMLListMenu<Schematic> CONFIG = new YAMLListMenu<>(SchematicBuilder.getInstance(), "menus/tiers.yml") {
 
         @Override
         protected String getTitle(String yamlTitle, Schematic schematic) {return yamlTitle;}
