@@ -58,7 +58,8 @@ public class SchematicTier extends Schematic {
     }
 
     @Override
-    public @Nullable Vector getAbsolutePosition() {return this.handle.getAbsolutePosition();}
+    @Nullable
+    public Vector getAbsolutePosition() {return this.handle.getAbsolutePosition();}
 
     @Override
     public int getWidth() {return this.handle.getWidth();}

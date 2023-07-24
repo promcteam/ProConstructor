@@ -16,8 +16,7 @@ import net.citizensnpcs.api.npc.NPC;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.TextComponent;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -27,6 +26,9 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
+import org.bukkit.util.Vector;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -106,16 +108,150 @@ public class BuilderMenu extends Menu {
                 case "origin": {
                     Location  origin    = builder.getOrigin();
                     ItemStack itemStack = this.getItem(function);
-                    ItemUT.replaceLore(itemStack, "%world%", Objects.requireNonNull(origin.getWorld().getName()));
+                    ItemUT.replaceLore(itemStack, "%world%", Objects.requireNonNull(origin.getWorld()).getName());
                     ItemUT.replaceLore(itemStack, "%x%", String.valueOf(origin.getBlockX()));
                     ItemUT.replaceLore(itemStack, "%y%", String.valueOf(origin.getBlockY()));
                     ItemUT.replaceLore(itemStack, "%z%", String.valueOf(origin.getBlockZ()));
                     return new Slot(itemStack) {
                         @Override
                         public void onLeftClick() {
-                            if (checkNotBusy(builder, player)) {
-                                // TODO
+                            Schematic schematic = builder.getSchematic();
+                            if (schematic == null) {
+                                player.sendMessage(SchematicBuilder.format(
+                                        SchematicBuilder.getInstance().config().getNoSchematicSelectedMessage(),
+                                        builder.getNPC(),
+                                        builder.getSchematic(),
+                                        player,
+                                        null, "0"));
+                                return;
                             }
+                            if (schematic instanceof YAMLSchematic && ((YAMLSchematic) schematic).getTier() >= 0) {
+                                player.sendMessage(SchematicBuilder.format(
+                                        SchematicBuilder.getInstance().config().getCantMoveSchematicMessage(),
+                                        builder.getNPC(),
+                                        builder.getSchematic(),
+                                        player,
+                                        null, "0"));
+                                return;
+                            }
+                            if (!checkNotBusy(builder, player)) {return;}
+
+                            Menu   menu   = this.menu;
+                            BaseComponent component  = new TextComponent("▸ While facing in each direction, left click to push the building, or right click to bring it closer.");
+                            player.spigot().sendMessage(component);
+                            component  = new TextComponent("");
+                            BaseComponent component1 = new TextComponent(ChatColor.GOLD.toString()+ChatColor.UNDERLINE+"stop");
+                            component1.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "stop"));
+                            component.addExtra(component1);
+                            component.addExtra(new TextComponent(" "));
+                            component1 = new TextComponent(ChatColor.GOLD.toString()+ChatColor.UNDERLINE+"here");
+                            component1.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "here"));
+                            component.addExtra(component1);
+                            component.addExtra(new TextComponent(" "));
+                            component1 = new TextComponent(ChatColor.GOLD.toString()+ChatColor.UNDERLINE+"to builder");
+                            component1.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "to builder"));
+                            component.addExtra(component1);
+                            player.spigot().sendMessage(component);
+                            this.menu.fakeClose();
+
+                            BukkitTask task = new BukkitRunnable() {
+                                @Override
+                                public void run() {
+                                    double width = schematic.getWidth();
+                                    double height = schematic.getHeight();
+                                    double length = schematic.getLength();
+                                    Location location = schematic.offset(builder.getOrigin(), 0, 0, 0);
+
+                                    double offset = width/5;
+                                    int amount = (int) width*5;
+
+                                    double x = location.getX()+width/2;
+                                    double y = location.getY();
+                                    double z = location.getZ();
+                                    player.spawnParticle(Particle.CRIT, x, y, z, amount, offset, 0, 0, 0);
+                                    player.spawnParticle(Particle.CRIT, x, y+height, z, amount, offset, 0, 0, 0);
+                                    player.spawnParticle(Particle.CRIT, x, y, z+length, amount, offset, 0, 0, 0);
+                                    player.spawnParticle(Particle.CRIT, x, y+height, z+length, amount, offset, 0, 0, 0);
+
+                                    x = location.getX();
+                                    y = location.getY()+height/2;
+                                    offset = height/5;
+                                    amount = (int) height*5;
+                                    player.spawnParticle(Particle.CRIT, x, y, z, amount, 0, offset, 0, 0);
+                                    player.spawnParticle(Particle.CRIT, x+width, y, z, amount, 0, offset, 0, 0);
+                                    player.spawnParticle(Particle.CRIT, x, y, z+length, amount, 0, offset, 0, 0);
+                                    player.spawnParticle(Particle.CRIT, x+width, y, z+length, amount, 0, offset, 0, 0);
+
+                                    y = location.getY();
+                                    z = location.getZ()+length/2;
+                                    offset = length/5;
+                                    amount = (int) length*5;
+                                    player.spawnParticle(Particle.CRIT, x, y, z, amount, 0, 0, offset, 0);
+                                    player.spawnParticle(Particle.CRIT, x+width, y, z, amount, 0, 0, offset, 0);
+                                    player.spawnParticle(Particle.CRIT, x, y+height, z, amount, 0, 0, offset, 0);
+                                    player.spawnParticle(Particle.CRIT, x+width, y+height, z, amount, 0, 0, offset, 0);
+                                }
+                            }.runTaskTimer(SchematicBuilder.getInstance(), 5, 5);
+                            menu.registerListener(new Listener() {
+                                @EventHandler
+                                public void onChat(AsyncPlayerChatEvent event) {
+                                    if (!event.getPlayer().equals(player)) {return;}
+                                    String message = event.getMessage().strip();
+                                    if (message.equalsIgnoreCase("stop")) {
+                                        HandlerList.unregisterAll(this);
+                                        event.setCancelled(true);
+                                        task.cancel();
+                                        menu.openSync();
+                                    } else if (message.equalsIgnoreCase("here")) {
+                                        event.setCancelled(true);
+                                        builder.setOrigin(player.getLocation());
+                                    } else if (message.equalsIgnoreCase("to builder")) {
+                                        event.setCancelled(true);
+                                        builder.setOrigin(null);
+                                    }
+                                }
+
+                                @EventHandler
+                                public void onBlockClick(PlayerInteractEvent event) {
+                                    switch (event.getAction()) {
+                                        case LEFT_CLICK_BLOCK: case LEFT_CLICK_AIR: case RIGHT_CLICK_BLOCK: case RIGHT_CLICK_AIR: {
+                                            float yaw = player.getLocation().getYaw();
+                                            float pitch = player.getLocation().getPitch();
+                                            Location location = builder.getOrigin();
+                                            Vector offset;
+                                            if (pitch < -45F) { // Up
+                                                offset = new Vector(0, 1, 0);
+                                            } else if (pitch <= 45F) { // Front
+                                                if (yaw < -135F) { // North
+                                                    offset = new Vector(0, 0, -1);
+                                                } else if (yaw < -45F) { // East
+                                                    offset = new Vector(1, 0, 0);
+                                                } else if (yaw < 45F) { // South
+                                                    offset = new Vector(0, 0, 1);
+                                                } else if (yaw < 135F) {
+                                                    offset = new Vector(-1, 0, 0);
+                                                } else { // Also north
+                                                    offset = new Vector(0, 0, -1);
+                                                }
+                                            } else { // Down
+                                                offset = new Vector(0, -1, 0);
+                                            }
+                                            float soundPitch = 0.5F;
+                                            switch (event.getAction()) {
+                                                case RIGHT_CLICK_BLOCK: case RIGHT_CLICK_AIR: {
+                                                    offset.multiply(-1);
+                                                    soundPitch = 1.5F;
+                                                    break;
+                                                }
+                                            }
+                                            player.playSound(player.getEyeLocation(), Sound.ENTITY_PLAYER_ATTACK_WEAK, SoundCategory.MASTER, 1, soundPitch);
+                                            location.add(offset);
+                                            builder.setOrigin(location);
+                                            break;
+                                        }
+                                    }
+                                }
+                            });
                         }
                     };
                 }
@@ -470,7 +606,7 @@ public class BuilderMenu extends Menu {
             }
             return null;
         }
-    };
+    }
 
     private static boolean checkNotBusy(BuilderTrait builder, Player player) {
         switch (builder.getState()) {

@@ -172,7 +172,7 @@ public class BuilderTrait extends Trait implements Toggleable {
     }
 
     @NotNull
-    public Location getOrigin() {return origin == null ? this.npc.getEntity().getLocation() : this.origin;}
+    public Location getOrigin() {return origin == null ? this.npc.getEntity().getLocation() : this.origin.clone();}
 
     public void setOrigin(@Nullable Location origin) {this.origin = origin;}
 

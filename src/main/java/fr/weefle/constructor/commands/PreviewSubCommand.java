@@ -12,7 +12,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PreviewSubCommand extends AbstractCommand { // TODO take schematic origin into account
+public class PreviewSubCommand extends AbstractCommand {
     public PreviewSubCommand(@Nullable SchematicBuilderCommand parent) {
         super("preview", "Shows the preview of the current structure", parent);
         this.permission = "schematicbuilder.preview";

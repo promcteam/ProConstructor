@@ -40,6 +40,9 @@ public class YAMLSchematic extends Schematic {
 
     public List<SchematicTier> getTiers() {return Collections.unmodifiableList(this.tiers);}
 
+    /**
+     * @return the index of the highest completed tier, or -1 if none is completed
+     */
     public int getTier() {return this.tier;}
 
     public int getTotalTiers() {return this.tiers.size();}

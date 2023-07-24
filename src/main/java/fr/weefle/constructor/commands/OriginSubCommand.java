@@ -1,5 +1,6 @@
 package fr.weefle.constructor.commands;
 
+import fr.weefle.constructor.SchematicBuilder;
 import fr.weefle.constructor.hooks.citizens.BuilderTrait;
 import fr.weefle.constructor.schematic.Schematic;
 import net.citizensnpcs.api.npc.NPC;
@@ -36,7 +37,12 @@ public class OriginSubCommand extends AbstractCommand {
                 NPC npc = builder.getNPC();
                 Schematic schematic = builder.getSchematic();
                 if (schematic == null) {
-                    sender.sendMessage(ChatColor.RED + npc.getName() + " has no schematic loaded");
+                    sender.sendMessage(SchematicBuilder.format(
+                            SchematicBuilder.getInstance().config().getNoSchematicSelectedMessage(),
+                            builder.getNPC(),
+                            builder.getSchematic(),
+                            sender,
+                            null, "0"));
                     return;
                 }
                 Vector absolutePosition = schematic.getAbsolutePosition();

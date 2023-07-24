@@ -24,7 +24,10 @@ public class Config {
             supplyDontNeedMessage,
             supplyTakenMessage,
             collectingMessage,
-            cantWhileBuilding;
+            cantWhileBuilding,
+            noSchematicSelected,
+            cantMoveSchematic
+                    ;
 
     Config() {
         SchematicBuilder plugin = SchematicBuilder.getInstance();
@@ -48,6 +51,8 @@ public class Config {
         supplyDontNeedMessage = config.getString("DefaultTexts.Supply_Dont_Need_Item", "");
         supplyTakenMessage = config.getString("DefaultTexts.Supply_Item_Taken", "");
         cantWhileBuilding = config.getString("DefaultTexts.CantWhileBuilding", "");
+        noSchematicSelected = config.getString("DefaultTexts.NoSchematicSelected", "");
+        cantMoveSchematic = config.getString("DefaultTexts.CantMoveSchematic", "");
         for (String material : config.getStringList("MarkMaterials")) {
             markMats.add(Material.valueOf(material));
         }
@@ -87,4 +92,8 @@ public class Config {
     public String getCollectingMessage() {return collectingMessage;}
 
     public String getCantWhileBuildingMessage() {return cantWhileBuilding;}
+
+    public String getNoSchematicSelectedMessage() {return noSchematicSelected;}
+
+    public String getCantMoveSchematicMessage() {return cantMoveSchematic;}
 }

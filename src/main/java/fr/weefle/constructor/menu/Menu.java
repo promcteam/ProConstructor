@@ -18,7 +18,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
-public abstract class Menu implements InventoryHolder {
+public abstract class Menu implements InventoryHolder { // TODO close if another menu of the same class opens
     protected final Player player;
     protected final String title;
     protected final int rows;
