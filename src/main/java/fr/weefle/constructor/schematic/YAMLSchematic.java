@@ -76,7 +76,9 @@ public class YAMLSchematic extends Schematic {
     public EmptyBuildBlock getBlockAt(int x, int y, int z) {return this.tiers.get(Math.min(this.getNextTier(), this.getTotalTiers()-1)).getBlockAt(x, y, z);}
 
     @Override
-    public Location offset(Location origin, int x, int y, int z, int emptyLayers) {return this.tiers.get(Math.min(this.getNextTier(), this.getTotalTiers()-1)).offset(origin, x, y, z, emptyLayers);}
+    public Location offset(Location origin, int x, int y, int z, int emptyLayers, int rotation) {
+        return this.tiers.get(Math.min(this.getNextTier(), this.getTotalTiers()-1)).offset(origin, x, y, z, emptyLayers, rotation);
+    }
 
     @Override
     public @NotNull Map<Material, Integer> getMaterials() {

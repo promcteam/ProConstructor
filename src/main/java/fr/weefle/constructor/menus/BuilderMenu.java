@@ -8,6 +8,7 @@ import fr.weefle.constructor.commands.PreviewSubCommand;
 import fr.weefle.constructor.hooks.citizens.BuilderTrait;
 import fr.weefle.constructor.schematic.Schematic;
 import fr.weefle.constructor.schematic.YAMLSchematic;
+import fr.weefle.constructor.util.Util;
 import mc.promcteam.engine.api.menu.Menu;
 import mc.promcteam.engine.api.menu.Slot;
 import mc.promcteam.engine.api.menu.YAMLMenu;
@@ -140,17 +141,28 @@ public class BuilderMenu extends Menu {
                             Menu   menu   = this.menu;
                             BaseComponent component  = new TextComponent("▸ While facing in each direction, left click to push the building, or right click to bring it closer.");
                             player.spigot().sendMessage(component);
+
+                            component = new TextComponent("");
+                            BaseComponent component1 = new TextComponent(ChatColor.BLUE.toString()+ChatColor.UNDERLINE+ "Rotate counterclockwise");
+                            component1.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "counterclockwise"));
+                            component.addExtra(component1);
+                            component.addExtra(new TextComponent(" "));
+                            component1 = new TextComponent(ChatColor.BLUE.toString()+ChatColor.UNDERLINE+"Rotate clockwise");
+                            component1.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "clockwise"));
+                            component.addExtra(component1);
+                            player.spigot().sendMessage(component);
+
                             component  = new TextComponent("");
-                            BaseComponent component1 = new TextComponent(ChatColor.GOLD.toString()+ChatColor.UNDERLINE+"stop");
-                            component1.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "stop"));
+                            component1 = new TextComponent(ChatColor.GOLD.toString()+ChatColor.UNDERLINE+"Stop");
+                            component1.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "Stop"));
                             component.addExtra(component1);
                             component.addExtra(new TextComponent(" "));
-                            component1 = new TextComponent(ChatColor.GOLD.toString()+ChatColor.UNDERLINE+"here");
-                            component1.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "here"));
+                            component1 = new TextComponent(ChatColor.GOLD.toString()+ChatColor.UNDERLINE+"Here");
+                            component1.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "Here"));
                             component.addExtra(component1);
                             component.addExtra(new TextComponent(" "));
-                            component1 = new TextComponent(ChatColor.GOLD.toString()+ChatColor.UNDERLINE+"to builder");
-                            component1.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "to builder"));
+                            component1 = new TextComponent(ChatColor.GOLD.toString()+ChatColor.UNDERLINE+"To builder");
+                            component1.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "To builder"));
                             component.addExtra(component1);
                             player.spigot().sendMessage(component);
                             this.menu.fakeClose();
@@ -158,39 +170,9 @@ public class BuilderMenu extends Menu {
                             BukkitTask task = new BukkitRunnable() {
                                 @Override
                                 public void run() {
-                                    double width = schematic.getWidth();
-                                    double height = schematic.getHeight();
-                                    double length = schematic.getLength();
-                                    Location location = schematic.offset(builder.getOrigin(), 0, 0, 0);
-
-                                    double offset = width/5;
-                                    int amount = (int) width*5;
-
-                                    double x = location.getX()+width/2;
-                                    double y = location.getY();
-                                    double z = location.getZ();
-                                    player.spawnParticle(Particle.CRIT, x, y, z, amount, offset, 0, 0, 0);
-                                    player.spawnParticle(Particle.CRIT, x, y+height, z, amount, offset, 0, 0, 0);
-                                    player.spawnParticle(Particle.CRIT, x, y, z+length, amount, offset, 0, 0, 0);
-                                    player.spawnParticle(Particle.CRIT, x, y+height, z+length, amount, offset, 0, 0, 0);
-
-                                    x = location.getX();
-                                    y = location.getY()+height/2;
-                                    offset = height/5;
-                                    amount = (int) height*5;
-                                    player.spawnParticle(Particle.CRIT, x, y, z, amount, 0, offset, 0, 0);
-                                    player.spawnParticle(Particle.CRIT, x+width, y, z, amount, 0, offset, 0, 0);
-                                    player.spawnParticle(Particle.CRIT, x, y, z+length, amount, 0, offset, 0, 0);
-                                    player.spawnParticle(Particle.CRIT, x+width, y, z+length, amount, 0, offset, 0, 0);
-
-                                    y = location.getY();
-                                    z = location.getZ()+length/2;
-                                    offset = length/5;
-                                    amount = (int) length*5;
-                                    player.spawnParticle(Particle.CRIT, x, y, z, amount, 0, 0, offset, 0);
-                                    player.spawnParticle(Particle.CRIT, x+width, y, z, amount, 0, 0, offset, 0);
-                                    player.spawnParticle(Particle.CRIT, x, y+height, z, amount, 0, 0, offset, 0);
-                                    player.spawnParticle(Particle.CRIT, x+width, y+height, z, amount, 0, 0, offset, 0);
+                                    ParticleCuboid cuboid = new ParticleCuboid(builder.getOrigin().toVector(), new Vector(schematic.getWidth(), schematic.getHeight(), schematic.getLength()));
+                                    cuboid.rotate(builder.getRotation());
+                                    cuboid.render(player);
                                 }
                             }.runTaskTimer(SchematicBuilder.getInstance(), 5, 5);
                             menu.registerListener(new Listener() {
@@ -198,15 +180,21 @@ public class BuilderMenu extends Menu {
                                 public void onChat(AsyncPlayerChatEvent event) {
                                     if (!event.getPlayer().equals(player)) {return;}
                                     String message = event.getMessage().strip();
-                                    if (message.equalsIgnoreCase("stop")) {
+                                    if (message.equalsIgnoreCase("counterclockwise")) {
+                                        event.setCancelled(true);
+                                        builder.setRotation(builder.getRotation()-1);
+                                    } else if (message.equalsIgnoreCase("clockwise")) {
+                                        event.setCancelled(true);
+                                        builder.setRotation(builder.getRotation()+1);
+                                    } else if (message.equalsIgnoreCase("Stop")) {
                                         HandlerList.unregisterAll(this);
                                         event.setCancelled(true);
                                         task.cancel();
                                         menu.openSync();
-                                    } else if (message.equalsIgnoreCase("here")) {
+                                    } else if (message.equalsIgnoreCase("Here")) {
                                         event.setCancelled(true);
                                         builder.setOrigin(player.getLocation());
-                                    } else if (message.equalsIgnoreCase("to builder")) {
+                                    } else if (message.equalsIgnoreCase("To builder")) {
                                         event.setCancelled(true);
                                         builder.setOrigin(null);
                                     }
@@ -638,5 +626,62 @@ public class BuilderMenu extends Menu {
         BuilderTrait builder = SchematicBuilder.getBuilder(npc);
         Preconditions.checkArgument(builder != null, npc.getName()+" is not a builder");
         CONFIG.setSlots(this, builder);
+    }
+
+    private static class ParticleCuboid {
+        private Vector origin;
+        private Vector size;
+
+        public ParticleCuboid(Vector origin, Vector size) {
+            this.origin = new Vector(origin.getBlockX(), origin.getBlockY(), origin.getBlockZ());
+            this.size = new Vector(size.getBlockX(), size.getBlockY(), size.getBlockZ());
+        }
+
+        public void rotate(int rotations) {
+            this.size = Util.rotateVector(this.size, rotations);
+            if (rotations == 1) {
+                this.origin.setX(this.origin.getX()+1);
+            } else if (rotations == 2) {
+                this.origin.setX(this.origin.getX()+1);
+                this.origin.setZ(this.origin.getZ()+1);
+            } else if (rotations == 3) {
+                this.origin.setZ(this.origin.getZ()+1);
+            }
+        }
+
+        public void render(Player player) {
+            double width = this.size.getX();
+            double height = this.size.getY();
+            double length = this.size.getZ();
+
+            double offset = width/5;
+            int amount = Math.max(1, Math.abs((int) width*5));
+            double x = this.origin.getX()+width/2;
+            double y = this.origin.getY();
+            double z = this.origin.getZ();
+
+            player.spawnParticle(Particle.CRIT, x, y, z, amount, offset, 0, 0, 0);
+            player.spawnParticle(Particle.CRIT, x, y+height, z, amount, offset, 0, 0, 0);
+            player.spawnParticle(Particle.CRIT, x, y, z+length, amount, offset, 0, 0, 0);
+            player.spawnParticle(Particle.CRIT, x, y+height, z+length, amount, offset, 0, 0, 0);
+
+            x = this.origin.getX();
+            y += height/2;
+            offset = height/5;
+            amount = Math.max(1, Math.abs((int) height*5));
+            player.spawnParticle(Particle.CRIT, x, y, z, amount, 0, offset, 0, 0);
+            player.spawnParticle(Particle.CRIT, x+width, y, z, amount, 0, offset, 0, 0);
+            player.spawnParticle(Particle.CRIT, x, y, z+length, amount, 0, offset, 0, 0);
+            player.spawnParticle(Particle.CRIT, x+width, y, z+length, amount, 0, offset, 0, 0);
+
+            y = this.origin.getY();
+            z += length/2;
+            offset = length/5;
+            amount = Math.max(5, Math.abs((int) length*5));
+            player.spawnParticle(Particle.CRIT, x, y, z, amount, 0, 0, offset, 0);
+            player.spawnParticle(Particle.CRIT, x+width, y, z, amount, 0, 0, offset, 0);
+            player.spawnParticle(Particle.CRIT, x, y+height, z, amount, 0, 0, offset, 0);
+            player.spawnParticle(Particle.CRIT, x+width, y+height, z, amount, 0, 0, offset, 0);
+        }
     }
 }

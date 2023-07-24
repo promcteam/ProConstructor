@@ -3,6 +3,7 @@ package fr.weefle.constructor.util;
 import fr.weefle.constructor.schematic.blocks.EmptyBuildBlock;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.util.Vector;
 
 import java.util.*;
 import java.util.Map.Entry;
@@ -176,4 +177,18 @@ public class Util {
         return false;
     }
 
+    public static int normalizeRotations(int rotation) {return (rotation%4+4)%4;}
+
+    public static Vector rotateVector(Vector vector, int rotation) {
+        rotation = normalizeRotations(rotation);
+        if (rotation == 0) {
+            return vector.clone();
+        } else if (rotation == 1) {
+            return new Vector(-vector.getZ(), vector.getY(), vector.getX());
+        } else if (rotation == 2) {
+            return new Vector(-vector.getX(), vector.getY(), -vector.getZ());
+        } else {
+            return new Vector(vector.getZ(), vector.getY(), -vector.getX());
+        }
+    }
 }

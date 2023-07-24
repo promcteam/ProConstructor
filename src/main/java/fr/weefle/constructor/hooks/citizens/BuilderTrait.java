@@ -72,6 +72,8 @@ public class BuilderTrait extends Trait implements Toggleable {
     PersistentBuilding persistentBuilding = null;
     @Persist("Origin")
     Location         origin             = null;
+    @Persist("Rotation")
+    int              rotation           = 0;
     @Persist("ContinueLoc")
     Location         continueLoc        = null; // Fixme after server restart, builder should continue the building where it left off
     @Persist("Materials")
@@ -175,6 +177,10 @@ public class BuilderTrait extends Trait implements Toggleable {
     public Location getOrigin() {return origin == null ? this.npc.getEntity().getLocation() : this.origin.clone();}
 
     public void setOrigin(@Nullable Location origin) {this.origin = origin;}
+
+    public int getRotation() {return this.rotation;}
+
+    public void setRotation(int rotation) {this.rotation = Util.normalizeRotations(rotation);}
 
     @Nullable
     public Location getContinueLoc() {return continueLoc == null ? null : continueLoc.clone();}
@@ -418,7 +424,7 @@ public class BuilderTrait extends Trait implements Toggleable {
                 return;
             }
 
-            pending = Objects.requireNonNull(continueLoc.getWorld()).getBlockAt(schematic.offset(continueLoc, next.X, next.Y, next.Z));
+            pending = Objects.requireNonNull(continueLoc.getWorld()).getBlockAt(schematic.offset(continueLoc, next.X, next.Y, next.Z, 0, this.rotation));
 
 
         } else {

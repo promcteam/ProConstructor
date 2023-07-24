@@ -239,12 +239,8 @@ public class RawSchematic extends Schematic {
     }
 
     @Override
-    public Location offset(Location origin, int x, int y, int z, int emptyLayers) {
-        return new Location(
-                origin.getWorld(),
-                origin.getBlockX() + x,
-                origin.getBlockY() + y - emptyLayers,
-                origin.getBlockZ() + z);
+    public Location offset(Location origin, int x, int y, int z, int emptyLayers, int rotation) {
+        return origin.clone().add(Util.rotateVector(new Vector(x, y-emptyLayers, z), rotation));
     }
 
     @Override
@@ -311,7 +307,7 @@ public class RawSchematic extends Schematic {
 
             for (EmptyBuildBlock b : thisLayer) {
                 //check if it needs to be placed.
-                Block pending = Objects.requireNonNull(origin.getWorld()).getBlockAt(offset(origin, b.X, b.Y, b.Z, emptyLayers));
+                Block pending = Objects.requireNonNull(origin.getWorld()).getBlockAt(offset(origin, b.X, b.Y, b.Z, emptyLayers, builder.getRotation()));
 
                 if (builder.isExcavate() && !pending.isEmpty()) {
                     exair.add(new EmptyBuildBlock(b.X, b.Y, b.Z)); // TODO remove

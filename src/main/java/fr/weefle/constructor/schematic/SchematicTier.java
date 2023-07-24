@@ -3,6 +3,7 @@ package fr.weefle.constructor.schematic;
 import fr.weefle.constructor.SchematicBuilder;
 import fr.weefle.constructor.hooks.citizens.BuilderTrait;
 import fr.weefle.constructor.schematic.blocks.EmptyBuildBlock;
+import fr.weefle.constructor.util.Util;
 import mc.promcteam.engine.utils.StringUT;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -83,8 +84,8 @@ public class SchematicTier extends Schematic {
     }
 
     @Override
-    public Location offset(Location origin, int x, int y, int z, int emptyLayers) {
-        return this.handle.offset(origin, x, y, z, emptyLayers).add(this.offset);
+    public Location offset(Location origin, int x, int y, int z, int emptyLayers, int rotation) {
+        return this.handle.offset(origin, x, y, z, emptyLayers, rotation).add(Util.rotateVector(this.offset, rotation));
     }
 
     public List<String> getLore() {return lore;}

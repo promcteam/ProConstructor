@@ -44,9 +44,7 @@ public abstract class Schematic {
     @NotNull
     public abstract EmptyBuildBlock getBlockAt(int x, int y, int z);
 
-    public abstract Location offset(Location origin, int x, int y, int z, int emptyLayers);
-
-    public Location offset(Location origin, int x, int y, int z) {return offset(origin, x, y, z, 0);}
+    public abstract Location offset(Location origin, int x, int y, int z, int emptyLayers, int rotation);
 
     @NotNull
     public abstract Map<Material, Integer> getMaterials();
@@ -64,14 +62,14 @@ public abstract class Schematic {
         Location               origin = builder.getOrigin();
         Queue<EmptyBuildBlock> queue  = buildQueue(builder);
         for (EmptyBuildBlock block : queue) {
-            player.sendBlockChange(offset(origin, block.X, block.Y, block.Z), block.getMat());
+            player.sendBlockChange(offset(origin, block.X, block.Y, block.Z, 0, builder.getRotation()), block.getMat());
         }
         new BukkitRunnable() {
             @Override
             public void run() {
                 World world = builder.getNPC().getEntity().getWorld();
                 for (EmptyBuildBlock block : queue) {
-                    world.getBlockAt(offset(origin, block.X, block.Y, block.Z)).getState().update();
+                    world.getBlockAt(offset(origin, block.X, block.Y, block.Z, 0, builder.getRotation())).getState().update();
                 }
             }
         }.runTaskLater(SchematicBuilder.getInstance(), ticks);
