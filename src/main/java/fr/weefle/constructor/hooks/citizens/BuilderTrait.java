@@ -96,8 +96,6 @@ public class BuilderTrait extends Trait implements Toggleable {
 
     private Queue<EmptyBuildBlock> queue = new LinkedList<>();
 
-    private boolean clearingMarks = false;
-
     private final Map<Player, Long> sessions = new HashMap<>();
 
     private Location mypos = null;
@@ -108,9 +106,6 @@ public class BuilderTrait extends Trait implements Toggleable {
     private Block           pending = null;
 
     private BukkitTask canceltaskid;
-
-    private final Queue<EmptyBuildBlock> marks  = new LinkedList<>();
-    private final Queue<EmptyBuildBlock> _marks = new LinkedList<>();
 
     public BuilderTrait() {super("builder");}
 
@@ -385,54 +380,20 @@ public class BuilderTrait extends Trait implements Toggleable {
         return true;
     }
 
-    public boolean StartMark(Material mat) {
-        if (!npc.isSpawned()) return false;
-        if (schematic == null) return false;
-        if (this.state != BuilderState.IDLE) return false;
-
-        onComplete = null;
-        onCancel = null;
-        onStart = null;
-
-        mypos = npc.getEntity().getLocation().clone();
-
-        if (origin == null) {
-            continueLoc = this.npc.getEntity().getLocation().clone();
-        } else {
-            continueLoc = origin.clone();
-        }
-        queue = schematic.createMarks(mat);
-        this.state = BuilderState.MARKING;
-
-        SetupNextBlock();
-
-        return true;
-    }
-
     public void SetupNextBlock() {
-        if (marks.isEmpty()) {
-            if (schematic == null) {
-                CancelBuild();
-                return;
-            }
-
-
-            next = queue.poll();
-
-            if (next == null) {
-                CompleteBuild();
-                return;
-            }
-
-            pending = Objects.requireNonNull(continueLoc.getWorld()).getBlockAt(schematic.offset(continueLoc, next.X, next.Y, next.Z, 0, this.rotation));
-
-
-        } else {
-            clearingMarks = true;
-            next = marks.remove();
-            pending = Objects.requireNonNull(continueLoc.getWorld()).getBlockAt(next.X, next.Y, next.Z);
-
+        if (schematic == null) {
+            CancelBuild();
+            return;
         }
+
+        next = queue.poll();
+
+        if (next == null) {
+            CompleteBuild();
+            return;
+        }
+
+        pending = Objects.requireNonNull(continueLoc.getWorld()).getBlockAt(schematic.offset(continueLoc, next.X, next.Y, next.Z, 0, this.rotation));
 
         if (next.getMat().equals(pending.getLocation().getBlock().getBlockData())) {
             SetupNextBlock();
@@ -532,17 +493,10 @@ public class BuilderTrait extends Trait implements Toggleable {
         boolean stop = state == BuilderState.BUILDING;
         if (canceltaskid != null && !canceltaskid.isCancelled()) canceltaskid.cancel();
 
-        if (this.state == BuilderState.MARKING) {
-            this.state = BuilderState.IDLE;
-            if (origin != null) npc.getNavigator().setTarget(origin);
-            else npc.getEntity().teleport(mypos);
-            marks.addAll(_marks);
-            _marks.clear();
-        } else {
-            this.state = BuilderState.IDLE;
-            if (stop && npc.isSpawned()) {
-                if (npc.getNavigator().isNavigating()) npc.getNavigator().cancelNavigation();
-                npc.getNavigator().setTarget(mypos);
+        this.state = BuilderState.IDLE;
+        if (stop && npc.isSpawned()) {
+            if (npc.getNavigator().isNavigating()) npc.getNavigator().cancelNavigation();
+            npc.getNavigator().setTarget(mypos);
 
 				/*if(sender instanceof Player) {
 					Player player = (Player) sender;
@@ -551,8 +505,6 @@ public class BuilderTrait extends Trait implements Toggleable {
 					Region region = new Region(player.getName()+"_"+UUID.randomUUID(), players, schematic.getSchematicOrigin(this), new int[]{},null, 0.0);
 					RegionManager.getInstance().addRegion(region);
 				}*/
-
-            }
         }
 
         if ((npc.getEntity() instanceof org.bukkit.entity.HumanEntity) && this.holdItems)
@@ -581,11 +533,6 @@ public class BuilderTrait extends Trait implements Toggleable {
 
         BlockData bdata = next.getMat();
 
-
-        if (state == BuilderState.MARKING && !clearingMarks) {
-            _marks.add(new DataBuildBlock(pending.getX(), pending.getY(), pending.getZ(), pending.getBlockData()));
-        }
-
         pending.setBlockData(bdata);
         pending.getWorld().playEffect(pending.getLocation(), Effect.STEP_SOUND, pending.getType());
         NMS.getInstance().getChecker().check(next, pending);
@@ -594,9 +541,6 @@ public class BuilderTrait extends Trait implements Toggleable {
             //arm swing
             net.citizensnpcs.util.PlayerAnimation.ARM_SWING.play((Player) this.npc.getEntity(), 64);
         }
-
-        if (marks.size() == 0) clearingMarks = false;
-
 
         SetupNextBlock();
 
@@ -628,7 +572,7 @@ public class BuilderTrait extends Trait implements Toggleable {
         return base.getLocation();
     }
 
-    public enum BuilderState {IDLE, BUILDING, MARKING, COLLECTING}
+    public enum BuilderState {IDLE, BUILDING, COLLECTING}
 
     public enum BuildPatternXZ {SPIRAL, REVERSE_SPIRAL, LINEAR, REVERSE_LINEAR}
 }

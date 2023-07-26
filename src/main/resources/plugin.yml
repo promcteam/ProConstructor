@@ -37,9 +37,6 @@ permissions:
   schematicbuilder.preview:
     default: op
     description: Allows to use the sub-command /schematicbuilder preview
-  schematicbuilder.mark:
-    default: op
-    description: Allows to use the sub-command /schematicbuilder mark
   schematicbuilder.survey:
     default: true
     description: Allows to use the sub-command /schematicbuilder survey

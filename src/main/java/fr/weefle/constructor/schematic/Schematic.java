@@ -52,15 +52,6 @@ public abstract class Schematic {
     @NotNull
     public abstract Map<Material, Integer> getMaterials();
 
-    public Queue<EmptyBuildBlock> createMarks(Material mat) {
-        Queue<EmptyBuildBlock> queue = new LinkedList<>();
-        queue.add(new DataBuildBlock(0, 0, 0, mat.createBlockData()));
-        queue.add(new DataBuildBlock(getWidth() - 1, 0, 0, mat.createBlockData()));
-        queue.add(new DataBuildBlock(0, 0, (int) getLength() - 1, mat.createBlockData()));
-        queue.add(new DataBuildBlock(getWidth() - 1, 0, getLength() - 1, mat.createBlockData()));
-        return queue;
-    }
-
     public void hidePreview() {
         if (this.hidePreviewRunnable != null) {
             this.hidePreviewRunnable.run();

@@ -9,7 +9,6 @@ import java.util.List;
 
 public class Config {
     private final String         schematicsFolder;
-    private final List<Material> markMats         = new ArrayList<>();
     private final double         moveTimeoutTicks;
     private final boolean        ignoreProtection, holdItems, requireMaterials;
 
@@ -17,7 +16,6 @@ public class Config {
             startedMessage,
             completeMessage,
             cancelMessage,
-            markMessage,
             surveyMessage,
             supplyListMessage,
             supplyNeedMessage,
@@ -44,7 +42,6 @@ public class Config {
         cancelMessage = config.getString("DefaultTexts.BuildCanceled", "");
         startedMessage = config.getString("DefaultTexts.BuildStarted", "");
         collectingMessage = config.getString("DefaultTexts.BuildCollecting", "");
-        markMessage = config.getString("DefaultTexts.Mark", "");
         surveyMessage = config.getString("DefaultTexts.Survey", "");
         supplyListMessage = config.getString("DefaultTexts.Supply_List", "");
         supplyNeedMessage = config.getString("DefaultTexts.Supply_Need_Item", "");
@@ -53,15 +50,9 @@ public class Config {
         cantWhileBuilding = config.getString("DefaultTexts.CantWhileBuilding", "");
         noSchematicSelected = config.getString("DefaultTexts.NoSchematicSelected", "");
         cantMoveSchematic = config.getString("DefaultTexts.CantMoveSchematic", "");
-        for (String material : config.getStringList("MarkMaterials")) {
-            markMats.add(Material.valueOf(material));
-        }
-        if (markMats.isEmpty()) markMats.add(Material.GLASS);
     }
 
     public String getSchematicsFolder() {return schematicsFolder;}
-
-    public List<Material> getMarkMats() {return markMats;}
 
     public double getMoveTimeoutTicks() {return moveTimeoutTicks;}
 
@@ -76,8 +67,6 @@ public class Config {
     public String getCompleteMessage() {return completeMessage;}
 
     public String getCancelMessage() {return cancelMessage;}
-
-    public String getMarkMessage() {return markMessage;}
 
     public String getSurveyMessage() {return surveyMessage;}
 

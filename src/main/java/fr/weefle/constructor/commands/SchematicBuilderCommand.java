@@ -19,7 +19,6 @@ public class SchematicBuilderCommand extends AbstractCommand {
         registerSubCommand(new ExcavatedSubCommand(this));
         registerSubCommand(new PreviewSubCommand(this));
         registerSubCommand(new SurveySubCommand(this));
-        registerSubCommand(new MarkSubCommand(this));
         registerSubCommand(new LoadSubCommand(this));
         registerSubCommand(new InfoSubCommand(this));
     }
