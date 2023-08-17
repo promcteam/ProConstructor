@@ -2,8 +2,8 @@ package fr.weefle.constructor.menus;
 
 import fr.weefle.constructor.SchematicBuilder;
 import fr.weefle.constructor.commands.LoadSubCommand;
-import mc.promcteam.engine.api.menu.FileExplorerMenu;
-import mc.promcteam.engine.api.menu.Slot;
+import mc.promcteam.engine.manager.api.menu.FileExplorerMenu;
+import mc.promcteam.engine.manager.api.menu.Slot;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;

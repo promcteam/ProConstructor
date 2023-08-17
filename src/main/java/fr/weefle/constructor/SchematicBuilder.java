@@ -11,7 +11,7 @@ import fr.weefle.constructor.nms.NMS;
 import fr.weefle.constructor.schematic.RawSchematic;
 import fr.weefle.constructor.schematic.Schematic;
 import fr.weefle.constructor.schematic.YAMLSchematic;
-import mc.promcteam.engine.api.menu.YAMLMenu;
+import mc.promcteam.engine.manager.api.menu.YAMLMenu;
 import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;

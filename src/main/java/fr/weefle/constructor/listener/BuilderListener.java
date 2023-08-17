@@ -6,8 +6,6 @@ import fr.weefle.constructor.hooks.citizens.BuilderTrait;
 import fr.weefle.constructor.hooks.citizens.BuilderTrait.BuilderState;
 import fr.weefle.constructor.menus.ExcavatedMenu;
 import fr.weefle.constructor.menus.MaterialsMenu;
-import mc.promcteam.engine.api.menu.Menu;
-import mc.promcteam.engine.api.menu.Slot;
 import mc.promcteam.engine.utils.ItemUT;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.event.NPCLeftClickEvent;
@@ -16,18 +14,10 @@ import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.InventoryAction;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.InventoryHolder;
-import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -78,84 +68,6 @@ public class BuilderListener implements Listener {
 		}
 
 	}*/
-
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void onInventoryClick(InventoryClickEvent event) {
-        Inventory inventory = event.getInventory();
-
-        InventoryView view = event.getView();
-        Inventory otherInventory = view.getTopInventory() == inventory ? view.getBottomInventory() : view.getTopInventory();
-        if (otherInventory.getHolder() instanceof Menu && event.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY) {
-            event.setCancelled(true);
-        }
-
-        InventoryHolder holder = inventory.getHolder();
-        if (holder instanceof Menu) {
-            event.setCancelled(true);
-            Menu menu = (Menu) holder;
-            Slot slot = menu.getSlot(event.getSlot());
-            if (slot != null) {
-                switch (event.getClick()) {
-                    case LEFT: {
-                        slot.onLeftClick();
-                        break;
-                    }
-                    case SHIFT_LEFT: {
-                        slot.onShiftLeftClick();
-                        break;
-                    }
-                    case RIGHT: {
-                        slot.onRightClick();
-                        break;
-                    }
-                    case SHIFT_RIGHT: {
-                        slot.onShiftRightClick();
-                        break;
-                    }
-                    case MIDDLE: {
-                        slot.onMiddleClick();
-                        break;
-                    }
-                    case NUMBER_KEY: {
-                        slot.onNumberClick(event.getHotbarButton());
-                        break;
-                    }
-                    case DOUBLE_CLICK: {
-                        slot.onDoubleClick();
-                        break;
-                    }
-                    case DROP: {
-                        slot.onDrop();
-                        break;
-                    }
-                    case CONTROL_DROP: {
-                        slot.onControlDrop();
-                        break;
-                    }
-                    case SWAP_OFFHAND: {
-                        slot.onSwapOffhand();
-                        break;
-                    }
-                }
-            }
-        }
-    }
-
-    @EventHandler
-    public void onInventoryClose(InventoryCloseEvent event) {
-        InventoryHolder holder = event.getInventory().getHolder();
-        if (holder instanceof Menu) {
-            Menu menu = (Menu) holder;
-            if (!menu.isOpening()) {
-                new BukkitRunnable() {
-                    @Override
-                    public void run() {
-                        menu.onClose();
-                    }
-                }.runTask(SchematicBuilder.getInstance());
-            }
-        }
-    }
 
     @EventHandler
     public void clickedme2(NPCLeftClickEvent event) {

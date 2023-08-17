@@ -9,9 +9,9 @@ import fr.weefle.constructor.hooks.citizens.BuilderTrait;
 import fr.weefle.constructor.schematic.Schematic;
 import fr.weefle.constructor.schematic.YAMLSchematic;
 import fr.weefle.constructor.util.Util;
-import mc.promcteam.engine.api.menu.Menu;
-import mc.promcteam.engine.api.menu.Slot;
-import mc.promcteam.engine.api.menu.YAMLMenu;
+import mc.promcteam.engine.manager.api.menu.Menu;
+import mc.promcteam.engine.manager.api.menu.Slot;
+import mc.promcteam.engine.manager.api.menu.YAMLMenu;
 import mc.promcteam.engine.utils.ItemUT;
 import net.citizensnpcs.api.npc.NPC;
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -101,7 +101,9 @@ public class BuilderMenu extends Menu {
                     return new Slot(this.getItem(function+"-start")) {
                         @Override
                         public void onLeftClick() {
-                            if (!builder.TryBuild(player)) {
+                            if (builder.TryBuild(player)) {
+                                menu.close();
+                            } else {
                                 player.sendMessage(ChatColor.RED + builder.getNPC().getName() + " needs a structure to build first!");
                             }
                         }

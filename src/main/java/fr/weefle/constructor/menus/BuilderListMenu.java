@@ -2,8 +2,8 @@ package fr.weefle.constructor.menus;
 
 import fr.weefle.constructor.SchematicBuilder;
 import fr.weefle.constructor.hooks.citizens.BuilderTrait;
-import mc.promcteam.engine.api.menu.Menu;
-import mc.promcteam.engine.api.menu.Slot;
+import mc.promcteam.engine.manager.api.menu.Menu;
+import mc.promcteam.engine.manager.api.menu.Slot;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.ChatColor;

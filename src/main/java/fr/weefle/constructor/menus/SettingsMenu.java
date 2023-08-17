@@ -3,7 +3,7 @@ package fr.weefle.constructor.menus;
 import com.google.common.base.Preconditions;
 import fr.weefle.constructor.SchematicBuilder;
 import fr.weefle.constructor.hooks.citizens.BuilderTrait;
-import mc.promcteam.engine.api.menu.Menu;
+import mc.promcteam.engine.manager.api.menu.Menu;
 import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.entity.Player;
 
