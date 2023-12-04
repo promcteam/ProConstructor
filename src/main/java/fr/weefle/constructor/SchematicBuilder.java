@@ -60,7 +60,7 @@ public class SchematicBuilder extends JavaPlugin {
 		}*/
         reload();
 
-        if (getServer().getPluginManager().getPlugin("Citizens") != null || getServer().getPluginManager().getPlugin("Citizens").isEnabled()) {
+        if (getServer().getPluginManager().getPlugin("Citizens") != null && getServer().getPluginManager().getPlugin("Citizens").isEnabled()) {
             getLogger().log(Level.INFO, "Citizens is now enabled");
         } else {
             getLogger().log(Level.SEVERE, "Citizens not found or not enabled");

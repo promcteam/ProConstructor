@@ -2,8 +2,8 @@ name: ProSchematicBuilder
 authors: [Weefle, Sentropic]
 version: ${project.version}
 main: fr.weefle.constructor.SchematicBuilder
-depends: [ProMCCore, Citizens]
-softdepends: [Denizen, dynmap]
+depend: [ProMCCore, Citizens]
+softdepend: [Denizen, dynmap]
 api-version: 1.19
 commands:
   schematicbuilder:
