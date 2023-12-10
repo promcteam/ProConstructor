@@ -26,10 +26,10 @@ import java.util.*;
 
 public class RawSchematic extends Schematic {
     private int width, height, length;
-    private Vector                      absolutePosition;
-    private EmptyBuildBlock[][][]       blocks;
-    private Map<Material, Integer>      materials;
-    private final List<SchematicEntity> entities = new ArrayList<>();
+    private Vector                 absolutePosition;
+    private EmptyBuildBlock[][][]  blocks;
+    private Map<Material, Integer> materials;
+    private List<SchematicEntity>  entities;
 
     public RawSchematic(Path path) {
         super(path);
@@ -57,7 +57,7 @@ public class RawSchematic extends Schematic {
         return block == null ? new EmptyBuildBlock(x, y, z) : block;
     }
 
-    private void load(boolean full) { // TODO load entities
+    private void load(boolean full) {
         File file = new File(getPath());
         if (getPath().endsWith(".schem")) {
             Object data;
@@ -142,12 +142,11 @@ public class RawSchematic extends Schematic {
                 index++;
             }
 
+            this.entities = new ArrayList<>();
             for (Object object : NMS.getInstance().getNMSProvider().nbtTagCompound_getList(data, "Entities", 10)) {
                 try {
                     this.entities.add(new SchematicEntity(object, absolutePosition));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                } catch (Exception ignored) {}
             }
         } else {
             CompoundTag data;

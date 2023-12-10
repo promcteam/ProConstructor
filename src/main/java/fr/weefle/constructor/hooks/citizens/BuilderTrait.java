@@ -52,6 +52,8 @@ public class BuilderTrait extends Trait implements Toggleable {
     boolean excavate      = false;
     @Persist("Silent")
     boolean          silent             = false;
+    @Persist("LoadEntities")
+    boolean          loadEntities       = false;
     @Persist("State")
     BuilderState     state              = BuilderState.IDLE;
     @Persist("PatternXY")
@@ -126,6 +128,10 @@ public class BuilderTrait extends Trait implements Toggleable {
     public boolean isSilent() {return silent;}
 
     public void setSilent(boolean silent) {this.silent = silent;}
+
+    public boolean isLoadEntities() {return loadEntities;}
+
+    public void setLoadEntities(boolean loadEntities) {this.loadEntities = loadEntities;}
 
     @NotNull
     public BuilderState getState() {return state;}
@@ -351,7 +357,7 @@ public class BuilderTrait extends Trait implements Toggleable {
         else {start = npc.getEntity().getLocation().clone();}
 
         queue = schematic.buildQueue(this);
-        entityQueue = schematic.getEntities();
+        if (loadEntities) entityQueue = schematic.getEntities();
 
         startingcount = queue.size();
         continueLoc = start.clone();

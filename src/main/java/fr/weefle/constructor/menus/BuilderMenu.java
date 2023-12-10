@@ -597,6 +597,17 @@ public class BuilderMenu extends Menu {
                         }
                     };
                 }
+                case "load-entities": {
+                    ItemStack itemStack = this.getItem(function);
+                    ItemUT.replaceLore(itemStack, "%current%", String.valueOf(builder.isLoadEntities()));
+                    return new Slot(itemStack) {
+                        @Override
+                        public void onLeftClick() {
+                            builder.setLoadEntities(!builder.isLoadEntities());
+                            this.menu.open();
+                        }
+                    };
+                }
             }
             return null;
         }

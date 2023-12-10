@@ -135,6 +135,13 @@ items:
     material: "barrel"
     amount: 1
     custom-model-data: 0
+  load-entities:
+    display-name: "&aLoad Entities"
+    lore:
+      - "&9Current: &b%current%"
+    material: "sheep_spawn_egg"
+    amount: 1
+    custom-model-data: 0
 slots:
   0: "silent"
   1: "hold-item"
@@ -147,4 +154,4 @@ slots:
   10: "ignore-liquid"
   11: "needs-materials"
   12: "citizens"
-
+  13: "load-entities"
