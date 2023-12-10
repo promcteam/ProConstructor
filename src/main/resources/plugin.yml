@@ -3,7 +3,7 @@ authors: [Weefle, Sentropic]
 version: ${project.version}
 main: fr.weefle.constructor.SchematicBuilder
 depend: [ProMCCore, Citizens]
-softdepend: [Denizen, dynmap]
+softdepend: [Denizen, dynmap, Towny]
 api-version: 1.19
 commands:
   schematicbuilder:
@@ -49,3 +49,6 @@ permissions:
   schematicbuilder.structure:
     default: op
     description: Allows to save the selected region as a new schematic
+  schematicbuilder.townyoverride:
+    default: op
+    description: Allows to access builders from a Town you do not belong to

@@ -1,6 +1,8 @@
 package fr.weefle.constructor.listener;
 
 
+import com.palmergames.bukkit.towny.TownyAPI;
+import com.palmergames.bukkit.towny.object.Town;
 import fr.weefle.constructor.SchematicBuilder;
 import fr.weefle.constructor.hooks.citizens.BuilderTrait;
 import fr.weefle.constructor.hooks.citizens.BuilderTrait.BuilderState;
@@ -11,6 +13,8 @@ import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.event.NPCLeftClickEvent;
 import net.citizensnpcs.api.event.NPCRightClickEvent;
 import net.citizensnpcs.api.npc.NPC;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -97,6 +101,19 @@ public class BuilderListener implements Listener {
         NPC          npc  = event.getNPC();
         BuilderTrait inst = SchematicBuilder.getBuilder(npc);
         if (inst == null) {return;}
+
+        Player player = event.getClicker();
+        if (!player.hasPermission("schematicbuilder.townyoverride") && Bukkit.getPluginManager().isPluginEnabled("Towny")) {
+            Town builderTown = TownyAPI.getInstance().getTown(inst.getNPC().getEntity().getLocation());
+            if (builderTown != null) {
+                Town playerTown = TownyAPI.getInstance().getTown(player);
+                if (playerTown == null || !builderTown.getUUID().equals(playerTown.getUUID())) {
+                    player.sendMessage(ChatColor.RED + "Can't interact with a builder from a different town");
+                    return;
+                }
+            }
+        }
+
         inst.handleRightClick(event);
     }
 
