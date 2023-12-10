@@ -2,7 +2,6 @@ package fr.weefle.constructor.schematic;
 
 import fr.weefle.constructor.SchematicBuilder;
 import fr.weefle.constructor.hooks.citizens.BuilderTrait;
-import fr.weefle.constructor.schematic.blocks.DataBuildBlock;
 import fr.weefle.constructor.schematic.blocks.EmptyBuildBlock;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -17,7 +16,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.nio.file.Path;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Queue;
 
@@ -47,7 +45,7 @@ public abstract class Schematic {
     @NotNull
     public abstract EmptyBuildBlock getBlockAt(int x, int y, int z);
 
-    public abstract Location offset(Location origin, int x, int y, int z, int emptyLayers, int rotation);
+    public abstract Location offset(Location origin, double x, double y, double z, int emptyLayers, int rotation);
 
     @NotNull
     public abstract Map<Material, Integer> getMaterials();
@@ -90,6 +88,9 @@ public abstract class Schematic {
 
     @NotNull
     public abstract Queue<EmptyBuildBlock> buildQueue(BuilderTrait builder);
+
+    @NotNull
+    public abstract Queue<SchematicEntity> getEntities();
 
     public String getInfo() {
         return ChatColor.GREEN + "Path: " + ChatColor.WHITE + getPath() +

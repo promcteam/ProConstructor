@@ -10,8 +10,8 @@ import fr.weefle.constructor.hooks.citizens.persistence.SchematicPersistenceLoad
 import fr.weefle.constructor.menus.BuilderMenu;
 import fr.weefle.constructor.nms.NMS;
 import fr.weefle.constructor.schematic.Schematic;
+import fr.weefle.constructor.schematic.SchematicEntity;
 import fr.weefle.constructor.schematic.YAMLSchematic;
-import fr.weefle.constructor.schematic.blocks.DataBuildBlock;
 import fr.weefle.constructor.schematic.blocks.EmptyBuildBlock;
 import fr.weefle.constructor.util.Util;
 import net.citizensnpcs.api.event.NPCRightClickEvent;
@@ -95,6 +95,7 @@ public class BuilderTrait extends Trait implements Toggleable {
     public Location start         = null;
 
     private Queue<EmptyBuildBlock> queue = new LinkedList<>();
+    private Queue<SchematicEntity> entityQueue = new LinkedList<>();
 
     private final Map<Player, Long> sessions = new HashMap<>();
 
@@ -102,8 +103,9 @@ public class BuilderTrait extends Trait implements Toggleable {
 
     private CommandSender sender = null;
 
-    private EmptyBuildBlock next    = null;
-    private Block           pending = null;
+    private EmptyBuildBlock next       = null;
+    private SchematicEntity nextEntity = null;
+    private Block           pending    = null;
 
     private BukkitTask canceltaskid;
 
@@ -349,6 +351,7 @@ public class BuilderTrait extends Trait implements Toggleable {
         else {start = npc.getEntity().getLocation().clone();}
 
         queue = schematic.buildQueue(this);
+        entityQueue = schematic.getEntities();
 
         startingcount = queue.size();
         continueLoc = start.clone();
@@ -389,7 +392,7 @@ public class BuilderTrait extends Trait implements Toggleable {
         next = queue.poll();
 
         if (next == null) {
-            CompleteBuild();
+            SetupNextEntity();
             return;
         }
 
@@ -446,6 +449,59 @@ public class BuilderTrait extends Trait implements Toggleable {
                 }
             }.runTaskLater(SchematicBuilder.getInstance(), (long) (moveTimeoutSeconds * 20) + 1);
         }
+    }
+
+    public void SetupNextEntity() {
+        if (schematic == null) {
+            CancelBuild();
+            return;
+        }
+
+        nextEntity = entityQueue.poll();
+
+        if (nextEntity == null) {
+            CompleteBuild();
+            return;
+        }
+
+        Location location = nextEntity.getLocation();
+        pending = Objects.requireNonNull(continueLoc.getWorld()).getBlockAt(schematic.offset(continueLoc, location.getX(), location.getY(), location.getZ(), 0, this.rotation));
+
+        if (npc.isSpawned()) {
+            if ((npc.getEntity() instanceof org.bukkit.entity.HumanEntity || npc.getEntity() instanceof org.bukkit.entity.Enderman) && this.holdItems) {
+                if ((npc.getEntity() instanceof org.bukkit.entity.HumanEntity) && this.holdItems) {
+                    ((org.bukkit.entity.HumanEntity) npc.getEntity()).getInventory().setItemInHand(new ItemStack(Material.SHEEP_SPAWN_EGG));
+                } else if ((npc.getEntity() instanceof org.bukkit.entity.Enderman) && this.holdItems) {
+                    ((org.bukkit.entity.Enderman) npc.getEntity()).setCarriedMaterial(new MaterialData(Material.SHEEP_SPAWN_EGG));
+                }
+            }
+        }
+
+
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                if (npc.isSpawned()) {
+                    Location loc = findaspot(pending).add(0.5, 0.5, 0.5);
+                    npc.getNavigator().setTarget(loc);
+                    npc.getNavigator().getLocalParameters().stationaryTicks((int) (moveTimeoutSeconds * 20));
+                    npc.getNavigator().getLocalParameters().stuckAction(BuilderTeleportStuckAction.INSTANCE);
+                    npc.getNavigator().getPathStrategy().update();
+                }
+            }
+        }.runTask(SchematicBuilder.getInstance());
+
+        canceltaskid = new BukkitRunnable() {
+            public void run() {
+                if (npc.isSpawned()) {
+                    if (npc.getNavigator().isNavigating()) {
+                        npc.getEntity().teleport(npc.getNavigator().getTargetAsLocation());
+                        npc.getNavigator().getPathStrategy().update();
+                        npc.getNavigator().cancelNavigation();
+                    }
+                }
+            }
+        }.runTaskLater(SchematicBuilder.getInstance(), (long) (moveTimeoutSeconds * 20) + 1);
     }
 
     public void CancelBuild() {
@@ -531,20 +587,22 @@ public class BuilderTrait extends Trait implements Toggleable {
             canceltaskid.cancel();
         }
 
-        BlockData bdata = next.getMat();
+        if (next == null) {
+            nextEntity.spawn(origin, rotation).getType().name();
+            SetupNextEntity();
+        } else {
+            BlockData bdata = next.getMat();
 
-        pending.setBlockData(bdata);
-        pending.getWorld().playEffect(pending.getLocation(), Effect.STEP_SOUND, pending.getType());
-        NMS.getInstance().getChecker().check(next, pending);
+            pending.setBlockData(bdata);
+            pending.getWorld().playEffect(pending.getLocation(), Effect.STEP_SOUND, pending.getType());
+            NMS.getInstance().getChecker().check(next, pending);
+            SetupNextBlock();
+        }
 
         if (this.npc.getEntity() instanceof Player) {
             //arm swing
             net.citizensnpcs.util.PlayerAnimation.ARM_SWING.play((Player) this.npc.getEntity(), 64);
         }
-
-        SetupNextBlock();
-
-
     }
 
     //Given a BuildBlock to place, find a good place to stand to place it.

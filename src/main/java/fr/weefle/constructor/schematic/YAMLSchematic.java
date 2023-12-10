@@ -76,7 +76,7 @@ public class YAMLSchematic extends Schematic {
     public EmptyBuildBlock getBlockAt(int x, int y, int z) {return this.tiers.get(Math.min(this.getNextTier(), this.getTotalTiers()-1)).getBlockAt(x, y, z);}
 
     @Override
-    public Location offset(Location origin, int x, int y, int z, int emptyLayers, int rotation) {
+    public Location offset(Location origin, double x, double y, double z, int emptyLayers, int rotation) {
         return this.tiers.get(Math.min(this.getNextTier(), this.getTotalTiers()-1)).offset(origin, x, y, z, emptyLayers, rotation);
     }
 
@@ -93,5 +93,13 @@ public class YAMLSchematic extends Schematic {
         int tier = this.getNextTier();
         if (tier >= getTotalTiers()) { return new LinkedList<>(); }
         return this.tiers.get(tier).buildQueue(builder);
+    }
+
+    @Override
+    @NotNull
+    public Queue<SchematicEntity> getEntities() {
+        int tier = this.getNextTier();
+        if (tier >= getTotalTiers()) { return new LinkedList<>(); }
+        return this.tiers.get(tier).getEntities();
     }
 }

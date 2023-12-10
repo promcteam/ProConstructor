@@ -26,9 +26,10 @@ import java.util.*;
 
 public class RawSchematic extends Schematic {
     private int width, height, length;
-    private Vector                 absolutePosition;
-    private EmptyBuildBlock[][][]  blocks;
-    private Map<Material, Integer> materials;
+    private Vector                      absolutePosition;
+    private EmptyBuildBlock[][][]       blocks;
+    private Map<Material, Integer>      materials;
+    private final List<SchematicEntity> entities = new ArrayList<>();
 
     public RawSchematic(Path path) {
         super(path);
@@ -140,6 +141,14 @@ public class RawSchematic extends Schematic {
                         new TileBuildBlock(x, y, z, blockState, tileEntity);
                 index++;
             }
+
+            for (Object object : NMS.getInstance().getNMSProvider().nbtTagCompound_getList(data, "Entities", 10)) {
+                try {
+                    this.entities.add(new SchematicEntity(object, absolutePosition));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
         } else {
             CompoundTag data;
             try (NBTInputStream inputStream = new NBTInputStream(new FileInputStream(file), true)) {
@@ -239,7 +248,7 @@ public class RawSchematic extends Schematic {
     }
 
     @Override
-    public Location offset(Location origin, int x, int y, int z, int emptyLayers, int rotation) {
+    public Location offset(Location origin, double x, double y, double z, int emptyLayers, int rotation) {
         return origin.clone().add(Util.rotateVector(new Vector(x, y-emptyLayers, z), rotation));
     }
 
@@ -512,6 +521,12 @@ public class RawSchematic extends Schematic {
         buildQ.clear();
         unload();
         return queue;
+    }
+
+    @Override
+    @NotNull
+    public Queue<SchematicEntity> getEntities() {
+        return new LinkedList<>(this.entities);
     }
 }
 

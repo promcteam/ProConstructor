@@ -84,7 +84,7 @@ public class SchematicTier extends Schematic {
     }
 
     @Override
-    public Location offset(Location origin, int x, int y, int z, int emptyLayers, int rotation) {
+    public Location offset(Location origin, double x, double y, double z, int emptyLayers, int rotation) {
         return this.handle.offset(origin, x, y, z, emptyLayers, rotation).add(Util.rotateVector(this.offset, rotation));
     }
 
@@ -93,4 +93,9 @@ public class SchematicTier extends Schematic {
     @Override
     @NotNull
     public Queue<EmptyBuildBlock> buildQueue(BuilderTrait builder) {return this.handle.buildQueue(builder);}
+
+    @Override
+    public @NotNull Queue<SchematicEntity> getEntities() {
+        return handle.getEntities();
+    }
 }
