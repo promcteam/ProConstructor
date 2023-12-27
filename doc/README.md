@@ -26,3 +26,8 @@ This will load the included example file `house.schem`.
 4) Position the NPC in the center of the area in which it should build.
 5) Start the NPC building with: `/schematicbuilder build`
 6) Watch the magic happen!
+
+### A huge thanks to our contributors
+<a href="https://github.com/promcteam/ProSchematicBuilder/graphs/contributors">
+<img src="https://contrib.rocks/image?repo=promcteam/ProSchematicBuilder" />
+</a>
