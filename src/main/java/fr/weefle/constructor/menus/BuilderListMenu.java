@@ -1,9 +1,9 @@
-package fr.weefle.constructor.menu.menus;
+package fr.weefle.constructor.menus;
 
 import fr.weefle.constructor.SchematicBuilder;
 import fr.weefle.constructor.hooks.citizens.BuilderTrait;
-import fr.weefle.constructor.menu.Menu;
-import fr.weefle.constructor.menu.Slot;
+import mc.promcteam.engine.manager.api.menu.Menu;
+import mc.promcteam.engine.manager.api.menu.Slot;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.ChatColor;
@@ -15,8 +15,8 @@ import org.bukkit.inventory.meta.SkullMeta;
 
 import java.util.ArrayList;
 
-public class NPCMenu extends Menu {
-    public NPCMenu(Player player) {
+public class BuilderListMenu extends Menu {
+    public BuilderListMenu(Player player) {
         super(player, 6, "SchematicBuilder - NPCs");
     }
 
@@ -77,7 +77,7 @@ public class NPCMenu extends Menu {
                 return;
             }
             player.performCommand("npc select " + npc.getId());
-            menu.openSubMenu(new ParameterMenu(player, npc));
+            menu.openSubMenu(new BuilderMenu(player, npc));
         }
 
         @Override

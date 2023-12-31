@@ -1,0 +1,43 @@
+title: "&8%npc%'s Citizens Actions"
+rows: 1
+items:
+  empty:
+    display-name: ""
+    lore: []
+    material: "air"
+    amount: 1
+    custom-model-data: 0
+  on-start:
+    display-name: "&aOn Start"
+    lore:
+      - "&7Run when the builder starts building"
+      - "&6Left-Click: &eSet"
+      - "&6Drop: &cRemove"
+      - "&9Current: &b%current%"
+    material: "green_wool"
+    amount: 1
+    custom-model-data: 0
+  on-complete:
+    display-name: "&aOn Complete"
+    lore:
+      - "&7Run when the builder completes a building"
+      - "&6Left-Click: &eSet"
+      - "&6Drop: &cRemove"
+      - "&9Current: &b%current%"
+    material: "blue_wool"
+    amount: 1
+    custom-model-data: 0
+  on-cancel:
+    display-name: "&aOn Cancel"
+    lore:
+      - "&7Run when the building is canceled"
+      - "&6Left-Click: &eSet"
+      - "&6Drop: &cRemove"
+      - "&9Current: &b%current%"
+    material: "red_wool"
+    amount: 1
+    custom-model-data: 0
+slots:
+  0: "on-start"
+  1: "on-complete"
+  2: "on-cancel"

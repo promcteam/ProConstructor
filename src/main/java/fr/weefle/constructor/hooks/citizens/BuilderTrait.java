@@ -1,14 +1,17 @@
 package fr.weefle.constructor.hooks.citizens;
 
 import fr.weefle.constructor.Config;
+import fr.weefle.constructor.PersistentBuilding;
 import fr.weefle.constructor.SchematicBuilder;
 import fr.weefle.constructor.hooks.citizens.persistence.MaterialIntegerMapPersistenceLoader;
 import fr.weefle.constructor.hooks.citizens.persistence.MaterialMapWrapper;
+import fr.weefle.constructor.hooks.citizens.persistence.PersistentBuildingPersistenceLoader;
 import fr.weefle.constructor.hooks.citizens.persistence.SchematicPersistenceLoader;
-import fr.weefle.constructor.menu.menus.ParameterMenu;
+import fr.weefle.constructor.menus.BuilderMenu;
 import fr.weefle.constructor.nms.NMS;
 import fr.weefle.constructor.schematic.Schematic;
-import fr.weefle.constructor.schematic.blocks.DataBuildBlock;
+import fr.weefle.constructor.schematic.SchematicEntity;
+import fr.weefle.constructor.schematic.YAMLSchematic;
 import fr.weefle.constructor.schematic.blocks.EmptyBuildBlock;
 import fr.weefle.constructor.util.Util;
 import net.citizensnpcs.api.event.NPCRightClickEvent;
@@ -16,6 +19,7 @@ import net.citizensnpcs.api.persistence.DelegatePersistence;
 import net.citizensnpcs.api.persistence.Persist;
 import net.citizensnpcs.api.trait.Trait;
 import net.citizensnpcs.api.trait.TraitName;
+import net.citizensnpcs.api.util.DataKey;
 import net.citizensnpcs.trait.Toggleable;
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -31,6 +35,7 @@ import org.dynmap.DynmapCommonAPI;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
@@ -47,6 +52,8 @@ public class BuilderTrait extends Trait implements Toggleable {
     boolean excavate      = false;
     @Persist("Silent")
     boolean          silent             = false;
+    @Persist("LoadEntities")
+    boolean          loadEntities       = false;
     @Persist("State")
     BuilderState     state              = BuilderState.IDLE;
     @Persist("PatternXY")
@@ -62,8 +69,13 @@ public class BuilderTrait extends Trait implements Toggleable {
     @Persist("Schematic")
     @DelegatePersistence(SchematicPersistenceLoader.class)
     Schematic        schematic          = null;
+    @Persist("PersistentBuilding")
+    @DelegatePersistence(PersistentBuildingPersistenceLoader.class)
+    PersistentBuilding persistentBuilding = null;
     @Persist("Origin")
     Location         origin             = null;
+    @Persist("Rotation")
+    int              rotation           = 0;
     @Persist("ContinueLoc")
     Location         continueLoc        = null; // Fixme after server restart, builder should continue the building where it left off
     @Persist("Materials")
@@ -85,8 +97,7 @@ public class BuilderTrait extends Trait implements Toggleable {
     public Location start         = null;
 
     private Queue<EmptyBuildBlock> queue = new LinkedList<>();
-
-    private boolean clearingMarks = false;
+    private Queue<SchematicEntity> entityQueue = new LinkedList<>();
 
     private final Map<Player, Long> sessions = new HashMap<>();
 
@@ -94,13 +105,11 @@ public class BuilderTrait extends Trait implements Toggleable {
 
     private CommandSender sender = null;
 
-    private EmptyBuildBlock next    = null;
-    private Block           pending = null;
+    private EmptyBuildBlock next       = null;
+    private SchematicEntity nextEntity = null;
+    private Block           pending    = null;
 
     private BukkitTask canceltaskid;
-
-    private final Queue<EmptyBuildBlock> marks  = new LinkedList<>();
-    private final Queue<EmptyBuildBlock> _marks = new LinkedList<>();
 
     public BuilderTrait() {super("builder");}
 
@@ -108,9 +117,9 @@ public class BuilderTrait extends Trait implements Toggleable {
 
     public void setIgnoreAir(boolean ignoreAir) {this.ignoreAir = ignoreAir;}
 
-    public boolean isIgnoreLiquids() {return ignoreLiquids;}
+    public boolean ignoresLiquids() {return ignoreLiquids;}
 
-    public void setIgnoreLiquids(boolean ignoreLiquids) {this.ignoreLiquids = ignoreLiquids;}
+    public void setIgnoresLiquids(boolean ignoreLiquids) {this.ignoreLiquids = ignoreLiquids;}
 
     public boolean isExcavate() {return excavate;}
 
@@ -120,6 +129,10 @@ public class BuilderTrait extends Trait implements Toggleable {
 
     public void setSilent(boolean silent) {this.silent = silent;}
 
+    public boolean isLoadEntities() {return loadEntities;}
+
+    public void setLoadEntities(boolean loadEntities) {this.loadEntities = loadEntities;}
+
     @NotNull
     public BuilderState getState() {return state;}
 
@@ -128,31 +141,49 @@ public class BuilderTrait extends Trait implements Toggleable {
 
     public void setBuildPatternXZ(@NotNull BuildPatternXZ buildPatternXZ) {this.buildPatternXZ = buildPatternXZ;}
 
-    public boolean isHoldItems() {return holdItems;}
+    public boolean holdsItems() {return holdItems;}
 
-    public void setHoldItems(boolean holdItems) {this.holdItems = holdItems;}
+    public void setHoldsItems(boolean holdItems) {this.holdItems = holdItems;}
 
-    public boolean isRequireMaterials() {return requireMaterials;}
+    public boolean requiresMaterials() {return requireMaterials;}
 
     public void setRequireMaterials(boolean requireMaterials) {this.requireMaterials = requireMaterials;}
 
     public double getMoveTimeoutSeconds() {return moveTimeoutSeconds;}
 
-    public void setMoveTimeoutSeconds(double moveTimeoutSeconds) {this.moveTimeoutSeconds = moveTimeoutSeconds;}
+    public void setMoveTimeoutSeconds(double moveTimeoutSeconds) {this.moveTimeoutSeconds = Math.max(1, moveTimeoutSeconds);}
 
     public int getBuildYLayers() {return buildYLayers;}
 
-    public void setBuildYLayers(int buildYLayers) {this.buildYLayers = buildYLayers;}
+    public void setBuildYLayers(int buildYLayers) {this.buildYLayers = Math.max(1, buildYLayers);}
 
     @Nullable
     public Schematic getSchematic() {return schematic;}
 
-    public void setSchematic(Schematic schematic) {this.schematic = schematic;}
+    public void setSchematic(@Nullable Schematic schematic) {
+        this.schematic = schematic;
+        this.persistentBuilding = null;
+        if (schematic == null) {
+            this.state = BuilderState.IDLE;
+        } else if (this.requireMaterials && !this.getMissingMaterials().isEmpty()) {this.state = BuilderState.COLLECTING;}
+    }
+
+    @Nullable
+    public PersistentBuilding getPersistentBuilding() {return persistentBuilding;}
+
+    public void setPersistentBuilding(@Nullable PersistentBuilding building) {
+        this.persistentBuilding = building;
+        this.schematic = this.persistentBuilding == null ? null : this.persistentBuilding.getSchematic();
+    }
 
     @NotNull
-    public Location getOrigin() {return origin == null ? this.npc.getEntity().getLocation() : this.origin;}
+    public Location getOrigin() {return origin == null ? this.npc.getEntity().getLocation() : this.origin.clone();}
 
     public void setOrigin(@Nullable Location origin) {this.origin = origin;}
+
+    public int getRotation() {return this.rotation;}
+
+    public void setRotation(int rotation) {this.rotation = Util.normalizeRotations(rotation);} // Fixme rotate actual block state
 
     @Nullable
     public Location getContinueLoc() {return continueLoc == null ? null : continueLoc.clone();}
@@ -162,6 +193,7 @@ public class BuilderTrait extends Trait implements Toggleable {
     @NotNull
     public Map<Material, Integer> getMissingMaterials() {
         Map<Material, Integer> missingMaterials = new TreeMap<>();
+        if (this.schematic == null || !this.requiresMaterials()) {return missingMaterials;}
         for (Map.Entry<Material, Integer> entry : this.schematic.getMaterials().entrySet()) {
             Material material = entry.getKey();
             int      missing  = entry.getValue() - this.materials.getHandle().getOrDefault(material, 0);
@@ -192,6 +224,8 @@ public class BuilderTrait extends Trait implements Toggleable {
     public void onSpawn() {
         npc.getNavigator().getDefaultParameters().avoidWater(false);
 
+        if (this.persistentBuilding != null) {this.schematic = this.persistentBuilding.getSchematic();}
+
         if (state == BuilderState.BUILDING || state == BuilderState.COLLECTING) {
             new BukkitRunnable() {
                 public void run() {
@@ -202,11 +236,17 @@ public class BuilderTrait extends Trait implements Toggleable {
         } else state = BuilderState.IDLE;
     }
 
+    @Override
+    public void save(DataKey key) { // Can't do this in Persisters since they don't process null values
+        key.setString("Schematic", this.schematic == null ? null : new File(SchematicBuilder.getInstance().config().getSchematicsFolder()).toPath().relativize(new File(this.schematic.getPath()).toPath()).toString());
+        key.setString("PersistentBuilding", this.persistentBuilding == null ? null : this.persistentBuilding.getUUID().toString());
+    }
+
     public void handleRightClick(NPCRightClickEvent event) {
         Player player = event.getClicker();
         if (this.state == BuilderState.IDLE || this.state == BuilderState.BUILDING) {
             player.performCommand("npc select " + npc.getId());
-            new ParameterMenu(event.getClicker(), npc).open();
+            new BuilderMenu(event.getClicker(), npc).open();
         } else if (this.state == BuilderState.COLLECTING) {
             ItemStack heldItem = player.getInventory().getItemInMainHand();
             if (heldItem.getType().isBlock() && !(heldItem.getType() == Material.AIR)) {
@@ -265,6 +305,9 @@ public class BuilderTrait extends Trait implements Toggleable {
                             "0"));
                     //don't need it or already have it.
                 }
+            } else {
+                player.performCommand("npc select " + npc.getId());
+                new BuilderMenu(event.getClicker(), npc).open();
             }
         }
     }
@@ -314,6 +357,7 @@ public class BuilderTrait extends Trait implements Toggleable {
         else {start = npc.getEntity().getLocation().clone();}
 
         queue = schematic.buildQueue(this);
+        if (loadEntities) entityQueue = schematic.getEntities();
 
         startingcount = queue.size();
         continueLoc = start.clone();
@@ -345,54 +389,20 @@ public class BuilderTrait extends Trait implements Toggleable {
         return true;
     }
 
-    public boolean StartMark(Material mat) {
-        if (!npc.isSpawned()) return false;
-        if (schematic == null) return false;
-        if (this.state != BuilderState.IDLE) return false;
-
-        onComplete = null;
-        onCancel = null;
-        onStart = null;
-
-        mypos = npc.getEntity().getLocation().clone();
-
-        if (origin == null) {
-            continueLoc = this.npc.getEntity().getLocation().clone();
-        } else {
-            continueLoc = origin.clone();
-        }
-        queue = schematic.createMarks(mat);
-        this.state = BuilderState.MARKING;
-
-        SetupNextBlock();
-
-        return true;
-    }
-
     public void SetupNextBlock() {
-        if (marks.isEmpty()) {
-            if (schematic == null) {
-                CancelBuild();
-                return;
-            }
-
-
-            next = queue.poll();
-
-            if (next == null) {
-                CompleteBuild();
-                return;
-            }
-
-            pending = Objects.requireNonNull(continueLoc.getWorld()).getBlockAt(schematic.offset(continueLoc, next.X, next.Y, next.Z));
-
-
-        } else {
-            clearingMarks = true;
-            next = marks.remove();
-            pending = Objects.requireNonNull(continueLoc.getWorld()).getBlockAt(next.X, next.Y, next.Z);
-
+        if (schematic == null) {
+            CancelBuild();
+            return;
         }
+
+        next = queue.poll();
+
+        if (next == null) {
+            SetupNextEntity();
+            return;
+        }
+
+        pending = Objects.requireNonNull(continueLoc.getWorld()).getBlockAt(schematic.offset(continueLoc, next.X, next.Y, next.Z, 0, this.rotation));
 
         if (next.getMat().equals(pending.getLocation().getBlock().getBlockData())) {
             SetupNextBlock();
@@ -447,6 +457,59 @@ public class BuilderTrait extends Trait implements Toggleable {
         }
     }
 
+    public void SetupNextEntity() {
+        if (schematic == null) {
+            CancelBuild();
+            return;
+        }
+
+        nextEntity = entityQueue.poll();
+
+        if (nextEntity == null) {
+            CompleteBuild();
+            return;
+        }
+
+        Location location = nextEntity.getLocation();
+        pending = Objects.requireNonNull(continueLoc.getWorld()).getBlockAt(schematic.offset(continueLoc, location.getX(), location.getY(), location.getZ(), 0, this.rotation));
+
+        if (npc.isSpawned()) {
+            if ((npc.getEntity() instanceof org.bukkit.entity.HumanEntity || npc.getEntity() instanceof org.bukkit.entity.Enderman) && this.holdItems) {
+                if ((npc.getEntity() instanceof org.bukkit.entity.HumanEntity) && this.holdItems) {
+                    ((org.bukkit.entity.HumanEntity) npc.getEntity()).getInventory().setItemInHand(new ItemStack(Material.SHEEP_SPAWN_EGG));
+                } else if ((npc.getEntity() instanceof org.bukkit.entity.Enderman) && this.holdItems) {
+                    ((org.bukkit.entity.Enderman) npc.getEntity()).setCarriedMaterial(new MaterialData(Material.SHEEP_SPAWN_EGG));
+                }
+            }
+        }
+
+
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                if (npc.isSpawned()) {
+                    Location loc = findaspot(pending).add(0.5, 0.5, 0.5);
+                    npc.getNavigator().setTarget(loc);
+                    npc.getNavigator().getLocalParameters().stationaryTicks((int) (moveTimeoutSeconds * 20));
+                    npc.getNavigator().getLocalParameters().stuckAction(BuilderTeleportStuckAction.INSTANCE);
+                    npc.getNavigator().getPathStrategy().update();
+                }
+            }
+        }.runTask(SchematicBuilder.getInstance());
+
+        canceltaskid = new BukkitRunnable() {
+            public void run() {
+                if (npc.isSpawned()) {
+                    if (npc.getNavigator().isNavigating()) {
+                        npc.getEntity().teleport(npc.getNavigator().getTargetAsLocation());
+                        npc.getNavigator().getPathStrategy().update();
+                        npc.getNavigator().cancelNavigation();
+                    }
+                }
+            }
+        }.runTaskLater(SchematicBuilder.getInstance(), (long) (moveTimeoutSeconds * 20) + 1);
+    }
+
     public void CancelBuild() {
         if (onCancel != null) SchematicBuilder.runTask(onCancel, npc);
         SchematicBuilder.denizenAction(npc, "Build Cancel");
@@ -475,25 +538,27 @@ public class BuilderTrait extends Trait implements Toggleable {
 
             SchematicBuilder.denizenAction(npc, "Build Complete");
             SchematicBuilder.denizenAction(npc, "Build " + schematic.getDisplayName() + " Complete");
+            if (this.schematic instanceof YAMLSchematic) {
+                YAMLSchematic yamlSchematic = (YAMLSchematic) this.schematic;
+                int tier = yamlSchematic.getTier()+1;
+                yamlSchematic.setTier(tier);
+                if (this.persistentBuilding == null || !this.persistentBuilding.getPath().equals(this.schematic.getPath())) {
+                    this.persistentBuilding = new PersistentBuilding(UUID.randomUUID(), yamlSchematic, tier, this.origin);
+                } else {this.persistentBuilding.setTier(tier);}
+            }
         }
         stop();
     }
 
     private void stop() {
+        // TODO send stored materials to collected
         boolean stop = state == BuilderState.BUILDING;
         if (canceltaskid != null && !canceltaskid.isCancelled()) canceltaskid.cancel();
 
-        if (this.state == BuilderState.MARKING) {
-            this.state = BuilderState.IDLE;
-            if (origin != null) npc.getNavigator().setTarget(origin);
-            else npc.getEntity().teleport(mypos);
-            marks.addAll(_marks);
-            _marks.clear();
-        } else {
-            this.state = BuilderState.IDLE;
-            if (stop && npc.isSpawned()) {
-                if (npc.getNavigator().isNavigating()) npc.getNavigator().cancelNavigation();
-                npc.getNavigator().setTarget(mypos);
+        this.state = BuilderState.IDLE;
+        if (stop && npc.isSpawned()) {
+            if (npc.getNavigator().isNavigating()) npc.getNavigator().cancelNavigation();
+            npc.getNavigator().setTarget(mypos);
 
 				/*if(sender instanceof Player) {
 					Player player = (Player) sender;
@@ -502,8 +567,6 @@ public class BuilderTrait extends Trait implements Toggleable {
 					Region region = new Region(player.getName()+"_"+UUID.randomUUID(), players, schematic.getSchematicOrigin(this), new int[]{},null, 0.0);
 					RegionManager.getInstance().addRegion(region);
 				}*/
-
-            }
         }
 
         if ((npc.getEntity() instanceof org.bukkit.entity.HumanEntity) && this.holdItems)
@@ -530,28 +593,22 @@ public class BuilderTrait extends Trait implements Toggleable {
             canceltaskid.cancel();
         }
 
-        BlockData bdata = next.getMat();
+        if (next == null) {
+            nextEntity.spawn(origin, rotation).getType().name();
+            SetupNextEntity();
+        } else {
+            BlockData bdata = next.getMat();
 
-
-        if (state == BuilderState.MARKING && !clearingMarks) {
-            _marks.add(new DataBuildBlock(pending.getX(), pending.getY(), pending.getZ(), pending.getBlockData()));
+            pending.setBlockData(bdata);
+            pending.getWorld().playEffect(pending.getLocation(), Effect.STEP_SOUND, pending.getType());
+            NMS.getInstance().getChecker().check(next, pending);
+            SetupNextBlock();
         }
-
-        pending.setBlockData(bdata);
-        pending.getWorld().playEffect(pending.getLocation(), Effect.STEP_SOUND, pending.getType());
-        NMS.getInstance().getChecker().check(next, pending);
 
         if (this.npc.getEntity() instanceof Player) {
             //arm swing
             net.citizensnpcs.util.PlayerAnimation.ARM_SWING.play((Player) this.npc.getEntity(), 64);
         }
-
-        if (marks.size() == 0) clearingMarks = false;
-
-
-        SetupNextBlock();
-
-
     }
 
     //Given a BuildBlock to place, find a good place to stand to place it.
@@ -579,7 +636,7 @@ public class BuilderTrait extends Trait implements Toggleable {
         return base.getLocation();
     }
 
-    public enum BuilderState {IDLE, BUILDING, MARKING, COLLECTING}
+    public enum BuilderState {IDLE, BUILDING, COLLECTING}
 
     public enum BuildPatternXZ {SPIRAL, REVERSE_SPIRAL, LINEAR, REVERSE_LINEAR}
 }

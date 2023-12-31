@@ -1,6 +1,7 @@
 package fr.weefle.constructor.nms.providers;
 
 import org.bukkit.World;
+import org.bukkit.event.entity.CreatureSpawnEvent;
 
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
@@ -8,6 +9,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.AbstractList;
 import java.util.Set;
+import java.util.function.Function;
 
 public abstract class NMSProvider {
 
@@ -39,8 +41,16 @@ public abstract class NMSProvider {
         return new String[]{"a", "valueOf"};
     }
 
+    public String[] getNBTTagDouble_getAsDoubleMethodNames() {
+        return new String[]{"j", "getAsDouble"};
+    }
+
     public String[] getNBTTagFloatClassNames() {
         return new String[]{"net.minecraft.nbt.NBTTagFloat", "net.minecraft.nbt.FloatTag"};
+    }
+
+    public String[] getNBTTagFloat_getAsFloatMethodNames() {
+        return new String[]{"k", "getAsFloat"};
     }
 
     public String[] getNBTTagFloat_valueOfMethodNames() {
@@ -107,12 +117,20 @@ public abstract class NMSProvider {
         return new String[]{"p", "getCompound"};
     }
 
+    public String[] getNBTTagCompound_getMethodNames() {
+        return new String[]{"c", "get"};
+    }
+
     public String[] getNBTTagCompound_getByteArrayMethodNames() {
         return new String[]{"m", "getByteArray"};
     }
 
     public String[] getNBTTagCompound_getAllKeysMethodNames() {
         return new String[]{"d", "getAllKeys"};
+    }
+
+    public String[] getNBTTagCompound_removeMethodNames() {
+        return new String[]{"r", "remove"};
     }
 
     public String[] getNBTTagCompound_getListMethodNames() {
@@ -147,6 +165,10 @@ public abstract class NMSProvider {
         return new String[]{"c_", "getBlockEntity"};
     }
 
+    public String[] getWorld_addFreshEntityWithPassengersMethodNames() {
+        return new String[]{"addFreshEntityWithPassengers"};
+    }
+
     public String[] getBlockEntityClassNames() {
         return new String[]{"net.minecraft.world.level.block.entity.TileEntity", "net.minecraft.world.level.block.entity.BlockEntity"};
     }
@@ -157,6 +179,30 @@ public abstract class NMSProvider {
 
     public String[] getIBlockDataClassNames() {
         return new String[]{"net.minecraft.world.level.block.state.IBlockData"};
+    }
+
+    public String[] getEntityTypeClassNames() {
+        return new String[]{"net.minecraft.world.entity.EntityType", "net.minecraft.world.entity.EntityTypes"};
+    }
+
+    public String[] getLevelClassNames() {
+        return new String[]{"net.minecraft.world.level.World", "net.minecraft.world.level.Level"};
+    }
+
+    public String[] getEntityType_loadEntityRecursiveMethodNames() {
+        return new String[]{"a", "loadEntityRecursive"};
+    }
+
+    public String[] getEntityClassNames() {
+        return new String[]{"net.minecraft.world.entity.Entity"};
+    }
+
+    public String[] getEntity_absMoveToMethodNames() {
+        return new String[]{"a", "absMoveTo"};
+    }
+
+    public String[] getEntity_getBukkitEntityMethodNames() {
+        return new String[]{"getBukkitEntity"};
     }
 
     public final Class<?> getClassByNames(String[] names) throws ClassNotFoundException {
@@ -230,6 +276,23 @@ public abstract class NMSProvider {
         }
     }
 
+    private Method nbtTagDouble_getAsDoubleMethod;
+
+    public final double nbtTagDouble_getAsDouble(Object nbtTagDouble) {
+        if (nbtTagDouble_getAsDoubleMethod == null) {
+            try {
+                nbtTagDouble_getAsDoubleMethod = getMethodByNames(getClassByNames(getNBTTagDoubleClassNames()), getNBTTagDouble_getAsDoubleMethodNames());
+            } catch (ClassNotFoundException | NoSuchMethodException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        try {
+            return (double) nbtTagDouble_getAsDoubleMethod.invoke(nbtTagDouble);
+        } catch (InvocationTargetException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private Method nbtTagDouble_valueOfMethod;
 
     public final Object nbtTagDouble_valueOf(double value) {
@@ -242,6 +305,23 @@ public abstract class NMSProvider {
         }
         try {
             return nbtTagDouble_valueOfMethod.invoke(null, value);
+        } catch (InvocationTargetException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private Method nbtTagFloat_getAsFloatMethod;
+
+    public final float nbtTagFloat_getAsFloat(Object nbtTagFloat) {
+        if (nbtTagFloat_getAsFloatMethod == null) {
+            try {
+                nbtTagFloat_getAsFloatMethod = getMethodByNames(getClassByNames(getNBTTagFloatClassNames()), getNBTTagFloat_getAsFloatMethodNames());
+            } catch (ClassNotFoundException | NoSuchMethodException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        try {
+            return (float) nbtTagFloat_getAsFloatMethod.invoke(nbtTagFloat);
         } catch (InvocationTargetException | IllegalAccessException e) {
             throw new RuntimeException(e);
         }
@@ -464,6 +544,23 @@ public abstract class NMSProvider {
         }
     }
 
+    private Method nbtTagCompound_getMethod;
+
+    public final Object nbtTagCompound_get(Object nbtTagCompound, String key) {
+        if (nbtTagCompound_getMethod == null) {
+            try {
+                nbtTagCompound_getMethod = getMethodByNames(getNBTTagCompoundClass(), getNBTTagCompound_getMethodNames(), String.class);
+            } catch (NoSuchMethodException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        try {
+            return nbtTagCompound_getMethod.invoke(nbtTagCompound, key);
+        } catch (InvocationTargetException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private Method nbtTagCompound_getByteArrayMethod;
 
     public final byte[] nbtTagCompound_getByteArray(Object nbtTagCompound, String key) {
@@ -493,6 +590,23 @@ public abstract class NMSProvider {
         }
         try {
             return (Set<String>) nbtTagCompound_getAllKeysMethod.invoke(nbtTagCompound);
+        } catch (InvocationTargetException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private Method nbtTagCompound_removeMethod;
+
+    public final void nbtTagCompound_remove(Object nbtTagCompound, String key) {
+        if (nbtTagCompound_removeMethod == null) {
+            try {
+                nbtTagCompound_removeMethod = getMethodByNames(getNBTTagCompoundClass(), getNBTTagCompound_removeMethodNames(), String.class);
+            } catch (NoSuchMethodException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        try {
+            nbtTagCompound_removeMethod.invoke(nbtTagCompound, key);
         } catch (InvocationTargetException | IllegalAccessException e) {
             throw new RuntimeException(e);
         }
@@ -618,6 +732,24 @@ public abstract class NMSProvider {
         }
     }
 
+    private Method world_addFreshEntityWithPassengersMethod;
+
+    public final void world_addFreshEntityWithPassengers(World world, Object entity, CreatureSpawnEvent.SpawnReason spawnReason) {
+        Object worldHandle = world_getHandle(world);
+        if (world_addFreshEntityWithPassengersMethod == null) {
+            try {
+                world_addFreshEntityWithPassengersMethod = getMethodByNames(worldHandle.getClass(), getWorld_addFreshEntityWithPassengersMethodNames(), getClassByNames(getEntityClassNames()), CreatureSpawnEvent.SpawnReason.class);
+            } catch (NoSuchMethodException | ClassNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        try {
+            world_addFreshEntityWithPassengersMethod.invoke(worldHandle, entity, spawnReason);
+        } catch (InvocationTargetException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private Method  blockEntity_loadMethod;
     private boolean blockEntity_loadMethod_old;
 
@@ -641,6 +773,96 @@ public abstract class NMSProvider {
             } else {
                 blockEntity_loadMethod.invoke(blockEntity, nbtTagCompound);
             }
+        } catch (InvocationTargetException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private Class<?> entityTypeClass;
+
+    public final Class<?> getEntityTypeClass() {
+        if (entityTypeClass == null) {
+            try {
+                entityTypeClass = getClassByNames(getEntityTypeClassNames());
+            } catch (ClassNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return entityTypeClass;
+    }
+
+    private Class<?> levelClass;
+
+    public final Class<?> getLevelClass() {
+        if (levelClass == null) {
+            try {
+                levelClass = getClassByNames(getLevelClassNames());
+            } catch (ClassNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return levelClass;
+    }
+
+    private Method entityType_loadEntityRecursiveMethod;
+
+    public final Object entityType_loadEntityRecursive(Object nbtTagCompound, World world, Function<Object, Object> function) {
+        if (entityType_loadEntityRecursiveMethod == null) {
+            try {
+                entityType_loadEntityRecursiveMethod = getMethodByNames(getEntityTypeClass(), getEntityType_loadEntityRecursiveMethodNames(), getNBTTagCompoundClass(), getClassByNames(getLevelClassNames()), Function.class);
+            } catch (NoSuchMethodException | ClassNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        try {
+            return entityType_loadEntityRecursiveMethod.invoke(null, nbtTagCompound, world_getHandle(world), function);
+        } catch (InvocationTargetException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private Class<?> entityClass;
+
+    public final Class<?> getEntityClass() {
+        if (entityClass == null) {
+            try {
+                entityClass = getClassByNames(getEntityClassNames());
+            } catch (ClassNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return entityClass;
+    }
+
+    private Method entity_absMoveToMethod;
+
+    public final void entity_absMoveTo(Object entity, double x, double y, double z, float yaw, float pitch) {
+        if (entity_absMoveToMethod == null) {
+            try {
+                entity_absMoveToMethod = getMethodByNames(getEntityClass(), getEntity_absMoveToMethodNames(), double.class, double.class, double.class, float.class, float.class);
+            } catch (NoSuchMethodException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        try {
+            entity_absMoveToMethod.invoke(entity, x, y, z, yaw, pitch);
+        } catch (InvocationTargetException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private Method entity_getBukkitEntityMethod;
+
+    public final Object entity_getBukkitEntity(Object entity) {
+        if (entity_getBukkitEntityMethod == null) {
+            try {
+                entity_getBukkitEntityMethod = getMethodByNames(getEntityClass(), getEntity_getBukkitEntityMethodNames());
+            } catch (NoSuchMethodException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        try {
+            return entity_getBukkitEntityMethod.invoke(entity);
         } catch (InvocationTargetException | IllegalAccessException e) {
             throw new RuntimeException(e);
         }

@@ -26,10 +26,10 @@ import java.util.*;
 
 public class RawSchematic extends Schematic {
     private int width, height, length;
-    private Vector                 offset;
     private Vector                 absolutePosition;
     private EmptyBuildBlock[][][]  blocks;
     private Map<Material, Integer> materials;
+    private List<SchematicEntity>  entities;
 
     public RawSchematic(Path path) {
         super(path);
@@ -57,7 +57,7 @@ public class RawSchematic extends Schematic {
         return block == null ? new EmptyBuildBlock(x, y, z) : block;
     }
 
-    private void load(boolean full) { // TODO load entities
+    private void load(boolean full) {
         File file = new File(getPath());
         if (getPath().endsWith(".schem")) {
             Object data;
@@ -68,16 +68,6 @@ public class RawSchematic extends Schematic {
             this.width = NMS.getInstance().getNMSProvider().nbtTagCompound_getShort(data, "Width");
             this.height = NMS.getInstance().getNMSProvider().nbtTagCompound_getShort(data, "Height");
             this.length = NMS.getInstance().getNMSProvider().nbtTagCompound_getShort(data, "Length");
-
-            Object meta = NMS.getInstance().getNMSProvider().nbtTagCompound_getCompound(data, "Metadata");
-            if (meta == null) {
-                this.offset = new Vector();
-            } else {
-                this.offset = new Vector(
-                        NMS.getInstance().getNMSProvider().nbtTagCompound_getInt(meta, "WEOffsetX"),
-                        NMS.getInstance().getNMSProvider().nbtTagCompound_getInt(meta, "WEOffsetY"),
-                        NMS.getInstance().getNMSProvider().nbtTagCompound_getInt(meta, "WEOffsetZ"));
-            }
 
             int[] offset = NMS.getInstance().getNMSProvider().nbtTagCompound_getIntArray(data, "Offset");
             if (offset.length == 3) {absolutePosition = new Vector(offset[0], offset[1], offset[2]);}
@@ -151,6 +141,13 @@ public class RawSchematic extends Schematic {
                         new TileBuildBlock(x, y, z, blockState, tileEntity);
                 index++;
             }
+
+            this.entities = new ArrayList<>();
+            for (Object object : NMS.getInstance().getNMSProvider().nbtTagCompound_getList(data, "Entities", 10)) {
+                try {
+                    this.entities.add(new SchematicEntity(object, absolutePosition));
+                } catch (Exception ignored) {}
+            }
         } else {
             CompoundTag data;
             try (NBTInputStream inputStream = new NBTInputStream(new FileInputStream(file), true)) {
@@ -161,7 +158,6 @@ public class RawSchematic extends Schematic {
             this.width = sizeTag.getInt(0);
             this.height = sizeTag.getInt(1);
             this.length = sizeTag.getInt(2);
-            this.offset = null;
 
             if (!full) {return;}
             this.blocks = new EmptyBuildBlock[width][height][length];
@@ -251,12 +247,8 @@ public class RawSchematic extends Schematic {
     }
 
     @Override
-    public Location offset(Location origin, int x, int y, int z, int emptyLayers) {
-        return new Location(
-                origin.getWorld(),
-                origin.getBlockX() + x - this.offset.getBlockX(),
-                origin.getBlockY() + y - this.offset.getBlockY() - emptyLayers,
-                origin.getBlockZ() + z - this.offset.getBlockZ() + 1);
+    public Location offset(Location origin, double x, double y, double z, int emptyLayers, int rotation) {
+        return origin.clone().add(Util.rotateVector(new Vector(x, y-emptyLayers, z), rotation));
     }
 
     @Override
@@ -323,7 +315,7 @@ public class RawSchematic extends Schematic {
 
             for (EmptyBuildBlock b : thisLayer) {
                 //check if it needs to be placed.
-                Block pending = Objects.requireNonNull(origin.getWorld()).getBlockAt(offset(origin, b.X, b.Y, b.Z, emptyLayers));
+                Block pending = Objects.requireNonNull(origin.getWorld()).getBlockAt(offset(origin, b.X, b.Y, b.Z, emptyLayers, builder.getRotation()));
 
                 if (builder.isExcavate() && !pending.isEmpty()) {
                     exair.add(new EmptyBuildBlock(b.X, b.Y, b.Z)); // TODO remove
@@ -359,7 +351,7 @@ public class RawSchematic extends Schematic {
                     case LEGACY_STATIONARY_LAVA:
                     //</editor-fold>
                         //5th
-                        if (!builder.isIgnoreLiquids()) liquids.add(b);
+                        if (!builder.ignoresLiquids()) liquids.add(b);
                         break;
                     case SAND:
                     case GRAVEL:
@@ -528,6 +520,12 @@ public class RawSchematic extends Schematic {
         buildQ.clear();
         unload();
         return queue;
+    }
+
+    @Override
+    @NotNull
+    public Queue<SchematicEntity> getEntities() {
+        return new LinkedList<>(this.entities);
     }
 }
 

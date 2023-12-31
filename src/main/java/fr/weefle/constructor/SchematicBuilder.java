@@ -11,6 +11,7 @@ import fr.weefle.constructor.nms.NMS;
 import fr.weefle.constructor.schematic.RawSchematic;
 import fr.weefle.constructor.schematic.Schematic;
 import fr.weefle.constructor.schematic.YAMLSchematic;
+import mc.promcteam.engine.manager.api.menu.YAMLMenu;
 import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -31,7 +32,8 @@ public class SchematicBuilder extends JavaPlugin {
     private static final Map<String,Schematic> schematics = new MapMaker().weakValues().makeMap();
 
     private Config config;
-    private Plugin denizen = null;
+    private BuildingRegistry buildingRegistry;
+    private Plugin denizen;
 
     @Override
     public void onEnable() {
@@ -56,8 +58,9 @@ public class SchematicBuilder extends JavaPlugin {
 			getLogger().severe("Verify the resource's link");
 			e.printStackTrace();
 		}*/
+        reload();
 
-        if (getServer().getPluginManager().getPlugin("Citizens") != null || getServer().getPluginManager().getPlugin("Citizens").isEnabled()) {
+        if (getServer().getPluginManager().getPlugin("Citizens") != null && getServer().getPluginManager().getPlugin("Citizens").isEnabled()) {
             getLogger().log(Level.INFO, "Citizens is now enabled");
         } else {
             getLogger().log(Level.SEVERE, "Citizens not found or not enabled");
@@ -75,16 +78,23 @@ public class SchematicBuilder extends JavaPlugin {
 
         getServer().getPluginManager().registerEvents(new TraitListener(), this);
         getServer().getPluginManager().registerEvents(new SelectionListener(), this);
+    }
 
+    public void reload() {
         this.config = new Config();
+        (this.buildingRegistry = new BuildingRegistry()).load();
         if (!new File(config.getSchematicsFolder()).exists()) {
             saveResource("schematics/house.schem", false);
             saveResource("schematics/house.yml", false);
             saveResource("schematics/structure_house.nbt", false);
+            saveResource("schematics/villager_house.schem", false);
         }
+        YAMLMenu.reloadMenus(this);
     }
 
     public Config config() {return config;}
+
+    public BuildingRegistry getBuildingRegistry() {return buildingRegistry;}
 
     public static BuilderTrait getBuilder(Entity ent) {
         if (ent == null) return null;
@@ -108,6 +118,7 @@ public class SchematicBuilder extends JavaPlugin {
         if (!path.toFile().isFile()) {return null;}
         String string = path.toString();
         Schematic schematic = SchematicBuilder.schematics.get(string);
+        if (schematic instanceof YAMLSchematic) {return ((YAMLSchematic) schematic).copy();}
         if (schematic != null) {return schematic;}
         if (string.endsWith(".schem") || string.endsWith(".nbt")) {
             schematic = new RawSchematic(path);
@@ -154,6 +165,10 @@ public class SchematicBuilder extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        this.buildingRegistry.save();
+        this.denizen = null;
+        this.buildingRegistry = null;
+
         getLogger().log(Level.INFO, " v" + getDescription().getVersion() + " disabled.");
         Bukkit.getServer().getScheduler().cancelTasks(this);
         HandlerList.unregisterAll(this);

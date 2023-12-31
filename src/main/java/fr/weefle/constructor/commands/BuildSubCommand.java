@@ -20,7 +20,6 @@ public class BuildSubCommand extends AbstractCommand {
         registerHyphenArgument(new HyphenArgument("onCancel"));
         registerHyphenArgument(new HyphenArgument("onStart"));
         registerHyphenArgument(new HyphenArgument("layers"));
-        registerHyphenArgument(new HyphenArgument("yOffset"));
         registerHyphenArgument(new HyphenArgument("groupAll", "true", "false"));
         registerHyphenArgument(new HyphenArgument("ignoreAir", "true", "false"));
         registerHyphenArgument(new HyphenArgument("ignoreLiquid", "true", "false"));
@@ -74,7 +73,7 @@ public class BuildSubCommand extends AbstractCommand {
             } else if (arg.equalsIgnoreCase("ignoreAir")) {
                 builder.setIgnoreAir(Boolean.parseBoolean(value));
             } else if (arg.equalsIgnoreCase("ignoreLiquid")) {
-                builder.setIgnoreLiquids(Boolean.parseBoolean(value));
+                builder.setIgnoresLiquids(Boolean.parseBoolean(value));
             } else if (arg.equalsIgnoreCase("excavate")) {
                 builder.setExcavate(Boolean.parseBoolean(value));
                 if (!builder.isSilent()) {

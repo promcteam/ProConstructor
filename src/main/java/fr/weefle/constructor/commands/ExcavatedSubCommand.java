@@ -30,26 +30,26 @@ public class ExcavatedSubCommand extends AbstractCommand {
             sendUsage(sender);
             return;
         }
+        execute(builder, (Player) sender);
+    }
+
+    public static void execute(BuilderTrait builder, Player player) {
         NPC npc = builder.getNPC();
 
-        if (builder.getState() == BuilderTrait.BuilderState.BUILDING && builder.isExcavate()) {
-            if (!builder.ExcavateMaterials.isEmpty()) {
-                Inventory inventory = ((Player) sender).getInventory();
-                for (Map.Entry<Material, Integer> entry : builder.ExcavateMaterials.entrySet()) {
-                    int total = entry.getValue();
-                    while (total > 0) {
-                        int amount = Math.min(total, 64);
-                        inventory.addItem(new ItemStack(entry.getKey(), amount));
-                        total -= amount;
-                    }
+        if (!builder.ExcavateMaterials.isEmpty()) {
+            Inventory inventory = player.getInventory();
+            for (Map.Entry<Material, Integer> entry : builder.ExcavateMaterials.entrySet()) {
+                int total = entry.getValue();
+                while (total > 0) {
+                    int amount = Math.min(total, 64);
+                    inventory.addItem(new ItemStack(entry.getKey(), amount));
+                    total -= amount;
                 }
-                builder.ExcavateMaterials.clear();
-                sender.sendMessage(ChatColor.GREEN + npc.getName() + " gave you all excavated blocks");
-            } else {
-                sender.sendMessage(ChatColor.RED + npc.getName() + " has no excavated blocks");
             }
+            builder.ExcavateMaterials.clear();
+            player.sendMessage(ChatColor.GREEN + npc.getName() + " gave you all excavated blocks");
         } else {
-            sender.sendMessage(ChatColor.RED + npc.getName() + " is not currently building");
+            player.sendMessage(ChatColor.RED + npc.getName() + " has no excavated blocks");
         }
     }
 }

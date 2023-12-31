@@ -1,34 +1,29 @@
-package fr.weefle.constructor.menu.menus;
+package fr.weefle.constructor.menus;
 
-import com.google.common.base.Preconditions;
-import fr.weefle.constructor.SchematicBuilder;
 import fr.weefle.constructor.hooks.citizens.BuilderTrait;
-import fr.weefle.constructor.menu.Menu;
-import fr.weefle.constructor.menu.Slot;
-import fr.weefle.constructor.schematic.Schematic;
-import net.citizensnpcs.api.npc.NPC;
+import mc.promcteam.engine.manager.api.menu.Menu;
+import mc.promcteam.engine.manager.api.menu.Slot;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
 import java.util.Objects;
 
 public class MaterialsMenu extends Menu {
-    protected final NPC npc;
+    protected final BuilderTrait builder;
 
-    public MaterialsMenu(Player player, NPC npc) {
+    public MaterialsMenu(Player player, @NotNull BuilderTrait builder) {
         super(player, 6, "SchematicBuilder - Materials");
-        Preconditions.checkArgument(SchematicBuilder.getBuilder(npc) != null, npc.getName()+" is not a builder");
-        this.npc = npc;
+        this.builder = Objects.requireNonNull(builder);
     }
 
     @Override
     public void setContents() {
-        BuilderTrait builder = Objects.requireNonNull(SchematicBuilder.getBuilder(npc), npc.getName()+" is not a builder");
-        Map<Material,Integer> obtainedMaterials = builder.getStoredMaterials();
+        Map<Material,Integer> obtainedMaterials = this.builder.getStoredMaterials();
         int i = 0;
-        for (Map.Entry<Material,Integer> entry : Objects.requireNonNull(builder.getSchematic(), npc.getName()+" has no schematic loaded").getMaterials().entrySet()) {
+        for (Map.Entry<Material,Integer> entry : Objects.requireNonNull(this.builder.getSchematic(), this.builder.getName()+" has no schematic loaded").getMaterials().entrySet()) {
             Material material = entry.getKey();
             int total = entry.getValue()-obtainedMaterials.getOrDefault(material, 0);
             while (total > 0) {

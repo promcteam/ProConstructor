@@ -2,36 +2,53 @@ name: ProSchematicBuilder
 authors: [Weefle, Sentropic]
 version: ${project.version}
 main: fr.weefle.constructor.SchematicBuilder
-depends: [ProMCCore, Citizens]
-softdepends: [Denizen, dynmap]
-api-version: 1.14
+depend: [ProMCCore, Citizens]
+softdepend: [Denizen, dynmap, Towny]
+api-version: 1.19
 commands:
   schematicbuilder:
     description: Lists SchematicBuilder commands.
     usage: /schematicbuilder help
 permissions:
-  schematicbuilder.*:
+  schematicbuilder.info:
+    default: true
+    description: Allows to use the sub-command /schematicbuilder info
+  schematicbuilder.reload:
     default: op
-    children:
-      schematicbuilder.reload: true
-      schematicbuilder.load: true
-      schematicbuilder.npc: true
-      schematicbuilder.cancel: true
-      schematicbuilder.excavated: true
-      schematicbuilder.preview: true
-      schematicbuilder.structure: true
-      schematicbuilder.build: true
-      schematicbuilder.mark: true
-      schematicbuilder.origin: true
-      schematicbuilder.check: true
-      schematicbuilder.compare: true
-      schematicbuilder.info: true
-      schematicbuilder.survey: true
-      schematicbuilder.timeout: true
-      schematicbuilder.ignoreprotection: true
-      schematicbuilder.list: true
-      schematicbuilder.hold: true
-      schematicbuilder.supply: true
-      schematicbuilder.donate: true
-      schematicbuilder.select: true
-      schematicbuilder.npc.click: true
+    description: Allows to use the sub-command /schematicbuilder reload
+  schematicbuilder.npc.edit:
+    default: op
+    description: Allows to access the admin view of a builder's settings menu
+  schematicbuilder.load:
+    default: op
+    description: Allows to use the sub-command /schematicbuilder load
+  schematicbuilder.npc:
+    default: op
+    description: Allows to use the sub-command /schematicbuilder npc
+  schematicbuilder.build:
+    default: op
+    description: Allows to use the sub-command /schematicbuilder build
+  schematicbuilder.cancel:
+    default: op
+    description: Allows to use the sub-command /schematicbuilder cancel
+  schematicbuilder.excavated:
+    default: op
+    description: Allows to use the sub-command /schematicbuilder excavated
+  schematicbuilder.preview:
+    default: op
+    description: Allows to use the sub-command /schematicbuilder preview
+  schematicbuilder.survey:
+    default: true
+    description: Allows to use the sub-command /schematicbuilder survey
+  schematicbuilder.donate:
+    default: true
+    description: Allows to donate required materials to a builder
+  schematicbuilder.select:
+    default: op
+    description: Allows select a region to save as a new schematic
+  schematicbuilder.structure:
+    default: op
+    description: Allows to save the selected region as a new schematic
+  schematicbuilder.townyoverride:
+    default: op
+    description: Allows to access builders from a Town you do not belong to

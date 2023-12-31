@@ -1,0 +1,99 @@
+title: "&8%npc%'s Settings"
+rows: 1
+items:
+  empty:
+    display-name: ""
+    lore: []
+    material: "air"
+    amount: 1
+    custom-model-data: 0
+  excavate:
+    display-name: "&aExcavate first"
+    lore:
+      - "&7Toggle whether the builder excavates the site"
+      - "&7before or while constructing"
+      - "&9Current: &b%current%"
+    material: "iron_shovel"
+    amount: 1
+    custom-model-data: 0
+  layers:
+    display-name: "&aSet layers to build at the same time"
+    lore:
+      - "&6Middle-Click: &eSet"
+      - "&6Left-Click: &eDecrease"
+      - "&6Right-Click: &eIncrease"
+      - "&6Drop: &cSet to default value"
+      - "&9Current: &b%current%"
+    material: "snow"
+    amount: 1
+    custom-model-data: 0
+  silent-true:
+    display-name: "&aIs silent"
+    lore:
+      - "&7Toggle whether the builder should send"
+      - "&7status messages to the player"
+      - "&9Current: &b%current%"
+    material: "white_wool"
+    amount: 1
+    custom-model-data: 0
+  silent-false:
+    display-name: "&aIs silent"
+    lore:
+      - "&7Toggle Whether the builder should send"
+      - "&7status messages to the player"
+      - "&9Current: &b%current%"
+    material: "note_block"
+    amount: 1
+    custom-model-data: 0
+  hold-item:
+    display-name: "&aHold item"
+    lore:
+      - "&7Toggle whether the builder shows the"
+      - "&7current building item in their hand"
+      - "&9Current: &b%current%"
+    material: "oak_planks"
+    amount: 1
+    custom-model-data: 0
+  build-pattern:
+    display-name: "&aBuild pattern"
+    lore:
+      - "&7Change the pattern or direction followed"
+      - "&7by the builder during construction"
+      - "&9Current: &b%current%"
+    material: "compass"
+    amount: 1
+    custom-model-data: 0
+  timeout:
+    display-name: "&aBuilding timeout"
+    lore:
+      - "&7Set the maximum number of seconds"
+      - "&7that can pass between placed blocks."
+      - "&7If the builder failed to move after this time,"
+      - "&7they'll be force-teleported"
+      - "&6Middle-Click: &eSet"
+      - "&6Left-Click: &eDecrease"
+      - "&6Right-Click: &eIncrease"
+      - "&6Drop: &cSet to default value"
+      - "&9Current: &b%current%"
+    material: "clock"
+    amount: 1
+    custom-model-data: 0
+  queue-by-category:
+    display-name: "&aQueue blocks by category"
+    lore:
+      - "&7Toggle whether blocks will be placed in the"
+      - "&7building queue according to their category"
+      - "&7(furniture, redstone, decors...)"
+      - "&7or according only to their layer"
+      - "&9Current: &b%current%"
+    material: "barrel"
+    amount: 1
+    custom-model-data: 0
+slots:
+  0: "silent"
+  1: "hold-item"
+  2: "excavate"
+  3: "layers"
+  4: "build-pattern"
+  5: "timeout"
+  6: "queue-by-category"

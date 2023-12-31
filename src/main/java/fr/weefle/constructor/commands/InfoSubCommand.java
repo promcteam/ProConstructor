@@ -43,14 +43,14 @@ public class InfoSubCommand extends AbstractCommand {
             sender.sendMessage(ChatColor.GREEN + "Origin: " + ChatColor.WHITE + builder.getOrigin());
         }
 
-        sender.sendMessage(ChatColor.GREEN + "Status: " + ChatColor.WHITE + builder.getState() + " Timeout: " + builder.getMoveTimeoutSeconds());
-        sender.sendMessage(ChatColor.GREEN + "Require Mats: " + ChatColor.WHITE + builder.isRequireMaterials() + " Hold Items: " + builder.isHoldItems());
+        sender.sendMessage(ChatColor.GREEN + "Status: " + ChatColor.WHITE + builder.getState() + ChatColor.GREEN + " Timeout: " + ChatColor.WHITE + builder.getMoveTimeoutSeconds());
+        sender.sendMessage(ChatColor.GREEN + "Require Mats: " + ChatColor.WHITE + builder.requiresMaterials() + ChatColor.GREEN + " Hold Items: " + ChatColor.WHITE + builder.holdsItems());
 
         if (builder.getState() == BuilderTrait.BuilderState.BUILDING) {
             sender.sendMessage(ChatColor.BLUE + "Location: " + ChatColor.WHITE + " x:" + builder.getOrigin().getBlockX() + " y:" + builder.getOrigin().getBlockY() + " z:" + builder.getOrigin().getBlockZ());
             sender.sendMessage(ChatColor.BLUE + "Build Pattern XZ: " + ChatColor.WHITE + builder.getBuildPatternXZ() + ChatColor.BLUE + " Build Y Layers: " + ChatColor.WHITE + builder.getBuildYLayers());
-            sender.sendMessage(ChatColor.BLUE + "Ignore Air: " + ChatColor.WHITE + builder.isIgnoreAir() + ChatColor.BLUE + " Ignore Liquid: " + ChatColor.WHITE + builder.isIgnoreLiquids());
-            sender.sendMessage(ChatColor.BLUE + "Hold Items: " + ChatColor.WHITE + builder.isHoldItems() + ChatColor.BLUE + "  Excavate: " + ChatColor.WHITE + builder.isExcavate());
+            sender.sendMessage(ChatColor.BLUE + "Ignore Air: " + ChatColor.WHITE + builder.isIgnoreAir() + ChatColor.BLUE + " Ignore Liquid: " + ChatColor.WHITE + builder.ignoresLiquids());
+            sender.sendMessage(ChatColor.BLUE + "Hold Items: " + ChatColor.WHITE + builder.holdsItems() + ChatColor.BLUE + "  Excavate: " + ChatColor.WHITE + builder.isExcavate());
             sender.sendMessage(ChatColor.BLUE + "On Complete: " + ChatColor.WHITE + builder.getOnComplete() + ChatColor.BLUE + "  " +
                     "On Cancel: " + ChatColor.WHITE + builder.getOnCancel());
             long c = builder.startingcount;

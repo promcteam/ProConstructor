@@ -1,20 +1,25 @@
 0:
-  display-name: "&6Villager House"
   path: "villager_house.schem"
+  display-name: "&6Villager House"
   offset:
     x: 0
     y: 0
     z: 0
   materials:
-    spruce_planks: 100
+    oak_planks: 100
+  lore:
+    - "&7A small house, good enough to survive the night"
 1:
-  display-name: "&6Big House"
   path: "house.schem"
+  display-name: "&6Big House"
   offset:
-    x: 0
+    x: -10
     y: 0
-    z: 0
+    z: -13
   materials:
     spruce_planks: 200
     bricks: 150
     white_wool: 64
+  lore:
+    - "&7A luxurious house with rooms for"
+    - "&7just about everything you might need"

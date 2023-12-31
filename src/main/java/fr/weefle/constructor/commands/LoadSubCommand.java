@@ -67,15 +67,8 @@ public class LoadSubCommand extends AbstractCommand {
 
     @Override
     public void execute(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull List<String> args) {
-        BuilderTrait builder = getSelectedBuilder(sender);
-        if (builder == null) {return;}
-        if (args.size() == 0) {
+                if (args.size() == 0) {
             sendUsage(sender);
-            return;
-        }
-
-        if (builder.getState() != BuilderTrait.BuilderState.IDLE) {
-            sender.sendMessage(ChatColor.RED + "Please cancel current build before loading new schematic.");
             return;
         }
 
@@ -83,17 +76,29 @@ public class LoadSubCommand extends AbstractCommand {
         for (int i = 1; i < args.size(); i++) {
             stringBuilder.append(" ").append(args.get(i));
         }
-        String arg = stringBuilder.toString().trim();
+        LoadSubCommand.execute(stringBuilder.toString().trim(), sender, null);
+    }
+
+    public static void execute(String path, CommandSender sender, @Nullable Runnable onComplete) {
+        BuilderTrait builder = getSelectedBuilder(sender);
+        if (builder == null) {
+            sender.sendMessage(ChatColor.RED + "No builder is selected.");
+            return;
+        }
+        if (builder.getState() != BuilderTrait.BuilderState.IDLE) {
+            sender.sendMessage(ChatColor.RED + "Please cancel current build before loading new schematic.");
+            return;
+        }
         new BukkitRunnable() {
             @Override
             public void run() {
                 try {
-                    Schematic schematic = SchematicBuilder.getSchematic(arg);
+                    Schematic schematic = SchematicBuilder.getSchematic(path);
                     new BukkitRunnable() {
                         @Override
                         public void run() {
                             if (schematic == null) {
-                                sender.sendMessage(ChatColor.RED + "no such file " + arg);
+                                sender.sendMessage(ChatColor.RED + "no such file " + path);
                             } else {
                                 builder.setSchematic(schematic);
                                 sender.sendMessage(ChatColor.GREEN + "Loaded Sucessfully");
@@ -105,10 +110,16 @@ public class LoadSubCommand extends AbstractCommand {
                     new BukkitRunnable() {
                         @Override
                         public void run() {
-                            sender.sendMessage(ChatColor.RED + "Failed to load schematic " + arg + ", check console for more details.");
-                            SchematicBuilder.getInstance().getLogger().log(Level.WARNING, "Failed to load schematic: " + arg);
+                            sender.sendMessage(ChatColor.RED + "Failed to load schematic " + path + ", check console for more details.");
+                            SchematicBuilder.getInstance().getLogger().log(Level.WARNING, "Failed to load schematic: " + path);
                             e.printStackTrace();
                         }
+                    }.runTask(SchematicBuilder.getInstance());
+                }
+                if (onComplete != null) {
+                    new BukkitRunnable() {
+                        @Override
+                        public void run() {onComplete.run();}
                     }.runTask(SchematicBuilder.getInstance());
                 }
             }

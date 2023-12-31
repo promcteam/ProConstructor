@@ -8,26 +8,26 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Config {
-    private       String         schematicsFolder;
-    private final List<Material> markMats         = new ArrayList<>();
-    private       double         moveTimeoutTicks;
-    private       boolean        ignoreProtection, holdItems, requireMaterials;
+    private final String         schematicsFolder;
+    private final double         moveTimeoutTicks;
+    private final boolean        ignoreProtection, holdItems, requireMaterials;
 
-    private String
+    private final String
             startedMessage,
             completeMessage,
             cancelMessage,
-            markMessage,
             surveyMessage,
             supplyListMessage,
             supplyNeedMessage,
             supplyDontNeedMessage,
             supplyTakenMessage,
-            collectingMessage;
+            collectingMessage,
+            cantWhileBuilding,
+            noSchematicSelected,
+            cantMoveSchematic
+                    ;
 
-    public Config() {reload();}
-
-    public void reload() {
+    Config() {
         SchematicBuilder plugin = SchematicBuilder.getInstance();
         plugin.saveDefaultConfig();
         plugin.reloadConfig();
@@ -42,22 +42,17 @@ public class Config {
         cancelMessage = config.getString("DefaultTexts.BuildCanceled", "");
         startedMessage = config.getString("DefaultTexts.BuildStarted", "");
         collectingMessage = config.getString("DefaultTexts.BuildCollecting", "");
-        markMessage = config.getString("DefaultTexts.Mark", "");
         surveyMessage = config.getString("DefaultTexts.Survey", "");
         supplyListMessage = config.getString("DefaultTexts.Supply_List", "");
         supplyNeedMessage = config.getString("DefaultTexts.Supply_Need_Item", "");
         supplyDontNeedMessage = config.getString("DefaultTexts.Supply_Dont_Need_Item", "");
         supplyTakenMessage = config.getString("DefaultTexts.Supply_Item_Taken", "");
-        for (String material : config.getStringList("MarkMaterials")) {
-            markMats.add(Material.valueOf(material));
-        }
-        if (markMats.isEmpty()) markMats.add(Material.GLASS);
-
+        cantWhileBuilding = config.getString("DefaultTexts.CantWhileBuilding", "");
+        noSchematicSelected = config.getString("DefaultTexts.NoSchematicSelected", "");
+        cantMoveSchematic = config.getString("DefaultTexts.CantMoveSchematic", "");
     }
 
     public String getSchematicsFolder() {return schematicsFolder;}
-
-    public List<Material> getMarkMats() {return markMats;}
 
     public double getMoveTimeoutTicks() {return moveTimeoutTicks;}
 
@@ -73,8 +68,6 @@ public class Config {
 
     public String getCancelMessage() {return cancelMessage;}
 
-    public String getMarkMessage() {return markMessage;}
-
     public String getSurveyMessage() {return surveyMessage;}
 
     public String getSupplyListMessage() {return supplyListMessage;}
@@ -86,4 +79,10 @@ public class Config {
     public String getSupplyTakenMessage() {return supplyTakenMessage;}
 
     public String getCollectingMessage() {return collectingMessage;}
+
+    public String getCantWhileBuildingMessage() {return cantWhileBuilding;}
+
+    public String getNoSchematicSelectedMessage() {return noSchematicSelected;}
+
+    public String getCantMoveSchematicMessage() {return cantMoveSchematic;}
 }

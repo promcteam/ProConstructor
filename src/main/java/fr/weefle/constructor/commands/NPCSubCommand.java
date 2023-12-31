@@ -1,6 +1,6 @@
 package fr.weefle.constructor.commands;
 
-import fr.weefle.constructor.menu.menus.NPCMenu;
+import fr.weefle.constructor.menus.BuilderListMenu;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -22,6 +22,6 @@ public class NPCSubCommand extends AbstractCommand {
             sendUsage(sender);
             return;
         }
-        new NPCMenu((Player) sender).open();
+        new BuilderListMenu((Player) sender).open();
     }
 }

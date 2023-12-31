@@ -1,8 +1,8 @@
-package fr.weefle.constructor.menu.menus;
+package fr.weefle.constructor.menus;
 
 import fr.weefle.constructor.SchematicBuilder;
-import fr.weefle.constructor.menu.Menu;
-import fr.weefle.constructor.menu.Slot;
+import mc.promcteam.engine.manager.api.menu.Menu;
+import mc.promcteam.engine.manager.api.menu.Slot;
 import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
