@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xmlns="http://maven.apache.org/POM/4.0.0" xmlns:Xlint="http://www.w3.org/2001/XMLSchema"
+         xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
@@ -10,16 +10,15 @@
         <version>1.20.4-SNAPSHOT</version>
     </parent>
 
-    <groupId>com.promcteam</groupId>
-    <artifactId>proschematicbuilder</artifactId>
-    <version>1.0-R0.11-SNAPSHOT</version>
+    <artifactId>blueprint</artifactId>
+    <version>1.0.0-R0.1-SNAPSHOT</version>
 
     <properties>
         <java.version>1.8</java.version>
-        <promccore.version>1.0.6-R0.3-SNAPSHOT</promccore.version>
+        <codex.version>1.0.0-R0.1-SNAPSHOT</codex.version>
     </properties>
 
-    <name>ProSchematicBuilder</name>
+    <name>Blueprint</name>
     <description>Let NPCs build your schematics and structures block by block with Citizens
     </description>
     <url>
@@ -51,7 +50,7 @@
         </dependency>
         <dependency>
             <groupId>com.promcteam</groupId>
-            <artifactId>promccore</artifactId>
+            <artifactId>codex</artifactId>
         </dependency>
         <dependency>
             <groupId>net.citizensnpcs</groupId>
@@ -81,7 +80,7 @@
         <dependency>
             <groupId>com.github.shynixn.structureblocklib</groupId>
             <artifactId>structureblocklib-bukkit-api</artifactId>
-            <version>2.10.0</version>
+            <version>2.12.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -111,8 +110,8 @@
                 <version>3.0.0-M7</version>
                 <configuration>
                     <systemPropertyVariables>
-                        <PROMCCORE_VERSION>${promccore.version}</PROMCCORE_VERSION>
-                        <PROSKILLAPI_VERSION>${project.version}</PROSKILLAPI_VERSION>
+                        <CODEX_VERSION>${codex.version}</CODEX_VERSION>
+                        <FABLED_VERSION>${project.version}</FABLED_VERSION>
                     </systemPropertyVariables>
                 </configuration>
             </plugin>
