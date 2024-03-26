@@ -6,7 +6,7 @@ import com.promcteam.blueprint.hooks.citizens.BuilderTrait;
 import com.promcteam.codex.manager.api.menu.Menu;
 import com.promcteam.codex.manager.api.menu.Slot;
 import com.promcteam.codex.manager.api.menu.YAMLMenu;
-import com.promcteam.codex.utils.ItemUT;
+import com.promcteam.codex.util.ItemUT;
 import net.citizensnpcs.api.npc.NPC;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -41,8 +41,8 @@ public class CitizensActionsMenu extends Menu {
                             return new Slot(itemStack) {
                                 @Override
                                 public void onLeftClick() {
-                                    Menu          menu       = this.menu;
-                                    BaseComponent component  =
+                                    Menu menu = this.menu;
+                                    BaseComponent component =
                                             new TextComponent("▸ Enter the desired action on start, or ");
                                     BaseComponent component1 = new TextComponent(
                                             ChatColor.GOLD.toString() + ChatColor.UNDERLINE + "cancel");
@@ -93,8 +93,8 @@ public class CitizensActionsMenu extends Menu {
                             return new Slot(itemStack) {
                                 @Override
                                 public void onLeftClick() {
-                                    Menu          menu       = this.menu;
-                                    BaseComponent component  =
+                                    Menu menu = this.menu;
+                                    BaseComponent component =
                                             new TextComponent("▸ Enter the desired action on complete, or ");
                                     BaseComponent component1 = new TextComponent(
                                             ChatColor.GOLD.toString() + ChatColor.UNDERLINE + "cancel");
@@ -145,8 +145,8 @@ public class CitizensActionsMenu extends Menu {
                             return new Slot(itemStack) {
                                 @Override
                                 public void onLeftClick() {
-                                    Menu          menu       = this.menu;
-                                    BaseComponent component  =
+                                    Menu menu = this.menu;
+                                    BaseComponent component =
                                             new TextComponent("▸ Enter the desired action on cancel, or ");
                                     BaseComponent component1 = new TextComponent(
                                             ChatColor.GOLD.toString() + ChatColor.UNDERLINE + "cancel");

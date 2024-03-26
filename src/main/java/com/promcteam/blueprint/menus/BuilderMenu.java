@@ -1,18 +1,18 @@
 package com.promcteam.blueprint.menus;
 
 import com.google.common.base.Preconditions;
-import com.promcteam.blueprint.schematic.Schematic;
-import com.promcteam.blueprint.PersistentBuilding;
 import com.promcteam.blueprint.Blueprint;
+import com.promcteam.blueprint.PersistentBuilding;
 import com.promcteam.blueprint.commands.ExcavatedSubCommand;
 import com.promcteam.blueprint.commands.PreviewSubCommand;
 import com.promcteam.blueprint.hooks.citizens.BuilderTrait;
+import com.promcteam.blueprint.schematic.Schematic;
 import com.promcteam.blueprint.schematic.YAMLSchematic;
 import com.promcteam.blueprint.util.Util;
 import com.promcteam.codex.manager.api.menu.Menu;
 import com.promcteam.codex.manager.api.menu.Slot;
 import com.promcteam.codex.manager.api.menu.YAMLMenu;
-import com.promcteam.codex.utils.ItemUT;
+import com.promcteam.codex.util.ItemUT;
 import net.citizensnpcs.api.npc.NPC;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -58,7 +58,7 @@ public class BuilderMenu extends Menu {
                     if (schematic == null) {
                         return new Slot(this.getItem(function + "-null"));
                     }
-                    int       tier      =
+                    int tier =
                             schematic instanceof YAMLSchematic ? ((YAMLSchematic) schematic).getTier() + 1 : 1;
                     ItemStack itemStack = this.getItem(function + "-notnull");
                     itemStack.setAmount(Math.max(1, tier));
@@ -150,7 +150,7 @@ public class BuilderMenu extends Menu {
                                 return;
                             }
 
-                            Menu          menu      = this.menu;
+                            Menu menu = this.menu;
                             BaseComponent component = new TextComponent(
                                     "▸ While facing in each direction, left click to push the building, or right click to bring it closer.");
                             player.spigot().sendMessage(component);
@@ -333,8 +333,8 @@ public class BuilderMenu extends Menu {
                         @Override
                         public void onLeftClick() {
                             if (checkNotBusy(builder, player)) {
-                                Menu          menu       = this.menu;
-                                BaseComponent component  = new TextComponent(
+                                Menu menu = this.menu;
+                                BaseComponent component = new TextComponent(
                                         "▸ Click on a block from the structure you want to select, or type ");
                                 BaseComponent component1 =
                                         new TextComponent(ChatColor.GOLD.toString() + ChatColor.UNDERLINE + "cancel");
@@ -373,7 +373,7 @@ public class BuilderMenu extends Menu {
                                                         .getBuildingRegistry()
                                                         .getPersistentBuilding(block.getLocation());
                                                 if (persistentBuilding == null) {
-                                                    BaseComponent component  = new TextComponent(ChatColor.RED
+                                                    BaseComponent component = new TextComponent(ChatColor.RED
                                                             + "This block doesn't belong to a existing building. Type ");
                                                     BaseComponent component1 = new TextComponent(
                                                             ChatColor.GOLD.toString() + ChatColor.UNDERLINE + "cancel");
@@ -451,8 +451,8 @@ public class BuilderMenu extends Menu {
                     return new Slot(itemStack) {
                         @Override
                         public void onMiddleClick() {
-                            Menu          menu       = this.menu;
-                            BaseComponent component  = new TextComponent("▸ Enter the desired layers, or ");
+                            Menu          menu      = this.menu;
+                            BaseComponent component = new TextComponent("▸ Enter the desired layers, or ");
                             BaseComponent component1 =
                                     new TextComponent(ChatColor.GOLD.toString() + ChatColor.UNDERLINE + "cancel");
                             component1.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "cancel"));
@@ -588,8 +588,8 @@ public class BuilderMenu extends Menu {
                     return new Slot(itemStack) {
                         @Override
                         public void onMiddleClick() {
-                            Menu          menu       = this.menu;
-                            BaseComponent component  = new TextComponent("▸ Enter the building timeout, or ");
+                            Menu          menu      = this.menu;
+                            BaseComponent component = new TextComponent("▸ Enter the building timeout, or ");
                             BaseComponent component1 =
                                     new TextComponent(ChatColor.GOLD.toString() + ChatColor.UNDERLINE + "cancel");
                             component1.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "cancel"));

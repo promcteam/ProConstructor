@@ -1,8 +1,8 @@
 package com.promcteam.blueprint.schematic;
 
-import com.promcteam.blueprint.schematic.blocks.EmptyBuildBlock;
 import com.promcteam.blueprint.Blueprint;
 import com.promcteam.blueprint.hooks.citizens.BuilderTrait;
+import com.promcteam.blueprint.schematic.blocks.EmptyBuildBlock;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;

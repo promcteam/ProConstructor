@@ -1,7 +1,7 @@
 package com.promcteam.blueprint.hooks.citizens.persistence;
 
-import com.promcteam.blueprint.schematic.Schematic;
 import com.promcteam.blueprint.Blueprint;
+import com.promcteam.blueprint.schematic.Schematic;
 import net.citizensnpcs.api.persistence.Persister;
 import net.citizensnpcs.api.util.DataKey;
 

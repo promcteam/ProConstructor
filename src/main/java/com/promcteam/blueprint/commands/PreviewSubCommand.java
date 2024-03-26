@@ -1,7 +1,7 @@
 package com.promcteam.blueprint.commands;
 
-import com.promcteam.blueprint.schematic.Schematic;
 import com.promcteam.blueprint.hooks.citizens.BuilderTrait;
+import com.promcteam.blueprint.schematic.Schematic;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;

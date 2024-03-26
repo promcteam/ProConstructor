@@ -6,7 +6,7 @@ import com.promcteam.blueprint.hooks.citizens.BuilderTrait;
 import com.promcteam.codex.manager.api.menu.Menu;
 import com.promcteam.codex.manager.api.menu.Slot;
 import com.promcteam.codex.manager.api.menu.YAMLMenu;
-import com.promcteam.codex.utils.ItemUT;
+import com.promcteam.codex.util.ItemUT;
 import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;

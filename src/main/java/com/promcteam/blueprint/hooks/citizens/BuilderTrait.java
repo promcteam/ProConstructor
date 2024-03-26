@@ -78,7 +78,7 @@ public class BuilderTrait extends Trait implements Toggleable {
     int                rotation           = 0;
     @Persist("ContinueLoc")
     Location           continueLoc        = null;
-            // Fixme after server restart, builder should continue the building where it left off
+    // Fixme after server restart, builder should continue the building where it left off
     @Persist("Materials")
     @DelegatePersistence(MaterialIntegerMapPersistenceLoader.class)
     MaterialMapWrapper materials          = new MaterialMapWrapper(new TreeMap<>());
@@ -274,7 +274,7 @@ public class BuilderTrait extends Trait implements Toggleable {
                 }
                 Material               material          = heldItem.getType();
                 Map<Material, Integer> requiredMaterials = this.schematic.getMaterials();
-                int                    needed            =
+                int needed =
                         requiredMaterials.getOrDefault(material, 0) - this.materials.getHandle()
                                 .getOrDefault(material, 0);
                 Config config = Blueprint.getInstance().config();

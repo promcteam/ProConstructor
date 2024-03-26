@@ -15,11 +15,11 @@ import java.net.URL;
 
 public class Updater
         extends Thread {
-    private       int              id;
-    public static boolean          update        = false;
-    private       boolean          log           = false;
-    private       boolean          enabled       = true;
-    public static boolean          enabledingame = true;
+    private       int       id;
+    public static boolean   update        = false;
+    private       boolean   log           = false;
+    private       boolean   enabled       = true;
+    public static boolean   enabledingame = true;
     private       URL       url;
     private final Blueprint m;
 
