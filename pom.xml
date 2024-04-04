@@ -5,24 +5,21 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>com.promcteam</groupId>
-        <artifactId>promc-parent</artifactId>
-        <version>1.20.4-R1-SNAPSHOT</version>
+        <groupId>studio.magemonkey</groupId>
+        <artifactId>magemonkey-parent</artifactId>
+        <version>1.20.4-SNAPSHOT</version>
     </parent>
 
     <artifactId>blueprint</artifactId>
+    <name>Blueprint</name>
     <version>1.0.0-R0.1-SNAPSHOT</version>
+    <description>Let NPCs build your schematics and structures block by block with Citizens</description>
 
     <properties>
         <java.version>1.8</java.version>
         <codex.version>1.0.0-R0.1-SNAPSHOT</codex.version>
     </properties>
 
-    <name>Blueprint</name>
-    <description>Let NPCs build your schematics and structures block by block with Citizens
-    </description>
-    <url>
-    </url>
 
     <repositories>
         <repository>
@@ -49,7 +46,7 @@
             <artifactId>spigot-api</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.promcteam</groupId>
+            <groupId>studio.magemonkey</groupId>
             <artifactId>codex</artifactId>
         </dependency>
         <dependency>
@@ -148,9 +145,9 @@
 
     <developers>
         <developer>
-            <name>ProMCTeam</name>
-            <organization>ProMCTeam</organization>
-            <organizationUrl>https://promcteam.com</organizationUrl>
+            <name>Mage Monkey Studios</name>
+            <organization>Mage Monkey Studios</organization>
+            <organizationUrl>https://magemonkey.studio</organizationUrl>
         </developer>
     </developers>
 

@@ -1,7 +1,7 @@
 name: ${project.name}
 authors: [ Weefle, Sentropic ]
 version: ${project.version}
-main: com.promcteam.blueprint.Blueprint
+main: studio.magemonkey.blueprint.Blueprint
 depend: [ Codex, Citizens ]
 softdepend: [ Denizen, dynmap, Towny ]
 api-version: 1.19

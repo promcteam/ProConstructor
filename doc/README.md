@@ -1,6 +1,6 @@
-[![Build](https://github.com/promcteam/${project.artifactId}/actions/workflows/maven.yml/badge.svg?branch=main)](https://s01.oss.sonatype.org/content/repositories/snapshots/com/promcteam/${project.artifactId}/)
-[![Build](https://github.com/promcteam/${project.artifactId}/actions/workflows/release.yml/badge.svg?branch=main)](https://s01.oss.sonatype.org/content/repositories/snapshots/com/promcteam/${project.artifactId}/)
-[![Build](https://github.com/promcteam/${project.artifactId}/actions/workflows/devbuild.yml/badge.svg?branch=dev)](https://s01.oss.sonatype.org/content/repositories/snapshots/com/promcteam/${project.artifactId}/${project.version}/)
+[![Build](https://github.com/promcteam/${project.artifactId}/actions/workflows/maven.yml/badge.svg?branch=main)](https://s01.oss.sonatype.org/content/repositories/snapshots/studio/magemonkey/${project.artifactId}/)
+[![Build](https://github.com/promcteam/${project.artifactId}/actions/workflows/release.yml/badge.svg?branch=main)](https://s01.oss.sonatype.org/content/repositories/snapshots/studio/magemonkey/${project.artifactId}/)
+[![Build](https://github.com/promcteam/${project.artifactId}/actions/workflows/devbuild.yml/badge.svg?branch=dev)](https://s01.oss.sonatype.org/content/repositories/snapshots/studio/magemonkey/${project.artifactId}/${project.version}/)
 
 # ${project.name}
 
