@@ -1,12 +1,11 @@
 import re
-import sys
-
 import requests
 import simplejson as json
+import sys
 
 is_dev = len(sys.argv) >= 3 and bool(sys.argv[2])
 search_string = \
-    r'Uploaded to (ossrh|central): (https:\/\/s01\.oss\.sonatype\.org(:443)?\/.*?\/com\/promcteam\/(.*?)\/(.*?)\/(' \
+    r'Uploaded to (ossrh|central): (https:\/\/s01\.oss\.sonatype\.org(:443)?\/.*?\/studio\/magemonkey\/(.*?)\/(.*?)\/(' \
     r'.*?)(?<!sources|javadoc)\.jar(?!\.asc)) '
 
 
@@ -21,15 +20,25 @@ def get_info():
 
 
 version, name, url = get_info()
+if is_dev:
+    split = version.split('-')[0:-2]
+    version = '-'.join(split)
 if not is_dev:
-    url = url.replace('https://s01.oss.sonatype.org:443/service/local/staging/deployByRepositoryId/compromcteam-1002',
-                  'https://s01.oss.sonatype.org/service/local/repositories/releases/content')
+    url = re.sub(
+        'https:\/\/s01\.oss\.sonatype\.org:443\/service\/local\/staging\/deployByRepositoryId\/studiomagemonkey-\d+',
+        'https://s01.oss.sonatype.org/service/local/repositories/releases/content',
+        url)
 embed = {
+    'username': 'Dev Mage',
     'author': {
         'name': 'New ' + ('Dev ' if is_dev else '') + 'Build Available!',
         'url': 'https://github.com/promcteam/' + name
     },
+    'image': {
+        'url': 'https://fabled.magemonkey.studio/' + ('dev_build.gif' if is_dev else 'release_build.gif')
+    },
     'title': version,
+    'description': 'Click the link above to download the new build!',
     'url': url,
     'color': 5341129
 }

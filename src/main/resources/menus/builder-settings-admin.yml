@@ -3,7 +3,7 @@ rows: 2
 items:
   empty:
     display-name: ""
-    lore: []
+    lore: [ ]
     material: "air"
     amount: 1
     custom-model-data: 0

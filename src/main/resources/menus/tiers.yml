@@ -3,7 +3,7 @@ rows: 6
 items:
   empty:
     display-name: ""
-    lore: []
+    lore: [ ]
     material: "air"
     amount: 1
     custom-model-data: 0
@@ -42,14 +42,14 @@ items:
     custom-model-data: 0
   prev-page:
     display-name: "&3Previous Page"
-    lore: []
+    lore: [ ]
     material: "player_head"
     skull-texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZWE0YTliNzBhMjVhMjdkODE4OWU2MGQyN2VhOGNjOTYzMmMzNmI0NjkyODE1NWRlNzc1NWYzNjZlZjA0Yzg3NyJ9fX0="
     amount: 1
     custom-model-data: 0
   next-page:
     display-name: "&3Next Page"
-    lore: []
+    lore: [ ]
     material: "player_head"
     skull-texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTkxNTJjMmU5MWY0NzA0ODViZTIyMmRiNWQyYTg5NWNhZGM5MDMzMjZmNWM2NzFiZjhhNTU5MTQ5NjczYmU4MCJ9fX0="
     amount: 1
