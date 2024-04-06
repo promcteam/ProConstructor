@@ -1,5 +1,9 @@
 package studio.magemonkey.blueprint.menus;
 
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.jetbrains.annotations.Nullable;
 import studio.magemonkey.blueprint.Blueprint;
 import studio.magemonkey.blueprint.schematic.Schematic;
 import studio.magemonkey.blueprint.schematic.SchematicTier;
@@ -8,18 +12,13 @@ import studio.magemonkey.codex.manager.api.menu.Menu;
 import studio.magemonkey.codex.manager.api.menu.Slot;
 import studio.magemonkey.codex.manager.api.menu.YAMLListMenu;
 import studio.magemonkey.codex.util.ItemUT;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class TiersMenu extends Menu {
     public static final YAMLListMenu<Schematic> CONFIG =
-            new YAMLListMenu<>(Blueprint.getInstance(), "menus/tiers.yml") {
-
+            new YAMLListMenu<Schematic>(Blueprint.getInstance(), "menus/tiers.yml") {
                 @Override
                 protected String getTitle(String yamlTitle, Schematic schematic) {return yamlTitle;}
 

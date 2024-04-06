@@ -1,22 +1,22 @@
 package studio.magemonkey.blueprint.menus;
 
 import com.google.common.base.Preconditions;
+import net.citizensnpcs.api.npc.NPC;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.Nullable;
 import studio.magemonkey.blueprint.Blueprint;
 import studio.magemonkey.blueprint.hooks.citizens.BuilderTrait;
 import studio.magemonkey.codex.manager.api.menu.Menu;
 import studio.magemonkey.codex.manager.api.menu.Slot;
 import studio.magemonkey.codex.manager.api.menu.YAMLMenu;
 import studio.magemonkey.codex.util.ItemUT;
-import net.citizensnpcs.api.npc.NPC;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 
 public class BuildPatternMenu extends Menu {
     public static final YAMLMenu<BuilderTrait> CONFIG =
-            new YAMLMenu<>(Blueprint.getInstance(), "menus/build-pattern.yml") {
+            new YAMLMenu<BuilderTrait>(Blueprint.getInstance(), "menus/build-pattern.yml") {
                 @Override
                 protected String getTitle(String yamlTitle, BuilderTrait parameter) {
                     return yamlTitle.replace("%npc%", parameter.getNPC().getName());

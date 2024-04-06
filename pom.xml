@@ -46,6 +46,12 @@
             <artifactId>codex</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.googlecode.json-simple</groupId>
+            <artifactId>json-simple</artifactId>
+            <version>1.1.1</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>net.citizensnpcs</groupId>
             <artifactId>citizens-main</artifactId>
             <version>2.0.30-SNAPSHOT</version>
@@ -69,6 +75,12 @@
             <artifactId>dynmap-api</artifactId>
             <version>3.4-beta-3</version>
             <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.bukkit</groupId>
+                    <artifactId>bukkit</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.github.shynixn.structureblocklib</groupId>
