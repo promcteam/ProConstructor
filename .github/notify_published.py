@@ -6,7 +6,7 @@ import simplejson as json
 
 is_dev = len(sys.argv) >= 3 and bool(sys.argv[2])
 search_string = \
-    r'Uploaded to (ossrh|central): (https:\/\/s01\.oss\.sonatype\.org(:443)?\/.*?\/com\/promcteam\/(.*?)\/(.*?)\/(' \
+    r'Uploaded to (ossrh|central): (https:\/\/s01\.oss\.sonatype\.org(:443)?\/.*?\/studio\/magemonkey\/(.*?)\/(.*?)\/(' \
     r'.*?)(?<!sources|javadoc)\.jar(?!\.asc)) '
 
 
@@ -22,7 +22,7 @@ def get_info():
 
 version, name, url = get_info()
 if not is_dev:
-    url = url.replace('https://s01.oss.sonatype.org:443/service/local/staging/deployByRepositoryId/compromcteam-1002',
+    url = url.replace('https://s01.oss.sonatype.org:443/service/local/staging/deployByRepositoryId/studiomagemonkey-1002',
                       'https://s01.oss.sonatype.org/service/local/repositories/releases/content')
 embed = {
     'author': {
