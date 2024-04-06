@@ -16,14 +16,14 @@ block.
 
 1) Create a NPC with Citizens and give it the 'builder' trait.
 
-Example: `/npc create Bob --trait builder`
+   Example: `/npc create Bob --trait builder`
 
-2) Select the NPC, either by right clicking them or through `/npc select <npc>`
+2) Select the NPC, either by right-clicking them or through `/npc select <npc>`
 3) Load a schematic with `/blueprint load <file name>`.
 
-Example: `/blueprint load house.schem`
+   Example: `/blueprint load house.schem`
 
-This will load the included example file `house.schem`.
+   This will load the included example file `house.schem`.
 
 4) Position the NPC in the center of the area in which it should build.
 5) Start the NPC building with: `/blueprint build`
