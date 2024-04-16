@@ -10,7 +10,7 @@ block.
 ## Dependencies
 
 - [Citizens](https://www.spigotmc.org/resources/citizens.13811/)
-- [Codex](https://www.spigotmc.org/resources/promccore.93608/)
+- [Codex](https://www.spigotmc.org/resources/codex-core-plugin-by-magemonkey-studio-formerly-promccore.93608/)
 
 ## Usage
 
