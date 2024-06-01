@@ -1,17 +1,24 @@
 package studio.magemonkey.blueprint.nms;
 
+import lombok.Getter;
+import lombok.Setter;
+import org.bukkit.Bukkit;
 import studio.magemonkey.blueprint.nbt.*;
 import studio.magemonkey.blueprint.nms.providers.*;
-import org.bukkit.Bukkit;
 
 import java.util.AbstractList;
 import java.util.Map;
 
 public class NMS {
 
-    private static NMS                                     instance;
-    public         String                                  version;
-    private        NMSProvider                             nmsProvider;
+    @Getter
+    private static NMS                                         instance;
+    @Setter
+    @Getter
+    public         String                                      version;
+    private        NMSProvider                                 nmsProvider;
+    @Setter
+    @Getter
     private        studio.magemonkey.blueprint.API.TileChecker checker;
 
     public boolean setInstance() {
@@ -36,31 +43,11 @@ public class NMS {
         return true;
     }
 
-    public static NMS getInstance() {
-        return instance;
-    }
-
     public NMSProvider getNMSProvider() {return nmsProvider;}
 
-    public String getVersion() {
-        return version;
-    }
-
-    public void setVersion(String version) {
-        this.version = version;
-    }
-
-    public studio.magemonkey.blueprint.API.TileChecker getChecker() {
-        return checker;
-    }
-
-    public void setChecker(studio.magemonkey.blueprint.API.TileChecker checker) {
-        this.checker = checker;
-    }
-
     public static Class<?> getNMSClass(String classname) {
-        String   version  = Bukkit.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3] + ".";
-        String   name     = "org.bukkit.craftbukkit." + version + classname;
+        String   pkg      = Bukkit.getServer().getClass().getPackage().getName();
+        String   name     = pkg + "." + classname;
         Class<?> nmsClass = null;
         try {
             nmsClass = Class.forName(name);
