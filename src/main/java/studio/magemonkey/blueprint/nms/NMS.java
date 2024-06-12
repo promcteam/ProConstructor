@@ -22,21 +22,31 @@ public class NMS {
     private        studio.magemonkey.blueprint.API.TileChecker checker;
 
     public boolean setInstance() {
-        String[] packageArray = Bukkit.getServer().getClass().getPackage().getName().split("\\.");
-        version = packageArray[packageArray.length - 1];
+        int bukkitMajorVersion = Integer.parseInt(Bukkit.getServer().getBukkitVersion().split("\\.")[1]);
 
-        Bukkit.getLogger().info("Your server is running version " + version);
-
-        if (version.compareTo("v1_19_R1") >= 0) {
-            nmsProvider = new NMSProvider_1_19();
-        } else if (version.compareTo("v1_18_R1") >= 0) {
-            nmsProvider = new NMSProvider_1_18();
-        } else if (version.compareTo("v1_17_R1") >= 0) {
-            nmsProvider = new NMSProvider_1_17();
-        } else if (version.compareTo("v1_16_R1") >= 0) {
-            nmsProvider = new NMSProvider_1_16(version);
+        if (bukkitMajorVersion >= 20) {
+            if (bukkitMajorVersion == 20) {
+                nmsProvider = new NMSProvider_1_20();
+            } else {
+                return false;
+            }
         } else {
-            return false;
+            String[] packageArray = Bukkit.getServer().getClass().getPackage().getName().split("\\.");
+            version = packageArray[packageArray.length - 1];
+
+            Bukkit.getLogger().info("Your server is running version " + version);
+
+            if (version.compareTo("v1_19_R1") >= 0) {
+                nmsProvider = new NMSProvider_1_19();
+            } else if (version.compareTo("v1_18_R1") >= 0) {
+                nmsProvider = new NMSProvider_1_18();
+            } else if (version.compareTo("v1_17_R1") >= 0) {
+                nmsProvider = new NMSProvider_1_17();
+            } else if (version.compareTo("v1_16_R1") >= 0) {
+                nmsProvider = new NMSProvider_1_16(version);
+            } else {
+                return false;
+            }
         }
         setChecker(new TileChecker());
         NMS.instance = this;
