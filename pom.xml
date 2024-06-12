@@ -12,7 +12,7 @@
 
     <artifactId>blueprint</artifactId>
     <name>Blueprint</name>
-    <version>1.0.0-R0.3-SNAPSHOT</version>
+    <version>1.0.0-R0.4-SNAPSHOT</version>
     <description>Let NPCs build your schematics and structures block by block with Citizens</description>
 
     <properties>
