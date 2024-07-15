@@ -22,7 +22,7 @@ public class NMS {
     private        studio.magemonkey.blueprint.API.TileChecker checker;
 
     public boolean setInstance() {
-        int bukkitMajorVersion = Integer.parseInt(Bukkit.getServer().getBukkitVersion().split("\\.")[1]);
+        int bukkitMajorVersion = Integer.parseInt(Bukkit.getServer().getBukkitVersion().split("[.-]")[1]);
 
         if (bukkitMajorVersion >= 20) {
             if (bukkitMajorVersion == 20) {
