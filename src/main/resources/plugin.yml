@@ -1,9 +1,9 @@
-name: ProSchematicBuilder
-authors: [Weefle, Sentropic]
+name: ${project.name}
+authors: [ Weefle, Sentropic ]
 version: ${project.version}
-main: fr.weefle.constructor.SchematicBuilder
-depend: [ProMCCore, Citizens]
-softdepend: [Denizen, dynmap, Towny]
+main: studio.magemonkey.blueprint.Blueprint
+depend: [ Codex, Citizens ]
+softdepend: [ Denizen, dynmap, Towny ]
 api-version: 1.19
 commands:
   schematicbuilder:
