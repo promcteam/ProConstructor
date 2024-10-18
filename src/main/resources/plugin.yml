@@ -2,7 +2,7 @@ name: ${project.name}
 authors: [ Weefle, Sentropic ]
 version: ${project.version}
 main: studio.magemonkey.blueprint.Blueprint
-depend: [ Codex, Citizens ]
+depend: [ CodexCore, Citizens ]
 softdepend: [ Denizen, dynmap, Towny ]
 api-version: 1.19
 commands:
