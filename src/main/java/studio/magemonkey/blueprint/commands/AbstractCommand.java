@@ -1,7 +1,5 @@
 package studio.magemonkey.blueprint.commands;
 
-import studio.magemonkey.blueprint.Blueprint;
-import studio.magemonkey.blueprint.hooks.citizens.BuilderTrait;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
 import net.citizensnpcs.api.trait.trait.Owner;
@@ -11,6 +9,8 @@ import org.bukkit.entity.Entity;
 import org.bukkit.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import studio.magemonkey.blueprint.Blueprint;
+import studio.magemonkey.blueprint.hooks.citizens.BuilderTrait;
 
 import java.util.*;
 

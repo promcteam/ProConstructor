@@ -1,16 +1,16 @@
 package studio.magemonkey.blueprint.schematic;
 
-import studio.magemonkey.blueprint.Blueprint;
-import studio.magemonkey.blueprint.hooks.citizens.BuilderTrait;
-import studio.magemonkey.blueprint.schematic.blocks.EmptyBuildBlock;
-import studio.magemonkey.blueprint.util.Util;
-import studio.magemonkey.codex.util.StringUT;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import studio.magemonkey.blueprint.Blueprint;
+import studio.magemonkey.blueprint.hooks.citizens.BuilderTrait;
+import studio.magemonkey.blueprint.schematic.blocks.EmptyBuildBlock;
+import studio.magemonkey.blueprint.util.Util;
+import studio.magemonkey.codex.util.StringUT;
 
 import java.nio.file.Path;
 import java.util.*;

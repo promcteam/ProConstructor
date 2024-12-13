@@ -1,9 +1,9 @@
 package studio.magemonkey.blueprint.util;
 
-import studio.magemonkey.blueprint.schematic.blocks.EmptyBuildBlock;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.util.Vector;
+import studio.magemonkey.blueprint.schematic.blocks.EmptyBuildBlock;
 
 import java.util.*;
 import java.util.Map.Entry;

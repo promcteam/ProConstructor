@@ -1,10 +1,10 @@
 package studio.magemonkey.blueprint.API;
 
 import com.github.shynixn.structureblocklib.api.bukkit.StructureBlockLibApi;
-import studio.magemonkey.blueprint.Blueprint;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.util.Vector;
+import studio.magemonkey.blueprint.Blueprint;
 
 import java.nio.file.Path;
 import java.util.logging.Level;

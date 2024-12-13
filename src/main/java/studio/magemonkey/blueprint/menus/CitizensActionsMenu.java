@@ -1,12 +1,6 @@
 package studio.magemonkey.blueprint.menus;
 
 import com.google.common.base.Preconditions;
-import studio.magemonkey.blueprint.Blueprint;
-import studio.magemonkey.blueprint.hooks.citizens.BuilderTrait;
-import studio.magemonkey.codex.manager.api.menu.Menu;
-import studio.magemonkey.codex.manager.api.menu.Slot;
-import studio.magemonkey.codex.manager.api.menu.YAMLMenu;
-import studio.magemonkey.codex.util.ItemUT;
 import net.citizensnpcs.api.npc.NPC;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -19,6 +13,12 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Nullable;
+import studio.magemonkey.blueprint.Blueprint;
+import studio.magemonkey.blueprint.hooks.citizens.BuilderTrait;
+import studio.magemonkey.codex.manager.api.menu.Menu;
+import studio.magemonkey.codex.manager.api.menu.Slot;
+import studio.magemonkey.codex.manager.api.menu.YAMLMenu;
+import studio.magemonkey.codex.util.ItemUT;
 
 import java.util.Objects;
 

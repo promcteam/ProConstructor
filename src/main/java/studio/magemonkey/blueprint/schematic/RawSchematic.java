@@ -1,14 +1,6 @@
 package studio.magemonkey.blueprint.schematic;
 
 import com.google.common.base.Preconditions;
-import studio.magemonkey.blueprint.hooks.citizens.BuilderTrait;
-import studio.magemonkey.blueprint.nbt.*;
-import studio.magemonkey.blueprint.nms.NMS;
-import studio.magemonkey.blueprint.schematic.blocks.DataBuildBlock;
-import studio.magemonkey.blueprint.schematic.blocks.EmptyBuildBlock;
-import studio.magemonkey.blueprint.schematic.blocks.EntityMap;
-import studio.magemonkey.blueprint.schematic.blocks.TileBuildBlock;
-import studio.magemonkey.blueprint.util.Util;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -17,6 +9,14 @@ import org.bukkit.block.data.BlockData;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import studio.magemonkey.blueprint.hooks.citizens.BuilderTrait;
+import studio.magemonkey.blueprint.nbt.*;
+import studio.magemonkey.blueprint.nms.NMS;
+import studio.magemonkey.blueprint.schematic.blocks.DataBuildBlock;
+import studio.magemonkey.blueprint.schematic.blocks.EmptyBuildBlock;
+import studio.magemonkey.blueprint.schematic.blocks.EntityMap;
+import studio.magemonkey.blueprint.schematic.blocks.TileBuildBlock;
+import studio.magemonkey.blueprint.util.Util;
 
 import java.io.File;
 import java.io.FileInputStream;

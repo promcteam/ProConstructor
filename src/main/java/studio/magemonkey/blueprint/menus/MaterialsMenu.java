@@ -1,12 +1,12 @@
 package studio.magemonkey.blueprint.menus;
 
-import studio.magemonkey.blueprint.hooks.citizens.BuilderTrait;
-import studio.magemonkey.codex.manager.api.menu.Menu;
-import studio.magemonkey.codex.manager.api.menu.Slot;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
+import studio.magemonkey.blueprint.hooks.citizens.BuilderTrait;
+import studio.magemonkey.codex.manager.api.menu.Menu;
+import studio.magemonkey.codex.manager.api.menu.Slot;
 
 import java.util.Map;
 import java.util.Objects;

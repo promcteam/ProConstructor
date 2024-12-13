@@ -1,12 +1,12 @@
 package studio.magemonkey.blueprint.API;
 
-import studio.magemonkey.blueprint.Blueprint;
-import studio.magemonkey.blueprint.hooks.citizens.BuilderTrait;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
 import net.citizensnpcs.api.npc.NPCRegistry;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import studio.magemonkey.blueprint.Blueprint;
+import studio.magemonkey.blueprint.hooks.citizens.BuilderTrait;
 
 public class BlueprintAPI {
 

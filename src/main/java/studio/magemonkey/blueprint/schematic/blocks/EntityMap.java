@@ -1,7 +1,7 @@
 package studio.magemonkey.blueprint.schematic.blocks;
 
-import studio.magemonkey.blueprint.nbt.Tag;
 import org.bukkit.block.data.BlockData;
+import studio.magemonkey.blueprint.nbt.Tag;
 
 public class EntityMap extends DataBuildBlock {
     private final Tag nbt;

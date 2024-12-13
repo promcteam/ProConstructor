@@ -1,6 +1,5 @@
 package studio.magemonkey.blueprint.commands;
 
-import studio.magemonkey.blueprint.hooks.citizens.BuilderTrait;
 import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -11,6 +10,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import studio.magemonkey.blueprint.hooks.citizens.BuilderTrait;
 
 import java.util.List;
 import java.util.Map;

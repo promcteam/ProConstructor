@@ -1,6 +1,5 @@
 package studio.magemonkey.blueprint.listener;
 
-import studio.magemonkey.blueprint.util.Cuboid;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -10,6 +9,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.util.Vector;
+import studio.magemonkey.blueprint.util.Cuboid;
 
 import java.util.HashMap;
 import java.util.Objects;

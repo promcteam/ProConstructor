@@ -3,12 +3,6 @@ package studio.magemonkey.blueprint.listener;
 
 import com.palmergames.bukkit.towny.TownyAPI;
 import com.palmergames.bukkit.towny.object.Town;
-import studio.magemonkey.blueprint.Blueprint;
-import studio.magemonkey.blueprint.hooks.citizens.BuilderTrait;
-import studio.magemonkey.blueprint.hooks.citizens.BuilderTrait.BuilderState;
-import studio.magemonkey.blueprint.menus.ExcavatedMenu;
-import studio.magemonkey.blueprint.menus.MaterialsMenu;
-import studio.magemonkey.codex.util.ItemUT;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.event.NPCLeftClickEvent;
 import net.citizensnpcs.api.event.NPCRightClickEvent;
@@ -22,6 +16,12 @@ import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
+import studio.magemonkey.blueprint.Blueprint;
+import studio.magemonkey.blueprint.hooks.citizens.BuilderTrait;
+import studio.magemonkey.blueprint.hooks.citizens.BuilderTrait.BuilderState;
+import studio.magemonkey.blueprint.menus.ExcavatedMenu;
+import studio.magemonkey.blueprint.menus.MaterialsMenu;
+import studio.magemonkey.codex.util.ItemUT;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;

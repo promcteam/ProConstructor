@@ -1,6 +1,5 @@
 package studio.magemonkey.blueprint;
 
-import com.google.gson.Gson;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.json.simple.JSONObject;

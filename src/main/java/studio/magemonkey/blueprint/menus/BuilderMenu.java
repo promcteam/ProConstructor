@@ -1,18 +1,6 @@
 package studio.magemonkey.blueprint.menus;
 
 import com.google.common.base.Preconditions;
-import studio.magemonkey.blueprint.Blueprint;
-import studio.magemonkey.blueprint.PersistentBuilding;
-import studio.magemonkey.blueprint.commands.ExcavatedSubCommand;
-import studio.magemonkey.blueprint.commands.PreviewSubCommand;
-import studio.magemonkey.blueprint.hooks.citizens.BuilderTrait;
-import studio.magemonkey.blueprint.schematic.Schematic;
-import studio.magemonkey.blueprint.schematic.YAMLSchematic;
-import studio.magemonkey.blueprint.util.Util;
-import studio.magemonkey.codex.manager.api.menu.Menu;
-import studio.magemonkey.codex.manager.api.menu.Slot;
-import studio.magemonkey.codex.manager.api.menu.YAMLMenu;
-import studio.magemonkey.codex.util.ItemUT;
 import net.citizensnpcs.api.npc.NPC;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -32,6 +20,18 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.Nullable;
+import studio.magemonkey.blueprint.Blueprint;
+import studio.magemonkey.blueprint.PersistentBuilding;
+import studio.magemonkey.blueprint.commands.ExcavatedSubCommand;
+import studio.magemonkey.blueprint.commands.PreviewSubCommand;
+import studio.magemonkey.blueprint.hooks.citizens.BuilderTrait;
+import studio.magemonkey.blueprint.schematic.Schematic;
+import studio.magemonkey.blueprint.schematic.YAMLSchematic;
+import studio.magemonkey.blueprint.util.Util;
+import studio.magemonkey.codex.manager.api.menu.Menu;
+import studio.magemonkey.codex.manager.api.menu.Slot;
+import studio.magemonkey.codex.manager.api.menu.YAMLMenu;
+import studio.magemonkey.codex.util.ItemUT;
 
 import java.util.ArrayList;
 import java.util.List;

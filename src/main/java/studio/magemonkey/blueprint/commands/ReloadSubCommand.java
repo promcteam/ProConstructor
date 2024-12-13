@@ -1,11 +1,11 @@
 package studio.magemonkey.blueprint.commands;
 
-import studio.magemonkey.blueprint.Blueprint;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import studio.magemonkey.blueprint.Blueprint;
 
 import java.util.List;
 

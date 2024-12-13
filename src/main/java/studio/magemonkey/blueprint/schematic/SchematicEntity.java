@@ -1,11 +1,11 @@
 package studio.magemonkey.blueprint.schematic;
 
-import studio.magemonkey.blueprint.nms.NMS;
-import studio.magemonkey.blueprint.nms.providers.NMSProvider;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.util.Vector;
+import studio.magemonkey.blueprint.nms.NMS;
+import studio.magemonkey.blueprint.nms.providers.NMSProvider;
 
 import java.util.List;
 import java.util.Objects;

@@ -1,13 +1,13 @@
 package studio.magemonkey.blueprint.commands;
 
-import studio.magemonkey.blueprint.hooks.citizens.BuilderTrait;
-import studio.magemonkey.blueprint.schematic.Schematic;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import studio.magemonkey.blueprint.hooks.citizens.BuilderTrait;
+import studio.magemonkey.blueprint.schematic.Schematic;
 
 import java.util.ArrayList;
 import java.util.List;

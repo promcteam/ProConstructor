@@ -1,11 +1,11 @@
 package studio.magemonkey.blueprint.menus;
 
 import com.google.common.base.Preconditions;
+import net.citizensnpcs.api.npc.NPC;
+import org.bukkit.entity.Player;
 import studio.magemonkey.blueprint.Blueprint;
 import studio.magemonkey.blueprint.hooks.citizens.BuilderTrait;
 import studio.magemonkey.codex.manager.api.menu.Menu;
-import net.citizensnpcs.api.npc.NPC;
-import org.bukkit.entity.Player;
 
 import java.util.Objects;
 

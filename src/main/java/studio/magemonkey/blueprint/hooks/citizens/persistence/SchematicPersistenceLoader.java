@@ -1,9 +1,9 @@
 package studio.magemonkey.blueprint.hooks.citizens.persistence;
 
-import studio.magemonkey.blueprint.Blueprint;
-import studio.magemonkey.blueprint.schematic.Schematic;
 import net.citizensnpcs.api.persistence.Persister;
 import net.citizensnpcs.api.util.DataKey;
+import studio.magemonkey.blueprint.Blueprint;
+import studio.magemonkey.blueprint.schematic.Schematic;
 
 import java.util.logging.Level;
 

@@ -1,9 +1,9 @@
 package studio.magemonkey.blueprint.nms;
 
+import org.bukkit.block.Block;
 import studio.magemonkey.blueprint.schematic.blocks.EmptyBuildBlock;
 import studio.magemonkey.blueprint.schematic.blocks.EntityMap;
 import studio.magemonkey.blueprint.schematic.blocks.TileBuildBlock;
-import org.bukkit.block.Block;
 
 public class TileChecker implements studio.magemonkey.blueprint.API.TileChecker {
 

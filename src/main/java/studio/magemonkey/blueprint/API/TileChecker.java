@@ -1,7 +1,7 @@
 package studio.magemonkey.blueprint.API;
 
-import studio.magemonkey.blueprint.schematic.blocks.EmptyBuildBlock;
 import org.bukkit.block.Block;
+import studio.magemonkey.blueprint.schematic.blocks.EmptyBuildBlock;
 
 import java.lang.reflect.InvocationTargetException;
 

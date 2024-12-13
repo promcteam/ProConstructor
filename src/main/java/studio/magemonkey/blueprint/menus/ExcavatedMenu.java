@@ -1,12 +1,12 @@
 package studio.magemonkey.blueprint.menus;
 
-import studio.magemonkey.blueprint.Blueprint;
-import studio.magemonkey.codex.manager.api.menu.Menu;
-import studio.magemonkey.codex.manager.api.menu.Slot;
 import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import studio.magemonkey.blueprint.Blueprint;
+import studio.magemonkey.codex.manager.api.menu.Menu;
+import studio.magemonkey.codex.manager.api.menu.Slot;
 
 import java.util.Map;
 import java.util.Objects;

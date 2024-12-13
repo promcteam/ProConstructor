@@ -1,9 +1,5 @@
 package studio.magemonkey.blueprint.menus;
 
-import studio.magemonkey.blueprint.Blueprint;
-import studio.magemonkey.blueprint.hooks.citizens.BuilderTrait;
-import studio.magemonkey.codex.manager.api.menu.Menu;
-import studio.magemonkey.codex.manager.api.menu.Slot;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.ChatColor;
@@ -12,6 +8,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
+import studio.magemonkey.blueprint.Blueprint;
+import studio.magemonkey.blueprint.hooks.citizens.BuilderTrait;
+import studio.magemonkey.codex.manager.api.menu.Menu;
+import studio.magemonkey.codex.manager.api.menu.Slot;
 
 import java.util.ArrayList;
 

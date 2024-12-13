@@ -1,9 +1,9 @@
 package studio.magemonkey.blueprint.listener;
 
-import studio.magemonkey.blueprint.Updater;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import studio.magemonkey.blueprint.Updater;
 
 public class UpdaterListener implements Listener {
 
